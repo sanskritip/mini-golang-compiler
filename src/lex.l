@@ -2,7 +2,8 @@
 %{
 	#include <stdio.h>
     #include<string.h>
-    #include "src/SymbolTable.h"    
+    #include "src/SymbolTable.h"  
+    // #include "yacc.tab.h"    /* token codes from the parser */  
 %}
 %option nounput yylineno
 UNICODE_LETTER			[a-zA-Z]
@@ -24,8 +25,8 @@ NIL_VAL				"nil"
 "/"				{printf("(%s, DIVIDE)\n", yytext);Insert(yytext,yylineno,"DIVIDE");}
 "%"				{printf("(%s, MOD)\n", yytext);Insert(yytext,yylineno,"MOD");}
 
-"&&"				{printf("(%s, AND)\n", yytext);Insert(yytext,yylineno,"AND");}
-"||"				{printf("(%s, OR)\n", yytext);Insert(yytext,yylineno,"OR");}
+"&&"				{printf("(%s, LAND)\n", yytext);Insert(yytext,yylineno,"LAND");}
+"||"				{printf("(%s, LOR)\n", yytext);Insert(yytext,yylineno,"LOR");}
 "->"				{printf("(%s, ARROW)\n", yytext);Insert(yytext,yylineno,"ARROW");}
 "++"				{printf("(%s, INCREMENT)\n", yytext);Insert(yytext,yylineno,"INCREMENT");}
 "--"				{printf("(%s, DECREMENT)\n", yytext);Insert(yytext,yylineno,"DECREMENT");}
@@ -86,10 +87,6 @@ NIL_VAL				"nil"
 %%
 
 int main(){
-
-	FILE *fp = fopen("test/test1.go", "r");
-	if(fp)
-			yyin = fp;
     yylex();
     printf("LEXING COMPLETED:\n");
     printf("Symbol Table after Lexical Analysis:\n");
