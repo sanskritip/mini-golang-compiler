@@ -44,7 +44,8 @@ struct SymbTab
             struct SymbTab *p;
             p = (SymbTab*)malloc(sizeof(struct SymbTab));
             //Token Label as TK<NO>
-            strcpy(p->label,"TK_0");
+            string token_no = "TK_"+to_string(size);
+            strcpy(p->label,token_no.c_str());
             // printf("\n\tEnter the symbol : ");
             // scanf("%s", p->symbol);
             strcpy(p->symbol, symbol);
