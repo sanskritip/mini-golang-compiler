@@ -32,3 +32,4 @@
 *.app
 
 *.yy.c
+src/lex.yy.c

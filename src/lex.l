@@ -106,10 +106,6 @@ NIL_VAL				"nil"
 %%
 
 
-int main(int argv, char *argc[]){
-    int y;
-    char la[10];
-
+int main(){
     yylex();
-    return 0;
 }
