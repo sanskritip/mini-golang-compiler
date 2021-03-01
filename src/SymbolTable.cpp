@@ -7,13 +7,14 @@ struct SymbTab
     {
         char label[10];
         char symbol[50];
+        char symbol_type[50];
         int addr;
         struct SymbTab *next;
     };
     struct SymbTab *first, *last;
     int Search(char lab[])
     {
-        // printf("Inside search\n");
+        printf("\n\nInside search ->%s\n\n",lab);
         int i, flag = 0;
         struct SymbTab *p;
         p = first;
@@ -22,12 +23,14 @@ struct SymbTab
         {
             //printf("Inside search loop\n");
             if (strcmp(p->label, lab) == 0)
-                flag = 1;
+            {   flag=1;
+                printf("MATCH");
+            }
             p = p->next;
         }
         return flag;
     }
-    void Insert(char symbol[], int address)
+    void Insert(char symbol[], int address, char symbol_type[])
     {
         // printf("Inside ;Insert\n");
         printf(" %s, %d",symbol, address);
@@ -49,6 +52,7 @@ struct SymbTab
             // printf("\n\tEnter the symbol : ");
             // scanf("%s", p->symbol);
             strcpy(p->symbol, symbol);
+            strcpy(p->symbol_type,symbol_type);
             // printf("\n\tEnter the address : ");
             // scanf("%d", &p->addr);
             p->addr = address;
@@ -72,10 +76,10 @@ struct SymbTab
         int i;
         struct SymbTab *p;
         p = first;
-        printf("\n\tLABEL\t\tSYMBOL\t\tADDRESS\n");
+        printf("\n\tLABEL\t\tSYMBOL\t\tSYMBOL_TYPE\t\tADDRESS\n");
         for (i = 0; i < size; i++)
         {
-            printf("\t%s\t\t%s\t\t%d\n", p->label, p->symbol, p->addr);
+            printf("\t%s\t\t%s\t\t%s\t\t%d\n", p->label, p->symbol,p->symbol_type, p->addr);
             p = p->next;
         }
     }

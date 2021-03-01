@@ -17,68 +17,68 @@ NIL_VAL				"nil"
 
 %%
 
-"="				{printf("(%s, ASSIGN)\n", yytext);Insert(yytext,yylineno);}
-"+"				{printf("(%s, ADD)\n", yytext);Insert(yytext,yylineno);}
-"-"				{printf("(%s, MINUS)\n", yytext);Insert(yytext,yylineno);}
-"*"				{printf("(%s, MULTIPLY)\n", yytext);Insert(yytext,yylineno);}
-"/"				{printf("(%s, DIVIDE)\n", yytext);Insert(yytext,yylineno);}
-"%"				{printf("(%s, MOD)\n", yytext);Insert(yytext,yylineno);}
+"="				{printf("(%s, ASSIGN)\n", yytext);Insert(yytext,yylineno,"ASSIGN");}
+"+"				{printf("(%s, ADD)\n", yytext);Insert(yytext,yylineno,"ADD");}
+"-"				{printf("(%s, MINUS)\n", yytext);Insert(yytext,yylineno,"MINUS");}
+"*"				{printf("(%s, MULTIPLY)\n", yytext);Insert(yytext,yylineno,"MULTIPLY");}
+"/"				{printf("(%s, DIVIDE)\n", yytext);Insert(yytext,yylineno,"DIVIDE");}
+"%"				{printf("(%s, MOD)\n", yytext);Insert(yytext,yylineno,"MOD");}
 
-"&&"				{printf("(%s, AND)\n", yytext);Insert(yytext,yylineno);}
-"||"				{printf("(%s, OR)\n", yytext);Insert(yytext,yylineno);}
-"->"				{printf("(%s, ARROW)\n", yytext);Insert(yytext,yylineno);}
-"++"				{printf("(%s, INCREMENT)\n", yytext);Insert(yytext,yylineno);}
-"--"				{printf("(%s, DECREMENT)\n", yytext);Insert(yytext,yylineno);}
+"&&"				{printf("(%s, AND)\n", yytext);Insert(yytext,yylineno,"AND");}
+"||"				{printf("(%s, OR)\n", yytext);Insert(yytext,yylineno,"OR");}
+"->"				{printf("(%s, ARROW)\n", yytext);Insert(yytext,yylineno,"ARROW");}
+"++"				{printf("(%s, INCREMENT)\n", yytext);Insert(yytext,yylineno,"INCREMENT");}
+"--"				{printf("(%s, DECREMENT)\n", yytext);Insert(yytext,yylineno,"DECREMENT");}
 
-"=="			{printf("(%s, EQL)\n", yytext);Insert(yytext,yylineno);}
-">"				{printf("(%s, GTR)\n", yytext);Insert(yytext,yylineno);}
-"<"				{printf("(%s, LSR)\n", yytext);Insert(yytext,yylineno);}
-"!"				{printf("(%s, NOT)\n", yytext);Insert(yytext,yylineno);}
+"=="			{printf("(%s, EQL)\n", yytext);Insert(yytext,yylineno,"EQL");}
+">"				{printf("(%s, GTR)\n", yytext);Insert(yytext,yylineno,"GTR");}
+"<"				{printf("(%s, LSR)\n", yytext);Insert(yytext,yylineno,"LSR");}
+"!"				{printf("(%s, NOT)\n", yytext);Insert(yytext,yylineno,"NOT");}
 
-"!="			{printf("(%s, NEQ)\n", yytext);Insert(yytext,yylineno);}
-"<="			{printf("(%s, LEQ)\n", yytext);Insert(yytext,yylineno);}
-">="			{printf("(%s, GEQ)\n", yytext);Insert(yytext,yylineno);}
-":="			{printf("(%s, DEFINE)\n", yytext);Insert(yytext,yylineno);}
+"!="			{printf("(%s, NEQ)\n", yytext);Insert(yytext,yylineno,"NEQ");}
+"<="			{printf("(%s, LEQ)\n", yytext);Insert(yytext,yylineno,"LEQ");}
+">="			{printf("(%s, GEQ)\n", yytext);Insert(yytext,yylineno,"GEQ");}
+":="			{printf("(%s, DEFINE)\n", yytext);Insert(yytext,yylineno,"DEFINE");}
 
-"("				{printf("(%s, LEFTPARANTHESES)\n", yytext);Insert(yytext,yylineno);}
-")"				{printf("(%s, RIGHTPARANTHESES)\n", yytext);Insert(yytext,yylineno);}
-"{"				{printf("(%s, LEFTBRACE)\n", yytext);Insert(yytext,yylineno);}
-"}"				{printf("(%s, RIGHTBRACE)\n", yytext);Insert(yytext,yylineno);}
-"["				{printf("(%s, LEFTBRACKET)\n", yytext);Insert(yytext,yylineno);}
-"]"				{printf("(%s, RIGHTBRACKET)\n", yytext);Insert(yytext,yylineno);}
-","				{printf("(%s, COMMA)\n", yytext);Insert(yytext,yylineno);}
-";"				{printf("(%s, SEMICOLON)\n", yytext);Insert(yytext,yylineno);}
-":"				{printf("(%s, COLON)\n", yytext);Insert(yytext,yylineno);}
-"."				{printf("(%s, PERIOD)\n", yytext);Insert(yytext,yylineno);}
+"("				{printf("(%s, LEFTPARANTHESES)\n", yytext);}
+")"				{printf("(%s, RIGHTPARANTHESES)\n", yytext);}
+"{"				{printf("(%s, LEFTBRACE)\n", yytext);}
+"}"				{printf("(%s, RIGHTBRACE)\n", yytext);}
+"["				{printf("(%s, LEFTBRACKET)\n", yytext);}
+"]"				{printf("(%s, RIGHTBRACKET)\n", yytext);}
+","				{printf("(%s, COMMA)\n", yytext);Insert(yytext,yylineno,"COMMA");}
+";"				{printf("(%s, SEMICOLON)\n", yytext);Insert(yytext,yylineno,"SEMICOLON");}
+":"				{printf("(%s, COLON)\n", yytext);Insert(yytext,yylineno,"COLON");}
+"."				{printf("(%s, PERIOD)\n", yytext);Insert(yytext,yylineno,"PERIOD");}
 
-"package"			{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);}
-"import"			{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);}
-"func"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);}
-"break"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);} 
-"case"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);}
-"const"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);} 
-"continue"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);} 
-"default"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);} 
-"else"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);}
-"for"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);}
-"go"        		{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);}
-"if"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);}
-"range"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);}
-"return"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);}
-"struct"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);}
-"switch"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);} 
-"type"       		{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);} 
-"var"        		{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno);}
-{VAR_TYPE}			{printf("(%s, DATA TYPE)\n", yytext);Insert(yytext,yylineno);}
-{BOOL_CONST}		{printf("(%s, Boolean constant)\n", yytext);Insert(yytext,yylineno);}
-{NIL_VAL}			{printf("(%s, NULL)\n", yytext);Insert(yytext,yylineno);}
+"package"			{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
+"import"			{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
+"func"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
+"break"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");} 
+"case"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
+"const"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");} 
+"continue"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");} 
+"default"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");} 
+"else"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
+"for"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
+"go"        		{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
+"if"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
+"range"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
+"return"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
+"struct"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
+"switch"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");} 
+"type"       		{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");} 
+"var"        		{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
+{VAR_TYPE}			{printf("(%s, DATA TYPE)\n", yytext);Insert(yytext,yylineno,"DATA TYPE");}
+{BOOL_CONST}		{printf("(%s, BOOLEAN CONSTANT)\n", yytext);Insert(yytext,yylineno,"BOOLEAN CONSTANT");}
+{NIL_VAL}			{printf("(%s, NULL)\n", yytext);Insert(yytext,yylineno,"NULL");}
 
-{LETTER}({LETTER}|{DIGIT})*	{printf("(%s, IDENTIFIER)\n", yytext);Insert(yytext,yylineno);}
-{DIGIT}+			{printf("(%s, INTEGER)\n", yytext);Insert(yytext,yylineno);}
-{DIGIT}+"."{DIGIT}+		{printf("(%s, FLOAT)\n", yytext);Insert(yytext,yylineno);}
-\'{UNICODE_CHAR}\'  		{printf("(%s, BYTE)\n", yytext);Insert(yytext,yylineno);}
+{LETTER}({LETTER}|{DIGIT})*	{printf("(%s, IDENTIFIER)\n", yytext);Insert(yytext,yylineno,"IDENTIFIER");}
+{DIGIT}+			{printf("(%s, INTEGER)\n", yytext);Insert(yytext,yylineno,"INTEGER");}
+{DIGIT}+"."{DIGIT}+		{printf("(%s, FLOAT)\n", yytext);Insert(yytext,yylineno,"FLOAT");}
+\'{UNICODE_CHAR}\'  		{printf("(%s, BYTE)\n", yytext);Insert(yytext,yylineno,"BYTE");}
 
-\"([^\\\n\"]|(\\.))*\"	{printf("(%s, STRING)\n", yytext);Insert(yytext,yylineno);}
+\"([^\\\n\"]|(\\.))*\"	{printf("(%s, STRING)\n", yytext);Insert(yytext,yylineno,"STRING");}
 \/\/{UNICODE_CHAR}*\n		;
 "\n"				;
 "\t"				;
