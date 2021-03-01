@@ -1,6 +1,6 @@
 all:
 	flex src/lex.l
-	g++ lex.yy.c src/SymbolTable.cpp src/SymbolTable.h -o lexer.out
+	g++ -w lex.yy.c src/SymbolTable.cpp src/SymbolTable.h -o lexer.out
 	./lexer.out
 
 clean:

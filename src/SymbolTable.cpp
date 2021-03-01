@@ -3,18 +3,11 @@
 
 using namespace std;
 int size=0;
-struct SymbTab
-    {
-        char label[10];
-        char symbol[50];
-        char symbol_type[50];
-        int addr;
-        struct SymbTab *next;
-    };
+
     struct SymbTab *first, *last;
-    int Search(char lab[])
+    struct SymbTab* Search(char lab[])
     {
-        printf("\n\nInside search ->%s\n\n",lab);
+        //printf("\n\nInside search ->%s\n\n",lab);
         int i, flag = 0;
         struct SymbTab *p;
         p = first;
@@ -22,13 +15,14 @@ struct SymbTab
         for (i = 0; i < size; i++)
         {
             //printf("Inside search loop\n");
-            if (strcmp(p->label, lab) == 0)
-            {   flag=1;
-                printf("MATCH");
+            //printf("%s %s\n",p->symbol, lab);
+            if (strcmp(p->symbol, lab) == 0)
+            {   return p;
+                //printf("MATCH");
             }
             p = p->next;
         }
-        return flag;
+        return NULL;
     }
     void Insert(char symbol[], int address, char symbol_type[])
     {
@@ -38,12 +32,14 @@ struct SymbTab
         // char l[20];
         // printf("\n\tEnter the label : ");
         // scanf("%s", l);
-        int n = Search(symbol);
-        printf("%d", n);
-        if (n == 1)
-            printf("\n\tThe label exists already in the symbol table\n\tDuplicate can’t be ;inserted");
-        else
+        struct SymbTab* n;
+        n = Search(symbol);
+        if (n)
         {
+            n->addr[n->addr_no] = address;
+            n->addr_no++;
+        }
+        else{
             struct SymbTab *p;
             p = (SymbTab*)malloc(sizeof(struct SymbTab));
             //Token Label as TK<NO>
@@ -55,7 +51,8 @@ struct SymbTab
             strcpy(p->symbol_type,symbol_type);
             // printf("\n\tEnter the address : ");
             // scanf("%d", &p->addr);
-            p->addr = address;
+            p->addr[0] = address;
+            p->addr_no=1;
             p->next = NULL;
             if (size == 0)
             {
@@ -68,18 +65,23 @@ struct SymbTab
                 last = p;
             }
             size++;
-        }
+        
         // printf("\n\tLabel ;inserted\n");
+        }
     }
     void Display()
     {
         int i;
         struct SymbTab *p;
         p = first;
-        printf("\n\tLABEL\t\tSYMBOL\t\tSYMBOL_TYPE\t\tADDRESS\n");
+        printf("\n\tLABEL\t\tSYMBOL\t\t\tSYMBOL_TYPE\t\t\tADDRESS\n");
         for (i = 0; i < size; i++)
-        {
-            printf("\t%s\t\t%s\t\t%s\t\t%d\n", p->label, p->symbol,p->symbol_type, p->addr);
+        {   
+            printf("\t%s\t\t%s\t\t\t%s\t\t\t", p->label, p->symbol,p->symbol_type);
+            for (int i=0;i<p->addr_no;i++){
+                printf("%d,",p->addr[i]);
+            }
+            printf("\n");
             p = p->next;
         }
     }
