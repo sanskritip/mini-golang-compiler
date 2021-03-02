@@ -43,7 +43,6 @@ NIL_VAL				"nil"
 "!="			{printf("(%s, NEQ)\n", yytext);Insert(yytext,yylineno,"NEQ");return NEQ; }
 "<="			{printf("(%s, LEQ)\n", yytext);Insert(yytext,yylineno,"LEQ");return LEQ;}
 ">="			{printf("(%s, GEQ)\n", yytext);Insert(yytext,yylineno,"GEQ");return GEQ;}
-":="			{printf("(%s, DEFINE)\n", yytext);Insert(yytext,yylineno,"DEFINE");return DEFINE;}
 
 "("				{printf("(%s, LEFTPARANTHESES)\n", yytext);return LEFTPARANTHESES;}
 ")"				{printf("(%s, RIGHTPARANTHESES)\n", yytext);return RIGHTPARANTHESES;}
@@ -70,7 +69,6 @@ NIL_VAL				"nil"
 "if"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");return IF;}
 "range"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");return RANGE;}
 "return"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");return RETURN;}
-"struct"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");return STRUCT;}
 "switch"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");return SWITCH;} 
 "type"       		{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");return TYPE;} 
 "var"        		{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");return VAR;}
