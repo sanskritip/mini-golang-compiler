@@ -1,34 +1,4 @@
 StartFile -> PackageClause ImportDeclList TopLevelDeclList 
-TopLevelDeclList -> TopLevelDeclList T_SEMICOLON  TopLevelDecl 
-TopLevelDecl -> FunctionDecl 
-FunctionDecl -> T_FUNC FunctionName Function 
-Function -> Signature FunctionBody 
-FunctionBody -> Block 
-Empty Block -> /*empty*/ 
-Block -> T_LEFTBRACE StatementList T_RIGHTBRACE 
-StatementList -> Statement  
-Statement -> FunctionCall 
-FunctionCall -> PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES 
-ArgumentList -> Arguments 
-Arguments -> FunctionCall 
-FunctionCall -> PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES 
-ArgumentList -> Arguments 
-Arguments -> PrimaryExpr 
-PrimaryExpr -> Operand 
-Operand -> Literal 
-Literal -> BasicLit 
-BasicLit -> T_INTEGER 
-PrimaryExpr -> Operand 
-Operand -> OperandName 
-OperandName -> T_IDENTIFIER 
-PrimaryExpr -> PrimaryExpr Selector 
-Selector -> T_PERIOD T_IDENTIFIER 
-PrimaryExpr -> Operand 
-Operand -> OperandName 
-OperandName -> T_IDENTIFIER 
-Signature -> Parameters 
-Parameters -> T_LEFTPARANTHESES T_RIGHTPARANTHESES 
-FunctionName -> T_IDENTIFIER 
 TopLevelDeclList -> TopLevelDecl 
 TopLevelDecl -> FunctionDecl 
 FunctionDecl -> T_FUNC FunctionName Function 
@@ -36,24 +6,78 @@ Function -> Signature FunctionBody
 FunctionBody -> Block 
 Empty Block -> /*empty*/ 
 Block -> T_LEFTBRACE StatementList T_RIGHTBRACE 
-StatementList -> Statement  
+StatementList -> StatementList Statement T_SEMICOLON 
+Statement -> FunctionCall 
+FunctionCall -> PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES 
+ArgumentList -> ArgumentList T_COMMA Arguments 
+Arguments -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
+ArgumentList -> Arguments 
+Arguments -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_STRING 
+PrimaryExpr -> PrimaryExpr Selector 
+Selector -> T_PERIOD T_IDENTIFIER 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
+StatementList -> StatementList Statement T_SEMICOLON 
 Statement -> SimpleStmt 
-SimpleStmt -> EmptyStmt 
-EmptyStmt -> /*empty*/ 
-Signature -> Parameters Result 
-Result -> Type 
-Type -> TypeName 
-TypeName -> T_VAR_TYPE 
-Parameters -> T_LEFTPARANTHESES ParameterList T_RIGHTPARANTHESES 
-ParameterList -> ParameterDecl 
-ParameterDecl -> IdentifierList Type 
+SimpleStmt -> IncDecStmt 
+IncDecStmt -> Expression INC 
+Expression -> Expression1 
+Expression1 -> Expression2 
+Expression2 -> Expression3 
+Expression3 -> Expression4 
+Expression4 -> Expression5 
+Expression5 -> UnaryExpr 
+UnaryExpr -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
+StatementList -> Statement T_SEMICOLON 
+Statement -> Declaration 
+Declaration -> VarDecl 
+VarDecl -> T_VAR VarSpec 
+VarSpec -> IdentifierList T_Type T_ASSIGN ExpressionList 
+ExpressionList -> Expression 
+Expression -> Expression1 
+Expression1 -> Expression2 
+Expression2 -> Expression3 
+Expression3 -> Expression4 
+Expression4 -> Expression4 add_op Expression5 
+Expression5 -> Expression5 mul_op PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_INTEGER 
+mul_op -> T_MUL 
+Expression5 -> UnaryExpr 
+UnaryExpr -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_INTEGER 
+add_op -> T_ADD 
+Expression4 -> Expression5 
+Expression5 -> UnaryExpr 
+UnaryExpr -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_INTEGER 
 Type -> TypeName 
 TypeName -> T_VAR_TYPE 
 IdentifierList -> T_IDENTIFIER 
+Signature -> Parameters 
+Parameters -> T_LEFTPARANTHESES T_RIGHTPARANTHESES 
 FunctionName -> T_IDENTIFIER 
 ImportDeclList -> ImportDecl 
-ImportDecl -> T_IMPORT T_LEFTPARANTHESES ImportSpecList  T_RIGHTPARANTHESES 
-ImportSpecList -> ImportSpec T_SEMICOLON 
+ImportDecl -> T_IMPORT ImportSpec T_SEMICOLON 
 ImportSpec -> PackageName2 
 PackageName -> T_STRING 
 PackageClause -> T_PACKAGE PackageName 
