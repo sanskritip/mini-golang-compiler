@@ -11,6 +11,8 @@ vector <string> lhs;
 vector <string> rhs;
 %}
 
+%start StartFile
+
 %union {
      char *nt;
      char *sval;
@@ -233,7 +235,7 @@ BasicLit:
 
 FunctionLit:
 	T_FUNC Function {lhs.push_back("FunctionLit");rhs.push_back("T_FUNC Function");};
-//-----------------------------------------------------------------------------start
+
 PrimaryExpr:
 	Operand {lhs.push_back("PrimaryExpr");rhs.push_back("Operand");}|
 	PrimaryExpr Selector {lhs.push_back("PrimaryExpr");rhs.push_back("PrimaryExpr Selector");}|
@@ -296,7 +298,7 @@ mul_op:
 	| T_SHR {lhs.push_back("mul_op");rhs.push_back("T_SHR");}
 	| T_AND {lhs.push_back("mul_op");rhs.push_back("T_AND");}
 	| T_AND_NOT {lhs.push_back("mul_op");rhs.push_back("T_AND_NOT");};
-//-------------------------------------------------------------------------------------------start
+
 unary_op:
 	T_ADD {lhs.push_back("unary_op");rhs.push_back("T_ADD");}
 	| T_MINUS {lhs.push_back("unary_op");rhs.push_back("T_SUB");}
@@ -304,7 +306,6 @@ unary_op:
 	| T_XOR {lhs.push_back("unary_op");rhs.push_back("T_XOR");}
 	| T_MULTIPLY {lhs.push_back("unary_op");rhs.push_back("T_MUL");}
 	| T_AND {lhs.push_back("unary_op");rhs.push_back("T_AND");};
-//----------------------------------------------------------------------------------------------------------------end
 
 assign_op:
 	  T_ASSIGN {lhs.push_back("assign_op");rhs.push_back("T_ASSIGN");};
@@ -358,7 +359,6 @@ int main (int argc, char** argv) {
         exit(1);
     }
 	else{
-		printf("File created!..........\n");
 		for(int i=0;i<lhs.size();i++){
 			fprintf(fptr, "%s -> %s \n", lhs[i].c_str(),rhs[i].c_str());
 	}
