@@ -26,17 +26,15 @@ vector <string> rhs;
 %token <sval> PACKAGE IMPORT FUNC BREAK CASE CONST CONTINUE DEFAULT
 %token <sval> ELSE FOR GO IF RANGE RETURN STRUCT SWITCH TYPE VAR VAR_TYPE
 %token <sval> BOOL_CONST NIL_VAL IDENTIFIER BYTE STRING ELLIPSIS
-%token <sval> SHL SHR INC DEC
+%token <sval> SHL SHR INCREMENT DECREMENT 
 %token <sval> INTEGER
 %token <sval> FLOAT
-%left <sval> ADD SUB MUL QUO REM 
+%left <sval> ADD MINUS MULTIPLY DIVIDE MOD
 %right <sval> ASSIGN AND NOT DEFINE AND_NOT
 %left <sval> OR XOR ARROW //Identifier
-%right <sval> ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN QUO_ASSIGN REM_ASSIGN
-%right <sval> AND_ASSIGN OR_ASSIGN XOR_ASSIGN
-%right <sval> SHL_ASSIGN SHR_ASSIGN AND_NOT_ASSIGN COLON
+%right <sval> COLON
 %left <sval> LAND LOR EQL NEQ LEQ GEQ SEMICOLON
-%left <sval> GTR LSS LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK COMMA PERIOD
+%left <sval> GTR LSR LEFTPARANTHESES RIGHTPARANTHESES LEFTBRACE RIGHTBRACE LEFTBRACKET RIGHTBRACKET COMMA PERIOD
 
 
 %type <nt> StartFile Expression 
@@ -51,7 +49,6 @@ vector <string> rhs;
 %type <nt> PostStmt Condition UnaryExpr PrimaryExpr
 %type <nt> Selector Index /*Slice */TypeDecl TypeSpecList TypeSpec VarDecl
 %type <nt> TypeAssertion ExpressionList ArrayType 
-//%type <nt> ExprCaseClauseList ExprCaseClause
 %type <nt> Operand Literal BasicLit OperandName ImportSpec IfStmt
 %type <nt> ImportPath/* SliceType*/
 %type <nt> PackageClause PackageName PackageName2 ImportDecl ImportDeclList ImportSpecList
@@ -59,22 +56,18 @@ vector <string> rhs;
 %type <nt> TypeName
 %type <nt> /*QualifiedIdent*/ PointerType IdentifierList
 
-//%%
-
-
-
 %% 
 
 
 StartFile:
-    PackageClause SEMICOLON ImportDeclList TopLevelDeclList {
+    PackageClause ImportDeclList TopLevelDeclList {
 		printf("Parsed Start of program file.");
-    	lhs.push_back("StartFile");rhs.push_back("PackageClause SEMICOLON ImportDeclList TopLevelDeclList");//cout << "---" << $$ << "---" << $3 << "---";
+    	lhs.push_back("StartFile");rhs.push_back("PackageClause ImportDeclList TopLevelDeclList");//cout << "---" << $$ << "---" << $3 << "---";
     }
     ;
 
 Block:
-	LBRACE OPENB StatementList CLOSEB RBRACE{lhs.push_back("Block");rhs.push_back("LBRACE OPENB StatementList CLOSEB RBRACE");}
+	LEFTBRACE OPENB StatementList CLOSEB RIGHTBRACE{lhs.push_back("Block");rhs.push_back("LEFTBRACE OPENB StatementList CLOSEB RIGHTBRACE");}
 	//printf("I have a block -------");cout << $1 << endl;}
 	; 
 
@@ -125,8 +118,8 @@ Label:
 
 
 IncDecStmt:
-	Expression INC {lhs.push_back("IncDecStmt");rhs.push_back("Expression INC");}
-	|Expression DEC {lhs.push_back("IncDecStmt");rhs.push_back("Expression DEC");};
+	Expression INCREMENT {lhs.push_back("IncDecStmt");rhs.push_back("Expression INC");}
+	|Expression DECREMENT {lhs.push_back("IncDecStmt");rhs.push_back("Expression DEC");};
 
 Assignment:
 	ExpressionList assign_op ExpressionList {lhs.push_back("Assignment");rhs.push_back("ExpressionList assign_op ExpressionList");}
@@ -165,7 +158,7 @@ FunctionStmt:
 		;
 
 
-FunctionCall:	PrimaryExpr LPAREN ArgumentList RPAREN {lhs.push_back("FunctionCall");rhs.push_back("PrimaryExpr LPAREN ArgumentList RPAREN");}
+FunctionCall:	PrimaryExpr LEFTPARANTHESES ArgumentList RIGHTPARANTHESES {lhs.push_back("FunctionCall");rhs.push_back("PrimaryExpr LEFTPARANTHESES ArgumentList RIGHTPARANTHESES");}
 		;		
 
 ArgumentList:	
@@ -186,13 +179,13 @@ Signature:
 
 //------------------------------------------------------------------------------------------------------end
 Result:
-	LPAREN TypeList RPAREN {lhs.push_back("Result");rhs.push_back("LPAREN TypeList RPAREN");}
+	LEFTPARANTHESES TypeList RIGHTPARANTHESES {lhs.push_back("Result");rhs.push_back("LEFTPARANTHESES TypeList RIGHTPARANTHESES");}
 	| Type  {lhs.push_back("Result");rhs.push_back("Type");};
 
 Parameters:
-	LPAREN RPAREN { lhs.push_back("Parameters");rhs.push_back("LPAREN RPAREN");}//printf("gor func with no arguments");}
-	| LPAREN ParameterList RPAREN {lhs.push_back("Parameters");rhs.push_back("LPAREN ParameterList RPAREN");}
-	|LPAREN ParameterList COMMA RPAREN {lhs.push_back("Parameters");rhs.push_back("LPAREN ParameterList COMMA RPAREN");}
+	LEFTPARANTHESES RIGHTPARANTHESES { lhs.push_back("Parameters");rhs.push_back("LEFTPARANTHESES RIGHTPARANTHESES");}//printf("gor func with no arguments");}
+	| LEFTPARANTHESES ParameterList RIGHTPARANTHESES {lhs.push_back("Parameters");rhs.push_back("LEFTPARANTHESES ParameterList RIGHTPARANTHESES");}
+	|LEFTPARANTHESES ParameterList COMMA RIGHTPARANTHESES {lhs.push_back("Parameters");rhs.push_back("LEFTPARANTHESES ParameterList COMMA RIGHTPARANTHESES");}
 	; 
 ParameterList:
 	ParameterDecl {lhs.push_back("ParameterList");rhs.push_back("ParameterDecl");}
@@ -212,7 +205,6 @@ TypeList:
     | Type {lhs.push_back("TypeList");rhs.push_back("Type");}
     ;
 
-//change
 //--------------------------------------------------------------------------------------------------------------------------------start
 IdentifierList:
 		IDENTIFIER IdentifierLIST {lhs.push_back("IdentifierList");rhs.push_back("IDENTIFIER IdentifierLIST");}
@@ -223,7 +215,6 @@ IdentifierLIST:	IdentifierLIST COMMA IDENTIFIER {lhs.push_back("IdentifierLIST")
 		| COMMA IDENTIFIER {lhs.push_back("IdentifierLIST");rhs.push_back("COMMA IDENTIFIER");}
 		;
 
-//change
 MethodDecl:
 	FUNC Receiver IDENTIFIER Function {lhs.push_back("MethodDecl");rhs.push_back("FUNC Receiver IDENTIFIER Function");}
 	| FUNC Receiver IDENTIFIER Signature {lhs.push_back("MethodDecl");rhs.push_back("FUNC Receiver IDENTIFIER Signature");}
@@ -251,7 +242,6 @@ TypeLit:
 	;
 
 
-//change
 
 Type:
 	TypeName {lhs.push_back("Type");rhs.push_back("TypeName");}
@@ -261,7 +251,7 @@ Type:
 Operand:
 	Literal {lhs.push_back("Operand");rhs.push_back("Literal");}
 	| OperandName {lhs.push_back("Operand");rhs.push_back("OperandName");}
-	| LPAREN Expression RPAREN {lhs.push_back("Operand");rhs.push_back("LPAREN Expression RPAREN");};
+	| LEFTPARANTHESES Expression RIGHTPARANTHESES {lhs.push_back("Operand");rhs.push_back("LEFTPARANTHESES Expression RIGHTPARANTHESES");};
 
 OperandName:
 	IDENTIFIER {lhs.push_back("OperandName");rhs.push_back("IDENTIFIER");}
@@ -321,7 +311,7 @@ TypeName:
 
 
 ArrayType:
-	LBRACK ArrayLength RBRACK Type{lhs.push_back("ArrayType");rhs.push_back("LBRACK ArrayLength RBRACK Type");}
+	LEFTBRACKET ArrayLength RIGHTBRACKET Type{lhs.push_back("ArrayType");rhs.push_back("LEFTBRACKET ArrayLength RIGHTBRACKET Type");}
 	;
 
 ArrayLength:
@@ -329,8 +319,8 @@ ArrayLength:
 	;
 
 StructType:
-    STRUCT LBRACE FieldDeclList RBRACE {lhs.push_back("StructType");rhs.push_back("STRUCT LBRACE FieldDeclList RBRACE");}
-    | STRUCT LBRACE RBRACE {lhs.push_back("StructType");rhs.push_back("STRUCT LBRACE RBRACE");}
+    STRUCT LEFTBRACE FieldDeclList RIGHTBRACE {lhs.push_back("StructType");rhs.push_back("STRUCT LEFTBRACE FieldDeclList RIGHTBRACE");}
+    | STRUCT LEFTBRACE RIGHTBRACE {lhs.push_back("StructType");rhs.push_back("STRUCT LEFTBRACE RIGHTBRACE");}
     ;
 
 FieldDeclList:
@@ -348,7 +338,7 @@ Tag:
 	;
 
 PointerType:
-	MUL BaseType {lhs.push_back("PointerType");rhs.push_back("MUL BaseType");}
+	MULTIPLY BaseType {lhs.push_back("PointerType");rhs.push_back("MULTIPLY BaseType");}
 	;
 BaseType:
 	Type {lhs.push_back("BaseType");rhs.push_back("Type");}
@@ -374,7 +364,7 @@ ExpressionList:
 
 TypeDecl:
 		TYPE  TypeSpec {lhs.push_back("TypeDecl");rhs.push_back("TYPE  TypeSpec");}
-		| TYPE LPAREN TypeSpecList RPAREN {lhs.push_back("TypeDecl");rhs.push_back("TYPE LPAREN TypeSpecList RPAREN");};
+		| TYPE LEFTPARANTHESES TypeSpecList RIGHTPARANTHESES {lhs.push_back("TypeDecl");rhs.push_back("TYPE LEFTPARANTHESES TypeSpecList RIGHTPARANTHESES");};
 
 TypeSpecList:
 		TypeSpecList TypeSpec SEMICOLON {lhs.push_back("TypeSpecList");rhs.push_back("TypeSpecList TypeSpec SEMICOLON");}
@@ -430,7 +420,7 @@ PrimaryExpr:
 //------------------------------------------------------------------------------end
 //here struct literal
 StructLiteral:
-    LBRACE KeyValList RBRACE {lhs.push_back("StructLiteral");rhs.push_back("LBRACE KeyValList RBRACE");}
+    LEFTBRACE KeyValList RIGHTBRACE {lhs.push_back("StructLiteral");rhs.push_back("LEFTBRACE KeyValList RIGHTBRACE");}
     ;
 
 KeyValList:
@@ -443,11 +433,11 @@ KeyValList:
 Selector:
 	PERIOD IDENTIFIER {lhs.push_back("Selector");rhs.push_back("PERIOD IDENTIFIER");};
 Index:	
-	LBRACK Expression RBRACK {lhs.push_back("Index");rhs.push_back("LBRACK Expression RBRACK");};
+	LEFTBRACKET Expression RIGHTBRACKET {lhs.push_back("Index");rhs.push_back("LEFTBRACKET Expression RIGHTBRACKET");};
 
 
 TypeAssertion:
-	PERIOD LPAREN Type RPAREN {lhs.push_back("TypeAssertion");rhs.push_back("PERIOD LPAREN Type RPAREN");}
+	PERIOD LEFTPARANTHESES Type RIGHTPARANTHESES {lhs.push_back("TypeAssertion");rhs.push_back("PERIOD LEFTPARANTHESES Type RIGHTPARANTHESES");}
 	;
 
 Expression:
@@ -498,19 +488,19 @@ binary_op:
 rel_op:
 	EQL {lhs.push_back("rel_op");rhs.push_back("EQL");}
 	| NEQ {lhs.push_back("rel_op");rhs.push_back("NEQ");}
-	| LSS {lhs.push_back("rel_op");rhs.push_back("LSS");}
+	| LSR {lhs.push_back("rel_op");rhs.push_back("LSR");}
 	| LEQ {lhs.push_back("rel_op");rhs.push_back("LEQ");}
 	| GTR {lhs.push_back("rel_op");rhs.push_back("GTR");}
 	| GEQ {lhs.push_back("rel_op");rhs.push_back("GEQ");};
 add_op:
 	ADD {lhs.push_back("add_op");rhs.push_back("ADD");}
-	| SUB {lhs.push_back("add_op");rhs.push_back("SUB");}
+	| MINUS {lhs.push_back("add_op");rhs.push_back("SUB");}
 	| OR {lhs.push_back("add_op");rhs.push_back("OR");}
 	| XOR {lhs.push_back("add_op");rhs.push_back("XOR");};
 mul_op:
-	MUL {lhs.push_back("mul_op");rhs.push_back("MUL");}
-	| QUO {lhs.push_back("mul_op");rhs.push_back("QUO");}
-	| REM {lhs.push_back("mul_op");rhs.push_back("REM");}
+	MULTIPLY {lhs.push_back("mul_op");rhs.push_back("MUL");}
+	| DIVIDE {lhs.push_back("mul_op");rhs.push_back("QUO");}
+	| MOD{lhs.push_back("mul_op");rhs.push_back("REM");}
 	| SHL {lhs.push_back("mul_op");rhs.push_back("SHL");}
 	| SHR {lhs.push_back("mul_op");rhs.push_back("SHR");}
 	| AND {lhs.push_back("mul_op");rhs.push_back("AND");}
@@ -518,22 +508,16 @@ mul_op:
 //-------------------------------------------------------------------------------------------start
 unary_op:
 	ADD {lhs.push_back("unary_op");rhs.push_back("ADD");}
-	| SUB {lhs.push_back("unary_op");rhs.push_back("SUB");}
+	| MINUS {lhs.push_back("unary_op");rhs.push_back("SUB");}
 	| NOT {lhs.push_back("unary_op");rhs.push_back("NOT");}
 	| XOR {lhs.push_back("unary_op");rhs.push_back("XOR");}
-	| MUL {lhs.push_back("unary_op");rhs.push_back("MUL");}
+	| MULTIPLY {lhs.push_back("unary_op");rhs.push_back("MUL");}
 	| AND {lhs.push_back("unary_op");rhs.push_back("AND");}
 	;
 //----------------------------------------------------------------------------------------------------------------end
 
 assign_op:
 	  ASSIGN {lhs.push_back("assign_op");rhs.push_back("ASSIGN");}
-	| ADD_ASSIGN {lhs.push_back("assign_op");rhs.push_back("ADD_ASSIGN");}
-	| SUB_ASSIGN {lhs.push_back("assign_op");rhs.push_back("SUB_ASSIGN");}
-	| MUL_ASSIGN {lhs.push_back("assign_op");rhs.push_back("MUL_ASSIGN");}
-	| QUO_ASSIGN {lhs.push_back("assign_op");rhs.push_back("QUO_ASSIGN");}
-	| REM_ASSIGN {lhs.push_back("assign_op");rhs.push_back("REM_ASSIGN");}
-	//| DEFINE 
 	;
 /*IfStmt shift/reduce conflict*/
 
@@ -549,35 +533,36 @@ ImportDeclList:
       ImportDeclList ImportDecl  {lhs.push_back("ImportDeclList");rhs.push_back("ImportDeclList ImportDecl");}//{ printf("got import list 1");}
     | ImportDecl  {lhs.push_back("ImportDeclList");rhs.push_back("ImportDecl");}//{ printf("got import list 2"); }
     | /*empty*/ {lhs.push_back("ImportDeclList");rhs.push_back("/*empty*/");}//{ printf("got import list 3");}
-    ;
+	;
 
 ImportDecl:
-	IMPORT ImportSpec SEMICOLON {lhs.push_back("ImportDecl");rhs.push_back("IMPORT ImportSpec SEMICOLON");}//{printf("got imports 1");}
-	| IMPORT LPAREN ImportSpecList  RPAREN {lhs.push_back("ImportDecl");rhs.push_back("IMPORT LPAREN ImportSpecList  RPAREN");}//{printf("got imports 2");}
+	IMPORT ImportSpec {lhs.push_back("ImportDecl");rhs.push_back("IMPORT ImportSpec SEMICOLON");}//{printf("got imports 1");}
+	| IMPORT LEFTPARANTHESES ImportSpecList  RIGHTPARANTHESES {lhs.push_back("ImportDecl");rhs.push_back("IMPORT LEFTPARANTHESES ImportSpecList  RIGHTPARANTHESES");}//{printf("got imports 2");}
 	;
 
 ImportSpecList:
-	ImportSpecList ImportSpec SEMICOLON {lhs.push_back("ImportSpecList");rhs.push_back("ImportSpecList ImportSpec SEMICOLON");}
-	| ImportSpec SEMICOLON {lhs.push_back("ImportSpecList");rhs.push_back("ImportSpec SEMICOLON");}
+	ImportSpecList ImportSpec {lhs.push_back("ImportSpecList");rhs.push_back("ImportSpecList ImportSpec SEMICOLON");}
+	| ImportSpec {lhs.push_back("ImportSpecList");rhs.push_back("ImportSpec SEMICOLON");}
 	;
 ImportSpec:
 	 PERIOD ImportPath {lhs.push_back("ImportSpec");rhs.push_back("PERIOD ImportPath");}
 	| PackageName2 ImportPath {lhs.push_back("ImportSpec");rhs.push_back("PackageName2 ImportPath");}
 	| PackageName2 {lhs.push_back("ImportSpec");rhs.push_back("PackageName2");};
 ImportPath:
-	string_lit {lhs.push_back("ImportPath");rhs.push_back("string_lit");}
+	string_lit {lhs.push_back("ImportPath");rhs.push_back("string_lit");}|
+	string_lit SEMICOLON {lhs.push_back("ImportPath");rhs.push_back("string_lit SEMICOLON");}
 	;
 PackageName2:
-	string_lit {lhs.push_back("PackageName2");rhs.push_back("string_lit");}//{printf("-----package2----");}	
+	string_lit {lhs.push_back("PackageName2");rhs.push_back("string_lit");}	|
+	string_lit SEMICOLON {lhs.push_back("PackageName2");rhs.push_back("string_lit SEMICOLON");}	
 	;
 
 %%
 
 
-int main (void) {
-	
+int main (int argc, char** argv) {	
 	printf("Inside main\n");
-	FILE * fp= fopen("test/test1.go", "r");	//taking input as argument
+	FILE * fp= fopen(argv[1], "r");
 	yyin = fp;
 	printf("Read the input file, continue with Lexing and Parsing\n");
 	printf("Performing Lexical analysis......\n\n");
@@ -595,15 +580,3 @@ int main (void) {
 	grammar.close();
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
