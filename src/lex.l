@@ -1,10 +1,14 @@
-%option noyywrap
+
 %{
 	#include <stdio.h>
     #include<string.h>
-    #include "src/SymbolTable.h"  
-    // #include "yacc.tab.h"    /* token codes from the parser */  
+    #include "src/SymbolTable.h"
+    #include "y.tab.h"    /* token codes from the parser */  
+    int yylex();
+    void yyerror (char *s);
+
 %}
+
 %option nounput yylineno
 UNICODE_LETTER			[a-zA-Z]
 LETTER				[a-zA-Z_]
@@ -52,7 +56,7 @@ NIL_VAL				"nil"
 ":"				{printf("(%s, COLON)\n", yytext);Insert(yytext,yylineno,"COLON");}
 "."				{printf("(%s, PERIOD)\n", yytext);Insert(yytext,yylineno,"PERIOD");}
 
-"package"			{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
+"package"			{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");return PACKAGE;}
 "import"			{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
 "func"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
 "break"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");} 
@@ -86,10 +90,7 @@ NIL_VAL				"nil"
 " "				;
 %%
 
-int main(){
-    yylex();
-    printf("LEXING COMPLETED:\n");
-    printf("Symbol Table after Lexical Analysis:\n");
-    Display();
+int yywrap()
+{
+    return 1;
 }
-

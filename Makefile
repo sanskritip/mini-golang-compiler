@@ -1,10 +1,11 @@
 all:
 	lex src/lex.l
 	yacc -d src/yacc.y
-	g++ -w -c lex.yy.c y.tab.c src/SymbolTable.cpp src/SymbolTable.h -o lexer.out -ll
-	./lexer
-	g++ -o example-m.n lex.yy.o y.tab.o -ll
-
+	g++ -w lex.yy.c src/SymbolTable.cpp src/SymbolTable.h y.tab.c -o gocompiler
+	./gocompiler
 clean:
-	rm *.yy.c
-	rm *.out
+	rm lex.yy.c
+	rm y.tab.c
+	rm y.tab.h
+	rm grammar.txt
+	rm gocompiler
