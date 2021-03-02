@@ -81,8 +81,10 @@ CLOSEB:
 	;
 
 StatementList:
-    StatementList Statement SEMICOLON {lhs.push_back("StatementList");rhs.push_back("StatementList Statement SEMICOLON");}//printf("got a list");}
-    | Statement SEMICOLON {lhs.push_back("StatementList");rhs.push_back("Statement SEMICOLON");/*;printf("got a statement");*/}
+    StatementList Statement SEMICOLON {lhs.push_back("StatementList");rhs.push_back("StatementList Statement SEMICOLON");}
+    | Statement SEMICOLON {lhs.push_back("StatementList");rhs.push_back("Statement SEMICOLON");}
+	| StatementList Statement {lhs.push_back("StatementList");rhs.push_back("StatementList Statement ");}
+    | Statement{lhs.push_back("StatementList");rhs.push_back("Statement ");}
     ;
 
 Statement:
@@ -149,11 +151,9 @@ Function:
 		Signature FunctionBody {lhs.push_back("Function");rhs.push_back("Signature FunctionBody");};
 FunctionBody:		
 		Block {lhs.push_back("FunctionBody");rhs.push_back("Block");};
-//-----------------------------------------------------------------------------------------------start
 //function call starts here
 FunctionStmt:
 		VarDecl DEFINE FunctionCall{lhs.push_back("FunctionStmt");rhs.push_back("VarDecl DEFINE FunctionCall");}
-		//new changes
 		| IDENTIFIER DEFINE FunctionCall{lhs.push_back("FunctionStmt");rhs.push_back("IDENTIFIER DEFINE FunctionCall");}
 		;
 
@@ -428,49 +428,36 @@ KeyValList:
  	| Expression COLON Expression {lhs.push_back("KeyValList");rhs.push_back("Expression COLON Expression");}
 	| KeyValList COMMA Expression COLON Expression  {lhs.push_back("KeyValList");rhs.push_back("KeyValList COMMA Expression COLON Expression");}
 	;
-//till here struct literal
-
 Selector:
 	PERIOD IDENTIFIER {lhs.push_back("Selector");rhs.push_back("PERIOD IDENTIFIER");};
 Index:	
 	LEFTBRACKET Expression RIGHTBRACKET {lhs.push_back("Index");rhs.push_back("LEFTBRACKET Expression RIGHTBRACKET");};
-
-
 TypeAssertion:
 	PERIOD LEFTPARANTHESES Type RIGHTPARANTHESES {lhs.push_back("TypeAssertion");rhs.push_back("PERIOD LEFTPARANTHESES Type RIGHTPARANTHESES");}
 	;
-
 Expression:
     Expression1 {lhs.push_back("Expression");rhs.push_back("Expression1");}
     ;
-
 Expression1:
-    Expression1 LOR Expression2 {lhs.push_back("Expression1");rhs.push_back("Expression1 LOR Expression2");}//{cout << "expr21";}
-    | Expression2 {lhs.push_back("Expression1");rhs.push_back("Expression2");}//{cout << "expr22";}
+    Expression1 LOR Expression2 {lhs.push_back("Expression1");rhs.push_back("Expression1 LOR Expression2");}
+    | Expression2 {lhs.push_back("Expression1");rhs.push_back("Expression2");}
     ;
-
 Expression2:
-    Expression2 LAND Expression3 {lhs.push_back("Expression2");rhs.push_back("Expression2 LAND Expression3");}//{cout << "expr31";}
-    | Expression3 {lhs.push_back("Expression2");rhs.push_back("Expression3");}//{cout << "expr32";}
+    Expression2 LAND Expression3 {lhs.push_back("Expression2");rhs.push_back("Expression2 LAND Expression3");}
+    | Expression3 {lhs.push_back("Expression2");rhs.push_back("Expression3");}
     ;
-
 Expression3:
-    Expression3 rel_op Expression4 {lhs.push_back("Expression3");rhs.push_back("Expression3 rel_op Expression4");}//{cout << "expr41";}
-    | Expression4 {lhs.push_back("Expression3");rhs.push_back("Expression4");}//{cout << "expr42";}
+    Expression3 rel_op Expression4 {lhs.push_back("Expression3");rhs.push_back("Expression3 rel_op Expression4");}
+    | Expression4 {lhs.push_back("Expression3");rhs.push_back("Expression4");}
     ;
-
 Expression4:
-    Expression4 add_op Expression5 {lhs.push_back("Expression4");rhs.push_back("Expression4 add_op Expression5");}//{cout << "expr51";}
-    | Expression5 {lhs.push_back("Expression4");rhs.push_back("Expression5");}//{cout << "expr52";}
+    Expression4 add_op Expression5 {lhs.push_back("Expression4");rhs.push_back("Expression4 add_op Expression5");}
+    | Expression5 {lhs.push_back("Expression4");rhs.push_back("Expression5");}
     ;
-
 Expression5:
-    Expression5 mul_op PrimaryExpr {lhs.push_back("Expression5");rhs.push_back("Expression5 mul_op PrimaryExpr");}//{cout << "primary ";}
-    | UnaryExpr {lhs.push_back("Expression5");rhs.push_back("UnaryExpr");}//{cout << "unary";}
+    Expression5 mul_op PrimaryExpr {lhs.push_back("Expression5");rhs.push_back("Expression5 mul_op PrimaryExpr");}
+    | UnaryExpr {lhs.push_back("Expression5");rhs.push_back("UnaryExpr");}
     ;
-    
-//till here*/	
-
 UnaryExpr:
 	PrimaryExpr {lhs.push_back("UnaryExpr");rhs.push_back("PrimaryExpr");}
 	| unary_op PrimaryExpr {lhs.push_back("UnaryExpr");rhs.push_back("unary_op PrimaryExpr");}
@@ -570,6 +557,7 @@ int main (int argc, char** argv) {
 	printf("Parsing completed.\n\n");
 	printf("Symbol Table after Lexical Analysis: \n");
 	Display();
+	/*
 	reverse(lhs.begin(),lhs.end());
 	reverse(rhs.begin(),rhs.end());
 	fstream grammar;
@@ -578,5 +566,6 @@ int main (int argc, char** argv) {
 			grammar << lhs[i] << " -> "<< rhs[i] << "$" << endl;
 	}
 	grammar.close();
+	*/
 	return 0;
 }
