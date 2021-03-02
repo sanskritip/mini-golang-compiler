@@ -6,59 +6,27 @@ Function -> Signature FunctionBody
 FunctionBody -> Block 
 Empty Block -> /*empty*/ 
 Block -> LEFTBRACE StatementList RIGHTBRACE 
-StatementList -> StatementList Statement  
+StatementList -> StatementList Statement SEMICOLON 
 Statement -> FunctionCall 
 FunctionCall -> PrimaryExpr LEFTPARANTHESES ArgumentList RIGHTPARANTHESES 
-ArgumentList -> Arguments 
+ArgumentList -> ArgumentList COMMA Arguments 
 Arguments -> PrimaryExpr 
 PrimaryExpr -> Operand 
 Operand -> OperandName 
 OperandName -> IDENTIFIER 
+ArgumentList -> Arguments 
+Arguments -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> STRING 
 PrimaryExpr -> PrimaryExpr Selector 
 Selector -> PERIOD IDENTIFIER 
 PrimaryExpr -> Operand 
 Operand -> OperandName 
 OperandName -> IDENTIFIER 
 StatementList -> StatementList Statement SEMICOLON 
-Statement -> ForStmt 
-ForStmt -> FOR ForClause Block 
-Empty Block -> /*empty*/ 
-Block -> LEFTBRACE StatementList RIGHTBRACE 
-StatementList -> Statement  
 Statement -> SimpleStmt 
-SimpleStmt -> Assignment 
-Assignment -> ExpressionList assign_op ExpressionList 
-ExpressionList -> Expression 
-Expression -> Expression1 
-Expression1 -> Expression2 
-Expression2 -> Expression3 
-Expression3 -> Expression4 
-Expression4 -> Expression4 add_op Expression5 
-Expression5 -> UnaryExpr 
-UnaryExpr -> PrimaryExpr 
-PrimaryExpr -> Operand 
-Operand -> OperandName 
-OperandName -> IDENTIFIER 
-add_op -> ADD 
-Expression4 -> Expression5 
-Expression5 -> UnaryExpr 
-UnaryExpr -> PrimaryExpr 
-PrimaryExpr -> Operand 
-Operand -> OperandName 
-OperandName -> IDENTIFIER 
-assign_op -> ASSIGN 
-ExpressionList -> Expression 
-Expression -> Expression1 
-Expression1 -> Expression2 
-Expression2 -> Expression3 
-Expression3 -> Expression4 
-Expression4 -> Expression5 
-Expression5 -> UnaryExpr 
-UnaryExpr -> PrimaryExpr 
-PrimaryExpr -> Operand 
-Operand -> OperandName 
-OperandName -> IDENTIFIER 
-ForClause -> SimpleStmt SEMICOLON Condition SEMICOLON SimpleStmt 
 SimpleStmt -> IncDecStmt 
 IncDecStmt -> Expression INC 
 Expression -> Expression1 
@@ -71,53 +39,7 @@ UnaryExpr -> PrimaryExpr
 PrimaryExpr -> Operand 
 Operand -> OperandName 
 OperandName -> IDENTIFIER 
-Condition -> Expression 
-Expression -> Expression1 
-Expression1 -> Expression2 
-Expression2 -> Expression3 
-Expression3 -> Expression3 rel_op Expression4 
-Expression4 -> Expression5 
-Expression5 -> UnaryExpr 
-UnaryExpr -> PrimaryExpr 
-PrimaryExpr -> Operand 
-Operand -> Literal 
-Literal -> BasicLit 
-BasicLit -> INTEGER 
-rel_op -> LSR 
-Expression3 -> Expression4 
-Expression4 -> Expression5 
-Expression5 -> UnaryExpr 
-UnaryExpr -> PrimaryExpr 
-PrimaryExpr -> Operand 
-Operand -> OperandName 
-OperandName -> IDENTIFIER 
-SimpleStmt -> Assignment 
-Assignment -> ExpressionList assign_op ExpressionList 
-ExpressionList -> Expression 
-Expression -> Expression1 
-Expression1 -> Expression2 
-Expression2 -> Expression3 
-Expression3 -> Expression4 
-Expression4 -> Expression5 
-Expression5 -> UnaryExpr 
-UnaryExpr -> PrimaryExpr 
-PrimaryExpr -> Operand 
-Operand -> Literal 
-Literal -> BasicLit 
-BasicLit -> INTEGER 
-assign_op -> ASSIGN 
-ExpressionList -> Expression 
-Expression -> Expression1 
-Expression1 -> Expression2 
-Expression2 -> Expression3 
-Expression3 -> Expression4 
-Expression4 -> Expression5 
-Expression5 -> UnaryExpr 
-UnaryExpr -> PrimaryExpr 
-PrimaryExpr -> Operand 
-Operand -> OperandName 
-OperandName -> IDENTIFIER 
-StatementList -> Statement  
+StatementList -> Statement SEMICOLON 
 Statement -> Declaration 
 Declaration -> VarDecl 
 VarDecl -> VAR VarSpec 
@@ -127,6 +49,20 @@ Expression -> Expression1
 Expression1 -> Expression2 
 Expression2 -> Expression3 
 Expression3 -> Expression4 
+Expression4 -> Expression4 add_op Expression5 
+Expression5 -> Expression5 mul_op PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> INTEGER 
+mul_op -> MUL 
+Expression5 -> UnaryExpr 
+UnaryExpr -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> INTEGER 
+add_op -> ADD 
 Expression4 -> Expression5 
 Expression5 -> UnaryExpr 
 UnaryExpr -> PrimaryExpr 

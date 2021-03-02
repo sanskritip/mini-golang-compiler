@@ -342,12 +342,6 @@ ImportPath:
 int main (int argc, char** argv) {	
 	printf("Inside main\n");
 	FILE * fp= fopen(argv[1], "r");
-	yyin = fp;
-	printf("Read the input file, continue with Lexing and Parsing\n");
-	printf("Performing Lexical analysis......\n\n");
-	yyparse ( );
-	printf("\n\033[0;32mParsing completed.\033[0m\n\n");
-	printf("Symbol Table after Lexical Analysis: \n");
 	Display();
 	reverse(lhs.begin(),lhs.end());
 	reverse(rhs.begin(),rhs.end());
