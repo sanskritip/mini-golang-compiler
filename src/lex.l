@@ -15,7 +15,7 @@ LETTER				[a-zA-Z_]
 DIGIT				[0-9]
 UNICODE_CHAR			[^\n]
 NEW_LINE			[\n]
-VAR_TYPE			"bool"|"byte"|"error"|"float32"|"float64"|"int"|"int8"|"int16"|"int32"|"int64"|"rune"|"string"|"uint"|"uint8 "|"uint16"|"uint32"|"uint64"|"uintptr"
+VAR_TYPE			"bool"|"error"|"float32"|"float64"|"int"|"int64"|"string"
 BOOL_CONST			"true"|"false"
 NIL_VAL				"nil"
 
