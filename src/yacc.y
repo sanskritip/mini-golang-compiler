@@ -4,12 +4,10 @@
 using namespace std;
 #include "src/SymbolTable.h"
 int yylex();
-void yyerror (const char *s) {fprintf (stderr, "%s\n", s);} 
 
-//string typeName="";
 extern FILE *yyin;
 extern int yylineno;
-
+void yyerror (const char *s) {fprintf (stderr, "\033[0;31mLine:%d | %s\n\033[0m\n",yylineno, s);} 
 vector <string> lhs;
 vector <string> rhs;
 
@@ -42,7 +40,7 @@ vector <string> rhs;
 %type <nt> EmptyStmt /*ExpressionStmt*/ IncDecStmt 
 %type <nt> Assignment Declaration ConstDecl VarSpec
 %type <nt> Signature Result Parameters ParameterList ParameterDecl
-%type <nt> ConstSpec MethodDecl Receiver TopLevelDecl TopLevelDeclList LabeledStmt
+%type <nt> ConstSpec MethodDecl Receiver TopLevelDecl TopLevelDeclList
 %type <nt> ReturnStmt BreakStmt ContinueStmt StructType
 %type <nt> FunctionDecl FunctionName TypeList
 %type <nt> Function FunctionBody FunctionCall ForStmt ForClause /*RangeClause*/ InitStmt ArgumentList
@@ -58,7 +56,6 @@ vector <string> rhs;
 
 %% 
 
-
 StartFile:
     PackageClause ImportDeclList TopLevelDeclList {
 		printf("Parsed Start of program file.");
@@ -68,7 +65,7 @@ StartFile:
 
 Block:
 	LEFTBRACE OPENB StatementList CLOSEB RIGHTBRACE{lhs.push_back("Block");rhs.push_back("LEFTBRACE OPENB StatementList CLOSEB RIGHTBRACE");}
-	//printf("I have a block -------");cout << $1 << endl;}
+	/*empty*/{lhs.push_back("Empty Block");rhs.push_back("/*empty*/");}
 	; 
 
 
@@ -89,35 +86,23 @@ StatementList:
 
 Statement:
 	Declaration {lhs.push_back("Statement");rhs.push_back("Declaration");}
-	| LabeledStmt {lhs.push_back("Statement");rhs.push_back("LabeledStmt");}
 	| SimpleStmt {lhs.push_back("Statement");rhs.push_back("SimpleStmt");}
-	|ReturnStmt {lhs.push_back("Statement");rhs.push_back("ReturnStmt");}
+	| ReturnStmt {lhs.push_back("Statement");rhs.push_back("ReturnStmt");}
 	| BreakStmt {lhs.push_back("Statement");rhs.push_back("BreakStmt");}
 	| ContinueStmt {lhs.push_back("Statement");rhs.push_back("ContinueStmt");}
-	|Block {lhs.push_back("Statement");rhs.push_back("Block");}
+	| Block {lhs.push_back("Statement");rhs.push_back("Block");}
 	| IfStmt {lhs.push_back("Statement");rhs.push_back("IfStmt");}
-	|  ForStmt {lhs.push_back("Statement");rhs.push_back("ForStmt");} 
+	| ForStmt {lhs.push_back("Statement");rhs.push_back("ForStmt");} 
 	| FunctionCall {lhs.push_back("Statement");rhs.push_back("FunctionCall");} 
 	| FunctionStmt {lhs.push_back("Statement");rhs.push_back("FunctionStmt");};
 
 SimpleStmt:
 	EmptyStmt {lhs.push_back("SimpleStmt");rhs.push_back("EmptyStmt");}
 	|  IncDecStmt {lhs.push_back("SimpleStmt");rhs.push_back("IncDecStmt");}
-	| Assignment {lhs.push_back("SimpleStmt");rhs.push_back("Assignment");} 
-;
+	| Assignment {lhs.push_back("SimpleStmt");rhs.push_back("Assignment");} ;
 
 EmptyStmt:
-	/*empty*/{lhs.push_back("EmptyStmt");rhs.push_back("/*empty*/");}
-	;
-
-
-
-LabeledStmt:
-	Label COLON Statement {lhs.push_back("LabeledStmt");rhs.push_back("Label COLON Statement");};
-Label:
-	IDENTIFIER {lhs.push_back("Label");rhs.push_back("IDENTIFIER");};
-
-
+	/*empty*/{lhs.push_back("EmptyStmt");rhs.push_back("/*empty*/");};
 
 IncDecStmt:
 	Expression INCREMENT {lhs.push_back("IncDecStmt");rhs.push_back("Expression INC");}
@@ -134,7 +119,6 @@ VarSpec:
 		IdentifierList Type ASSIGN ExpressionList {lhs.push_back("VarSpec");rhs.push_back("IdentifierList Type ASSIGN ExpressionList");}
 		| IdentifierList Type {lhs.push_back("VarSpec");rhs.push_back("IdentifierList Type");}
 		;
-
 
 Declaration:
 	ConstDecl {lhs.push_back("Declaration");rhs.push_back("ConstDecl");}
@@ -241,8 +225,6 @@ TypeLit:
 	| FunctionType {lhs.push_back("TypeLit");rhs.push_back("FunctionType");}
 	;
 
-
-
 Type:
 	TypeName {lhs.push_back("Type");rhs.push_back("TypeName");}
 	| TypeLit {lhs.push_back("Type");rhs.push_back("TypeLit");}
@@ -262,13 +244,10 @@ ReturnStmt:
 	|RETURN {lhs.push_back("ReturnStmt");rhs.push_back("RETURN");};
 
 BreakStmt:
-	BREAK Label {lhs.push_back("BreakStmt");rhs.push_back("BREAK Label");}
-	| BREAK {lhs.push_back("BreakStmt");rhs.push_back("BREAK");};
+	BREAK {lhs.push_back("BreakStmt");rhs.push_back("BREAK");};
 
 ContinueStmt:
-	CONTINUE Label {lhs.push_back("ContinueStmt");rhs.push_back("CONTINUE Label");}
-	|CONTINUE {lhs.push_back("ContinueStmt");rhs.push_back("CONTINUE");}
-	;
+	CONTINUE {lhs.push_back("ContinueStmt");rhs.push_back("CONTINUE");};
 
 IfStmt:
 	IF OPENB Expression Block CLOSEB {lhs.push_back("IfStmt");rhs.push_back("IF OPENB Expression Block CLOSEB");}//{printf("IF case 1");}
@@ -276,8 +255,7 @@ IfStmt:
 	|IF OPENB SimpleStmt SEMICOLON Expression Block ELSE IfStmt CLOSEB  {lhs.push_back("IfStmt");rhs.push_back("IF OPENB SimpleStmt SEMICOLON Expression Block ELSE IfStmt CLOSEB");}//{printf("IF case 3");}
 	|IF OPENB SimpleStmt SEMICOLON Expression Block ELSE  Block CLOSEB {lhs.push_back("IfStmt");rhs.push_back("IF OPENB SimpleStmt SEMICOLON Expression Block ELSE  Block CLOSEB");}//{printf("IF case 4");}
 	|IF OPENB Expression Block ELSE IfStmt CLOSEB {lhs.push_back("IfStmt");rhs.push_back("IF OPENB Expression Block ELSE IfStmt CLOSEB");}//{printf("IF case 5");}
-	|IF OPENB Expression Block ELSE  Block CLOSEB {lhs.push_back("IfStmt");rhs.push_back("IF OPENB Expression Block ELSE  Block CLOSEB");}//{printf("IF case 6");}
-	;
+	|IF OPENB Expression Block ELSE  Block CLOSEB {lhs.push_back("IfStmt");rhs.push_back("IF OPENB Expression Block ELSE  Block CLOSEB");}//{printf("IF case 6");};
 
 ForStmt:
 	FOR OPENB Condition Block CLOSEB {lhs.push_back("ForStmt");rhs.push_back("FOR OPENB Condition Block CLOSEB");}
@@ -301,14 +279,10 @@ float_lit:
 	  FLOAT{lhs.push_back("float_lit");rhs.push_back("FLOAT");}
 	  ;
 
-
-
 TypeName:
 	IDENTIFIER {lhs.push_back("TypeName");rhs.push_back("IDENTIFIER");}
 	| VAR_TYPE {lhs.push_back("TypeName");rhs.push_back("VAR_TYPE");}
 	;
-
-
 
 ArrayType:
 	LEFTBRACKET ArrayLength RIGHTBRACKET Type{lhs.push_back("ArrayType");rhs.push_back("LEFTBRACKET ArrayLength RIGHTBRACKET Type");}
@@ -382,9 +356,6 @@ TypeDef:
 		IDENTIFIER Type {lhs.push_back("TypeDef");rhs.push_back("IDENTIFIER Type");}
 		;
 
-
-
-
 Literal:
 	BasicLit {lhs.push_back("Literal");rhs.push_back("BasicLit");}
 	| FunctionLit {lhs.push_back("Literal");rhs.push_back("FunctionLit");}
@@ -394,18 +365,14 @@ string_lit:
 	STRING {lhs.push_back("string_lit");rhs.push_back("STRING");}
 	;
 
-//added later
 byte_lit:
 	BYTE {lhs.push_back("byte_lit");rhs.push_back("BYTE");}
-	;
-	
+	;	
 BasicLit:
 	int_lit {lhs.push_back("BasicLit");rhs.push_back("int_lit");}
 	| float_lit {lhs.push_back("BasicLit");rhs.push_back("float_lit");}
 	| string_lit {lhs.push_back("BasicLit");rhs.push_back("string_lit");}
-	| byte_lit {lhs.push_back("BasicLit");rhs.push_back("byte_lit");}	//added later
-	;
-
+	| byte_lit {lhs.push_back("BasicLit");rhs.push_back("byte_lit");};
 
 FunctionLit:
 	FUNC Function {lhs.push_back("FunctionLit");rhs.push_back("FUNC Function");};
@@ -554,7 +521,7 @@ int main (int argc, char** argv) {
 	printf("Read the input file, continue with Lexing and Parsing\n");
 	printf("Performing Lexical analysis......\n\n");
 	yyparse ( );
-	printf("Parsing completed.\n\n");
+	printf("\n\033[0;32mParsing completed.\033[0m\n\n");
 	printf("Symbol Table after Lexical Analysis: \n");
 	Display();
 	/*

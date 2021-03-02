@@ -19,7 +19,6 @@ VAR_TYPE			"bool"|"byte"|"error"|"float32"|"float64"|"int"|"int8"|"int16"|"int32
 BOOL_CONST			"true"|"false"
 NIL_VAL				"nil"
 
-
 %%
 
 "="				{printf("(%s, ASSIGN)\n", yytext);Insert(yytext,yylineno,"ASSIGN");return ASSIGN;}
