@@ -6,27 +6,183 @@ Function -> Signature FunctionBody
 FunctionBody -> Block 
 Empty Block -> /*empty*/ 
 Block -> T_LEFTBRACE StatementList T_RIGHTBRACE 
-StatementList -> StatementList Statement T_SEMICOLON 
+CLOSEB -> /*empty*/ 
+StatementList -> StatementList Statement  
+Statement -> IfStmt 
+IfStmt -> T_IF Expression Block T_ELSE IfStmt 
+IfStmt -> T_IF Expression Block T_ELSE  Block 
+Empty Block -> /*empty*/ 
+Block -> T_LEFTBRACE StatementList T_RIGHTBRACE 
+CLOSEB -> /*empty*/ 
+StatementList -> Statement T_SEMICOLON 
 Statement -> FunctionCall 
 FunctionCall -> PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES 
 ArgumentList -> ArgumentList T_COMMA Arguments 
 Arguments -> PrimaryExpr 
 PrimaryExpr -> Operand 
-Operand -> OperandName 
-OperandName -> T_IDENTIFIER 
-ArgumentList -> Arguments 
-Arguments -> PrimaryExpr 
-PrimaryExpr -> Operand 
 Operand -> Literal 
 Literal -> BasicLit 
 BasicLit -> T_STRING 
+ArgumentList -> Arguments 
+Arguments -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
 PrimaryExpr -> PrimaryExpr Selector 
 Selector -> T_PERIOD T_IDENTIFIER 
 PrimaryExpr -> Operand 
 Operand -> OperandName 
 OperandName -> T_IDENTIFIER 
+OPENB -> /*empty*/ 
+Empty Block -> /*empty*/ 
+Block -> T_LEFTBRACE StatementList T_RIGHTBRACE 
+CLOSEB -> /*empty*/ 
+StatementList -> Statement T_SEMICOLON 
+Statement -> FunctionCall 
+FunctionCall -> PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES 
+ArgumentList -> ArgumentList T_COMMA Arguments 
+Arguments -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_STRING 
+ArgumentList -> Arguments 
+Arguments -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
+PrimaryExpr -> PrimaryExpr Selector 
+Selector -> T_PERIOD T_IDENTIFIER 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
+OPENB -> /*empty*/ 
+Expression -> Expression1 
+Expression1 -> Expression2 
+Expression2 -> Expression3 
+Expression3 -> Expression3 rel_op Expression4 
+Expression4 -> Expression5 
+Expression5 -> UnaryExpr 
+UnaryExpr -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_INTEGER 
+rel_op -> T_LSR 
+Expression3 -> Expression4 
+Expression4 -> Expression5 
+Expression5 -> UnaryExpr 
+UnaryExpr -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
+Empty Block -> /*empty*/ 
+Block -> T_LEFTBRACE StatementList T_RIGHTBRACE 
+CLOSEB -> /*empty*/ 
+StatementList -> Statement T_SEMICOLON 
+Statement -> FunctionCall 
+FunctionCall -> PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES 
+ArgumentList -> ArgumentList T_COMMA Arguments 
+Arguments -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_STRING 
+ArgumentList -> Arguments 
+Arguments -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
+PrimaryExpr -> PrimaryExpr Selector 
+Selector -> T_PERIOD T_IDENTIFIER 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
+OPENB -> /*empty*/ 
+Expression -> Expression1 
+Expression1 -> Expression2 
+Expression2 -> Expression3 
+Expression3 -> Expression3 rel_op Expression4 
+Expression4 -> Expression5 
+Expression5 -> UnaryExpr 
+UnaryExpr -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_INTEGER 
+rel_op -> T_LSR 
+Expression3 -> Expression4 
+Expression4 -> Expression5 
+Expression5 -> UnaryExpr 
+UnaryExpr -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
 StatementList -> StatementList Statement T_SEMICOLON 
-Statement -> SimpleStmt 
+Statement -> Declaration 
+Declaration -> VarDecl 
+VarDecl -> T_VAR VarSpec 
+VarSpec -> IdentifierList T_Type T_ASSIGN ExpressionList 
+ExpressionList -> Expression 
+Expression -> Expression1 
+Expression1 -> Expression2 
+Expression2 -> Expression3 
+Expression3 -> Expression4 
+Expression4 -> Expression5 
+Expression5 -> UnaryExpr 
+UnaryExpr -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_INTEGER 
+Type -> TypeName 
+TypeName -> T_VAR_TYPE 
+IdentifierList -> T_IDENTIFIER 
+StatementList -> StatementList Statement  
+Statement -> IfStmt 
+IfStmt -> T_IF SimpleStmt T_SEMICOLON Expression Block 
+Empty Block -> /*empty*/ 
+Block -> T_LEFTBRACE StatementList T_RIGHTBRACE 
+CLOSEB -> /*empty*/ 
+StatementList -> Statement  
+Statement -> FunctionCall 
+FunctionCall -> PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES 
+ArgumentList -> ArgumentList T_COMMA Arguments 
+Arguments -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_STRING 
+ArgumentList -> Arguments 
+Arguments -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
+PrimaryExpr -> PrimaryExpr Selector 
+Selector -> T_PERIOD T_IDENTIFIER 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
+OPENB -> /*empty*/ 
+Expression -> Expression1 
+Expression1 -> Expression2 
+Expression2 -> Expression3 
+Expression3 -> Expression3 rel_op Expression4 
+Expression4 -> Expression5 
+Expression5 -> UnaryExpr 
+UnaryExpr -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_INTEGER 
+rel_op -> T_LSR 
+Expression3 -> Expression4 
+Expression4 -> Expression5 
+Expression5 -> UnaryExpr 
+UnaryExpr -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
 SimpleStmt -> IncDecStmt 
 IncDecStmt -> Expression INC 
 Expression -> Expression1 
@@ -39,7 +195,7 @@ UnaryExpr -> PrimaryExpr
 PrimaryExpr -> Operand 
 Operand -> OperandName 
 OperandName -> T_IDENTIFIER 
-StatementList -> Statement T_SEMICOLON 
+StatementList -> StatementList Statement  
 Statement -> Declaration 
 Declaration -> VarDecl 
 VarDecl -> T_VAR VarSpec 
@@ -49,20 +205,6 @@ Expression -> Expression1
 Expression1 -> Expression2 
 Expression2 -> Expression3 
 Expression3 -> Expression4 
-Expression4 -> Expression4 add_op Expression5 
-Expression5 -> Expression5 mul_op PrimaryExpr 
-PrimaryExpr -> Operand 
-Operand -> Literal 
-Literal -> BasicLit 
-BasicLit -> T_INTEGER 
-mul_op -> T_MUL 
-Expression5 -> UnaryExpr 
-UnaryExpr -> PrimaryExpr 
-PrimaryExpr -> Operand 
-Operand -> Literal 
-Literal -> BasicLit 
-BasicLit -> T_INTEGER 
-add_op -> T_ADD 
 Expression4 -> Expression5 
 Expression5 -> UnaryExpr 
 UnaryExpr -> PrimaryExpr 
@@ -73,6 +215,119 @@ BasicLit -> T_INTEGER
 Type -> TypeName 
 TypeName -> T_VAR_TYPE 
 IdentifierList -> T_IDENTIFIER 
+StatementList -> StatementList Statement  
+Statement -> IfStmt 
+IfStmt -> T_IF Expression Block 
+Empty Block -> /*empty*/ 
+Block -> T_LEFTBRACE StatementList T_RIGHTBRACE 
+CLOSEB -> /*empty*/ 
+StatementList -> Statement  
+Statement -> FunctionCall 
+FunctionCall -> PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES 
+ArgumentList -> Arguments 
+Arguments -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_STRING 
+PrimaryExpr -> PrimaryExpr Selector 
+Selector -> T_PERIOD T_IDENTIFIER 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
+OPENB -> /*empty*/ 
+Expression -> Expression1 
+Expression1 -> Expression2 
+Expression2 -> Expression3 
+Expression3 -> Expression3 rel_op Expression4 
+Expression4 -> Expression5 
+Expression5 -> UnaryExpr 
+UnaryExpr -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_INTEGER 
+rel_op -> T_EQL 
+Expression3 -> Expression4 
+Expression4 -> Expression5 
+Expression5 -> Expression5 mul_op PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_INTEGER 
+mul_op -> T_REM 
+Expression5 -> UnaryExpr 
+UnaryExpr -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_INTEGER 
+StatementList -> Statement  
+Statement -> IfStmt 
+IfStmt -> T_IF Expression Block T_ELSE  Block 
+Empty Block -> /*empty*/ 
+Block -> T_LEFTBRACE StatementList T_RIGHTBRACE 
+CLOSEB -> /*empty*/ 
+StatementList -> Statement  
+Statement -> FunctionCall 
+FunctionCall -> PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES 
+ArgumentList -> Arguments 
+Arguments -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_STRING 
+PrimaryExpr -> PrimaryExpr Selector 
+Selector -> T_PERIOD T_IDENTIFIER 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
+OPENB -> /*empty*/ 
+Empty Block -> /*empty*/ 
+Block -> T_LEFTBRACE StatementList T_RIGHTBRACE 
+CLOSEB -> /*empty*/ 
+StatementList -> Statement  
+Statement -> FunctionCall 
+FunctionCall -> PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES 
+ArgumentList -> Arguments 
+Arguments -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_STRING 
+PrimaryExpr -> PrimaryExpr Selector 
+Selector -> T_PERIOD T_IDENTIFIER 
+PrimaryExpr -> Operand 
+Operand -> OperandName 
+OperandName -> T_IDENTIFIER 
+OPENB -> /*empty*/ 
+Expression -> Expression1 
+Expression1 -> Expression2 
+Expression2 -> Expression3 
+Expression3 -> Expression3 rel_op Expression4 
+Expression4 -> Expression5 
+Expression5 -> UnaryExpr 
+UnaryExpr -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_INTEGER 
+rel_op -> T_EQL 
+Expression3 -> Expression4 
+Expression4 -> Expression5 
+Expression5 -> Expression5 mul_op PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_INTEGER 
+mul_op -> T_REM 
+Expression5 -> UnaryExpr 
+UnaryExpr -> PrimaryExpr 
+PrimaryExpr -> Operand 
+Operand -> Literal 
+Literal -> BasicLit 
+BasicLit -> T_INTEGER 
+OPENB -> /*empty*/ 
 Signature -> Parameters 
 Parameters -> T_LEFTPARANTHESES T_RIGHTPARANTHESES 
 FunctionName -> T_IDENTIFIER 

@@ -1,6 +1,6 @@
 package main
 import "fmt"
-func main() {
+func main({
 	// This is a comment and it is ignored in symbol table.
     var a int = 7+8*2;
 	a++;

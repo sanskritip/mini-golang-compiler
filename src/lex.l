@@ -10,6 +10,7 @@
 %}
 
 %option nounput yylineno
+
 UNICODE_LETTER			[a-zA-Z]
 LETTER				    [a-zA-Z_]
 DIGIT				    [0-9]
@@ -90,5 +91,6 @@ NIL_VAL				    "nil"
 
 int yywrap()
 {
+    printf("Input Exhausted!\n");
     return 1;
 }
