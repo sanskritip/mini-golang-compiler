@@ -21,7 +21,7 @@ vector <string> rhs;
 }
 
 %token <sval> T_PACKAGE T_IMPORT T_FUNC T_BREAK T_CONST T_CONTINUE
-%token <sval> T_ELSE T_FOR T_GO T_IF T_RETURN T_STRUCT T_SWITCH T_TYPE T_VAR T_VAR_TYPE
+%token <sval> T_ELSE T_FOR T_IF T_RETURN T_VAR T_VAR_TYPE
 %token <sval> T_BOOL_CONST T_NIL_VAL T_IDENTIFIER T_BYTE T_STRING T_ELLIPSIS
 %token <sval> T_INCREMENT T_DECREMENT 
 %token <sval> T_INTEGER
@@ -29,25 +29,22 @@ vector <string> rhs;
 
 %left <sval> T_ADD T_MINUS T_MULTIPLY T_DIVIDE T_MOD
 %right <sval> T_ASSIGN T_AND T_NOT
-%left <sval> T_ARROW //Identifier
-%right <sval> T_COLON
 %left <sval> T_LAND T_LOR T_EQL T_NEQ T_LEQ T_GEQ T_SEMICOLON
 %left <sval> T_GTR T_LSR T_LEFTPARANTHESES T_RIGHTPARANTHESES T_LEFTBRACE T_RIGHTBRACE T_LEFTBRACKET T_RIGHTBRACKET T_COMMA T_PERIOD
 
 %type <nt> StartFile Expression 
 %type <nt> Block StatementList Statement SimpleStmt 
 %type <nt> EmptyStmt IncDecStmt 
-%type <nt> Assignment Declaration ConstDecl 
+%type <nt> Assignment Declaration ConstDecl
 %type <nt> Signature Result Parameters ParameterList ParameterDecl
-%type <nt> ConstSpec TopLevelDecl TopLevelDeclList
+%type <nt> TopLevelDecl TopLevelDeclList
 %type <nt> ReturnStmt BreakStmt ContinueStmt
 %type <nt> FunctionDecl FunctionName TypeList
 %type <nt> Function FunctionBody FunctionCall ForStmt ForClause ArgumentList
 %type <nt> Condition UnaryExpr PrimaryExpr
 %type <nt> ExpressionList 
-%type <nt> Operand Literal BasicLit OperandName ImportSpec IfStmt
+%type <nt> Operand Literal BasicLit IfStmt
 %type <nt> PackageClause PackageName ImportDecl ImportDeclList ImportSpecList
-%type <nt> TypeName
 %% 
 
 StartFile:
@@ -83,8 +80,6 @@ Statement:
 	| ForStmt {lhs.push_back("Statement");rhs.push_back("ForStmt");} 
 	| FunctionCall {lhs.push_back("Statement");rhs.push_back("FunctionCall");} ;
 
-//All simple statements 
-
 SimpleStmt:
 	EmptyStmt {lhs.push_back("SimpleStmt");rhs.push_back("EmptyStmt");}
 	| IncDecStmt {lhs.push_back("SimpleStmt");rhs.push_back("IncDecStmt");}
@@ -95,7 +90,7 @@ EmptyStmt:
 
 IncDecStmt:
 	Expression T_INCREMENT {lhs.push_back("IncDecStmt");rhs.push_back("Expression INC");}
-	| Expression T_DECREMENT {lhs.push_back("IncDecStmt");rhs.push_back("Expression DEC");};
+	|Expression T_DECREMENT {lhs.push_back("IncDecStmt");rhs.push_back("Expression DEC");};
 
 Assignment:
 	ExpressionList assign_op ExpressionList {lhs.push_back("Assignment");rhs.push_back("ExpressionList assign_op ExpressionList");};
@@ -103,8 +98,6 @@ Assignment:
 Declaration:
 	ConstDecl {lhs.push_back("Declaration");rhs.push_back("ConstDecl");}
 	|VarDecl {lhs.push_back("Declaration");rhs.push_back("VarDecl");};
-
-//Variable Declaration
 
 VarDecl:
 		T_VAR IdentifierList Type T_ASSIGN ExpressionList {lhs.push_back("VarDecl");rhs.push_back("T_VAR IdentifierList T_Type T_ASSIGN ExpressionList");}
@@ -174,35 +167,25 @@ IdentifierLIST:	IdentifierLIST T_COMMA T_IDENTIFIER {lhs.push_back("IdentifierLI
 
 TopLevelDeclList:
      TopLevelDeclList /*here colon*/ TopLevelDecl  {lhs.push_back("TopLevelDeclList");rhs.push_back("TopLevelDeclList TopLevelDecl");}|
-	 TopLevelDeclList T_SEMICOLON/*here colon*/ TopLevelDecl  {lhs.push_back("TopLevelDeclList");rhs.push_back("TopLevelDeclList T_SEMICOLON  TopLevelDecl");}
+	 TopLevelDeclList T_SEMICOLON /*here colon*/ TopLevelDecl  {lhs.push_back("TopLevelDeclList");rhs.push_back("TopLevelDeclList T_SEMICOLON  TopLevelDecl");}
     | TopLevelDecl  {lhs.push_back("TopLevelDeclList");rhs.push_back("TopLevelDecl");};
 
 TopLevelDecl:
 	Declaration {lhs.push_back("TopLevelDecl");rhs.push_back("Declaration");}	
 	| FunctionDecl {lhs.push_back("TopLevelDecl");rhs.push_back("FunctionDecl");};
 
+//No custom defined types
+
 Type:
-	TypeName {lhs.push_back("Type");rhs.push_back("TypeName");}
-	|TypeLit {lhs.push_back("Type");rhs.push_back("TypeLit");};
-
-TypeName:
-	T_IDENTIFIER {lhs.push_back("TypeName");rhs.push_back("T_IDENTIFIER");}
-	| T_VAR_TYPE {lhs.push_back("TypeName");rhs.push_back("T_VAR_TYPE");};
-
-TypeLit:
-	FunctionType {lhs.push_back("TypeLit");rhs.push_back("FunctionType");};
-
-FunctionType:
-	T_FUNC Signature {lhs.push_back("FunctionType");rhs.push_back("T_FUNC Signature");};
+	T_VAR_TYPE {lhs.push_back("TypeName");rhs.push_back("T_VAR_TYPE");}
+	| T_FUNC Signature {lhs.push_back("Type");rhs.push_back("TypeLit");};
 
 Operand:
 	Literal {lhs.push_back("Operand");rhs.push_back("Literal");}
-	| OperandName {lhs.push_back("Operand");rhs.push_back("OperandName");}
+	| T_IDENTIFIER {lhs.push_back("Operand");rhs.push_back("T_IDENTIFIER");}
 	| T_LEFTPARANTHESES Expression T_RIGHTPARANTHESES {lhs.push_back("Operand");rhs.push_back("T_LEFTPARANTHESES Expression T_RIGHTPARANTHESES");};
 
-OperandName:
-	T_IDENTIFIER {lhs.push_back("OperandName");rhs.push_back("T_IDENTIFIER");};
-
+//Void return or Returning and Expression
 ReturnStmt:
 	T_RETURN Expression {lhs.push_back("ReturnStmt");rhs.push_back("T_RETURN Expression");}
 	| T_RETURN {lhs.push_back("ReturnStmt");rhs.push_back("T_RETURN");};
@@ -215,11 +198,8 @@ ContinueStmt:
 
 IfStmt:
 	T_IF Expression Block {lhs.push_back("IfStmt");rhs.push_back("T_IF Expression Block");}//{printf("T_IF case 1");}
-	|T_IF Expression Block T_ELSE IfStmt {lhs.push_back("IfStmt");rhs.push_back("T_IF Expression Block T_ELSE IfStmt");}//{printf("T_IF case 5");}
-	|T_IF Expression Block T_ELSE  Block {lhs.push_back("IfStmt");rhs.push_back("T_IF Expression Block T_ELSE  Block");}//{printf("T_IF case 6");}
-	|T_IF SimpleStmt T_SEMICOLON Expression Block {lhs.push_back("IfStmt");rhs.push_back("T_IF SimpleStmt T_SEMICOLON Expression Block");}//{printf("T_IF case 2");}
-	|T_IF SimpleStmt T_SEMICOLON Expression Block T_ELSE IfStmt  {lhs.push_back("IfStmt");rhs.push_back("T_IF SimpleStmt T_SEMICOLON Expression Block T_ELSE IfStmt");}//{printf("T_IF case 3");}
-	|T_IF SimpleStmt T_SEMICOLON Expression Block T_ELSE  Block {lhs.push_back("IfStmt");rhs.push_back("T_IF SimpleStmt T_SEMICOLON Expression Block T_ELSE  Block");}//{printf("T_IF case 4");};
+	| T_IF Expression Block T_ELSE IfStmt {lhs.push_back("IfStmt");rhs.push_back("T_IF Expression Block T_ELSE IfStmt");}//{printf("T_IF case 5");}
+	| T_IF Expression Block T_ELSE  Block {lhs.push_back("IfStmt");rhs.push_back("T_IF Expression Block T_ELSE  Block");}//{printf("T_IF case 6");};
 
 ForStmt:
 	T_FOR Condition Block {lhs.push_back("ForStmt");rhs.push_back("T_FOR Condition Block");}
@@ -309,6 +289,8 @@ unary_op:
 assign_op:
 	  T_ASSIGN {lhs.push_back("assign_op");rhs.push_back("T_ASSIGN");};
 
+//Package Related
+
 PackageClause:
 	/*PACKAGE*/T_PACKAGE PackageName {lhs.push_back("PackageClause");rhs.push_back("T_PACKAGE PackageName");};
 
@@ -325,17 +307,13 @@ ImportDeclList:
     | /*empty*/ {lhs.push_back("ImportDeclList");rhs.push_back("/*empty*/");}//{ printf("got import list 3");};
 
 ImportDecl:
-	T_IMPORT ImportSpec {lhs.push_back("ImportDecl");rhs.push_back("T_IMPORT ImportSpec T_SEMICOLON");}//{printf("got imports 1");}
+	T_IMPORT PackageName {lhs.push_back("ImportDecl");rhs.push_back("T_IMPORT PackageName T_SEMICOLON");}//{printf("got imports 1");}
 	| T_IMPORT T_LEFTPARANTHESES ImportSpecList  T_RIGHTPARANTHESES {lhs.push_back("ImportDecl");rhs.push_back("T_IMPORT T_LEFTPARANTHESES ImportSpecList  T_RIGHTPARANTHESES");}//{printf("got imports 2");};
 
 ImportSpecList:
-	ImportSpecList PackageName {lhs.push_back("ImportSpecList");rhs.push_back("ImportSpecList ImportSpec T_SEMICOLON");}
-	| ImportSpec {lhs.push_back("ImportSpecList");rhs.push_back("ImportSpec T_SEMICOLON");};
+	ImportSpecList PackageName {lhs.push_back("ImportSpecList");rhs.push_back("ImportSpecList PacakageName T_SEMICOLON");}
+	| PackageName {lhs.push_back("ImportSpecList");rhs.push_back("PackageName T_SEMICOLON");};
 
-ImportSpec:
- PackageName {lhs.push_back("ImportSpec");rhs.push_back("PackageName2");};
-
-	
 %%
 
 int main (int argc, char** argv) {	

@@ -31,7 +31,6 @@ NIL_VAL				    "nil"
 
 "&&"				{yylval.sval = strdup(yytext);printf("(%s, T_LAND)\n", yytext);Insert(yytext,yylineno,"T_LAND");return T_LAND;}
 "||"				{yylval.sval = strdup(yytext);printf("(%s, T_LOR)\n", yytext);Insert(yytext,yylineno,"T_LOR");return T_LOR;}
-"->"				{yylval.sval = strdup(yytext);printf("(%s, T_ARROW)\n", yytext);Insert(yytext,yylineno,"T_ARROW");return T_ARROW;}
 "++"				{yylval.sval = strdup(yytext);printf("(%s, T_INCREMENT)\n", yytext);Insert(yytext,yylineno,"T_INCREMENT");return T_INCREMENT;}
 "--"				{yylval.sval = strdup(yytext);printf("(%s, T_DECREMENT)\n", yytext);Insert(yytext,yylineno,"T_DECREMENT");return T_DECREMENT;}
 
@@ -53,7 +52,6 @@ NIL_VAL				    "nil"
 "]"				{yylval.sval = strdup(yytext);printf("(%s, T_RIGHTBRACKET)\n", yytext);return T_RIGHTBRACKET;}
 ","				{yylval.sval = strdup(yytext);printf("(%s, T_COMMA)\n", yytext);Insert(yytext,yylineno,"T_COMMA");return T_COMMA;}
 ";"				{yylval.sval = strdup(yytext);printf("(%s, T_SEMICOLON)\n", yytext);Insert(yytext,yylineno,"T_SEMICOLON");return T_SEMICOLON;}
-":"				{yylval.sval = strdup(yytext);printf("(%s, T_COLON)\n", yytext);Insert(yytext,yylineno,"T_COLON");return T_COLON;}
 "."				{yylval.sval = strdup(yytext);printf("(%s, T_PERIOD)\n", yytext);Insert(yytext,yylineno,"T_PERIOD");return T_PERIOD;}
 
 "package"			{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_PACKAGE;}
@@ -66,7 +64,6 @@ NIL_VAL				    "nil"
 "for"				{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_FOR;}
 "if"				{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_IF;}
 "return"        	{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_RETURN;}
-"type"       		{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_TYPE;} 
 "var"        		{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_VAR;}
 {VAR_TYPE}			{yylval.sval = strdup(yytext);printf("(%s, T_DATA TYPE)\n", yytext);Insert(yytext,yylineno,"T_DATA TYPE");return T_VAR_TYPE;}
 {BOOL_CONST}		{yylval.sval = strdup(yytext);printf("(%s, T_BOOLEAN CONSTANT)\n", yytext);Insert(yytext,yylineno,"T_BOOLEAN CONSTANT");return T_BOOL_CONST;}

@@ -21,7 +21,7 @@ vector <string> rhs;
 }
 
 %token <sval> T_PACKAGE T_IMPORT T_FUNC T_BREAK T_CONST T_CONTINUE
-%token <sval> T_ELSE T_FOR T_GO T_IF T_RETURN T_TYPE T_VAR T_VAR_TYPE
+%token <sval> T_ELSE T_FOR T_IF T_RETURN T_VAR T_VAR_TYPE
 %token <sval> T_BOOL_CONST T_NIL_VAL T_IDENTIFIER T_BYTE T_STRING T_ELLIPSIS
 %token <sval> T_INCREMENT T_DECREMENT 
 %token <sval> T_INTEGER
@@ -29,8 +29,6 @@ vector <string> rhs;
 
 %left <sval> T_ADD T_MINUS T_MULTIPLY T_DIVIDE T_MOD
 %right <sval> T_ASSIGN T_AND T_NOT
-%left <sval> T_ARROW //Identifier
-%right <sval> T_COLON
 %left <sval> T_LAND T_LOR T_EQL T_NEQ T_LEQ T_GEQ T_SEMICOLON
 %left <sval> T_GTR T_LSR T_LEFTPARANTHESES T_RIGHTPARANTHESES T_LEFTBRACE T_RIGHTBRACE T_LEFTBRACKET T_RIGHTBRACKET T_COMMA T_PERIOD
 
@@ -187,6 +185,7 @@ Operand:
 	| T_IDENTIFIER {lhs.push_back("Operand");rhs.push_back("T_IDENTIFIER");}
 	| T_LEFTPARANTHESES Expression T_RIGHTPARANTHESES {lhs.push_back("Operand");rhs.push_back("T_LEFTPARANTHESES Expression T_RIGHTPARANTHESES");};
 
+//Void return or Returning and Expression
 ReturnStmt:
 	T_RETURN Expression {lhs.push_back("ReturnStmt");rhs.push_back("T_RETURN Expression");}
 	| T_RETURN {lhs.push_back("ReturnStmt");rhs.push_back("T_RETURN");};
