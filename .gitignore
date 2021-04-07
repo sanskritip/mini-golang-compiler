@@ -36,5 +36,5 @@ src/lex.yy.c
 
 *.tab.c
 *.tab.h
-grammar.txt
+.grammar.txt
 gocompiler

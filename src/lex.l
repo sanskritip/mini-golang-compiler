@@ -60,15 +60,12 @@ NIL_VAL				    "nil"
 "import"			{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_IMPORT;}
 "func"				{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_FUNC;}
 "break"				{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_BREAK;} 
-"case"				{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_CASE;}
 "const"				{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_CONST;} 
 "continue"        	{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_CONTINUE;} 
 "default"        	{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_DEFAULT;} 
 "else"				{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_ELSE;}
 "for"				{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_FOR;}
-"go"        		{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_GO;}
 "if"				{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_IF;}
-"range"				{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_RANGE;}
 "return"        	{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_RETURN;}
 "switch"        	{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_SWITCH;} 
 "type"       		{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_TYPE;} 
@@ -84,6 +81,7 @@ NIL_VAL				    "nil"
 
 \"([^\\\n\"]|(\\.))*\"	{yylval.sval = strdup(yytext);printf("(%s, T_STRING)\n", yytext);Insert(yytext,yylineno,"T_STRING");return T_STRING;}
 \/\/{UNICODE_CHAR}*\n		;
+
 "\n"				;
 "\t"				;
 " "				;
