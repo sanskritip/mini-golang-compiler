@@ -2,10 +2,12 @@
 %{
 	#include <stdio.h>
     #include<string.h>
+    #include<errno.h>
     #include "src/SymbolTable.h"
     #include "y.tab.h"    /* token codes from the parser */  
     int yylex();
     void yyerror (char *s);
+    extern int errno;
 
 %}
 
@@ -80,6 +82,8 @@ NIL_VAL				    "nil"
 "\n"				;
 "\t"				;
 " "				;
+
+
 %%
 
 int yywrap()

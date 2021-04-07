@@ -18,6 +18,7 @@ vector <string> rhs;
      char *nt;
      char *sval;
 	 int ival;
+	 char *error_msg;
 }
 
 %token <sval> T_PACKAGE T_IMPORT T_FUNC T_BREAK T_CONST T_CONTINUE
@@ -123,6 +124,7 @@ FunctionBody:
 FunctionCall:	
 		PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES {lhs.push_back("FunctionCall");rhs.push_back("PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES");};		
 
+
 ArgumentList:	
 		ArgumentList T_COMMA Arguments {lhs.push_back("ArgumentList");rhs.push_back("ArgumentList T_COMMA Arguments");}
 		| Arguments {lhs.push_back("ArgumentList");rhs.push_back("Arguments");}//{printf("function's arguments ---2");}
@@ -136,28 +138,28 @@ Signature:
 	Parameters {lhs.push_back("Signature");rhs.push_back("Parameters");}
 	| Parameters Result {lhs.push_back("Signature");rhs.push_back("Parameters Result");};
 
+//Multiple return types
 Result:
 	T_LEFTPARANTHESES TypeList T_RIGHTPARANTHESES {lhs.push_back("Result");rhs.push_back("T_LEFTPARANTHESES TypeList T_RIGHTPARANTHESES");}
 	| Type  {lhs.push_back("Result");rhs.push_back("Type");};
 
 Parameters:
-	T_LEFTPARANTHESES T_RIGHTPARANTHESES { lhs.push_back("Parameters");rhs.push_back("T_LEFTPARANTHESES T_RIGHTPARANTHESES");}//printf("gor T_func with no arguments");}
-	| T_LEFTPARANTHESES ParameterList T_RIGHTPARANTHESES {lhs.push_back("Parameters");rhs.push_back("T_LEFTPARANTHESES ParameterList T_RIGHTPARANTHESES");}
-	|T_LEFTPARANTHESES ParameterList T_COMMA T_RIGHTPARANTHESES {lhs.push_back("Parameters");rhs.push_back("T_LEFTPARANTHESES ParameterList T_COMMA T_RIGHTPARANTHESES");}; 
+	T_LEFTPARANTHESES ParameterList T_RIGHTPARANTHESES {lhs.push_back("Parameters");rhs.push_back("T_LEFTPARANTHESES ParameterList T_RIGHTPARANTHESES");};
 
 ParameterList:
 	ParameterDecl {lhs.push_back("ParameterList");rhs.push_back("ParameterDecl");}
-	|ParameterList T_COMMA ParameterDecl {lhs.push_back("ParameterList");rhs.push_back("ParameterList T_COMMA ParameterDecl");};
+	| ParameterList T_COMMA ParameterDecl {lhs.push_back("ParameterList");rhs.push_back("ParameterList T_COMMA ParameterDecl");}
+	| /*empty*/{lhs.push_back("ArgumentList");rhs.push_back("/*empty*/");};
 
 ParameterDecl:
-	IdentifierList Type {lhs.push_back("ParameterDecl");rhs.push_back("IdentifierList Type");}
-	| IdentifierList T_ELLIPSIS  Type {lhs.push_back("ParameterDecl");rhs.push_back("IdentifierList T_ELLIPSIS  Type");}
-	| T_ELLIPSIS Type {lhs.push_back("ParameterDecl");rhs.push_back("T_ELLIPSIS Type");};
+	IdentifierList Type {lhs.push_back("ParameterDecl");rhs.push_back("IdentifierList Type");};
 
 TypeList:
     TypeList T_COMMA Type {lhs.push_back("TypeList");rhs.push_back("TypeList T_COMMA Type");}
     | Type {lhs.push_back("TypeList");rhs.push_back("Type");};
 
+
+//Understand this plis
 IdentifierList:
 		T_IDENTIFIER IdentifierLIST {lhs.push_back("IdentifierList");rhs.push_back("T_IDENTIFIER IdentifierLIST");}
 		| T_IDENTIFIER {lhs.push_back("IdentifierList");rhs.push_back("T_IDENTIFIER");};
