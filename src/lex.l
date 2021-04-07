@@ -62,12 +62,10 @@ NIL_VAL				    "nil"
 "break"				{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_BREAK;} 
 "const"				{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_CONST;} 
 "continue"        	{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_CONTINUE;} 
-"default"        	{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_DEFAULT;} 
 "else"				{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_ELSE;}
 "for"				{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_FOR;}
 "if"				{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_IF;}
 "return"        	{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_RETURN;}
-"switch"        	{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_SWITCH;} 
 "type"       		{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_TYPE;} 
 "var"        		{yylval.sval = strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);Insert(yytext,yylineno,"T_KEYWORD");return T_VAR;}
 {VAR_TYPE}			{yylval.sval = strdup(yytext);printf("(%s, T_DATA TYPE)\n", yytext);Insert(yytext,yylineno,"T_DATA TYPE");return T_VAR_TYPE;}

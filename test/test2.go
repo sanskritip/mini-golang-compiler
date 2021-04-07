@@ -14,13 +14,6 @@ func main() {
         fmt.Println("8 is divisible by 4")
     }
 
-    //If with Simple statement
-
-    var v int = 2
-    if v++ ; v < 5 {
-            fmt.Println(v, "is smaller than 5")
-    }
-
 	var num int = 9;
     //If - elseif - else statement
     if num < 0 {

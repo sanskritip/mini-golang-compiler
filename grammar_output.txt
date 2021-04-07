@@ -28,13 +28,11 @@ BasicLit -> T_STRING
 PrimaryExpr -> PrimaryExpr Selector 
 Selector -> T_PERIOD T_IDENTIFIER 
 PrimaryExpr -> Operand 
-Operand -> OperandName 
-OperandName -> T_IDENTIFIER 
+Operand -> T_IDENTIFIER 
 PrimaryExpr -> PrimaryExpr Selector 
 Selector -> T_PERIOD T_IDENTIFIER 
 PrimaryExpr -> Operand 
-Operand -> OperandName 
-OperandName -> T_IDENTIFIER 
+Operand -> T_IDENTIFIER 
 StatementList -> Statement  
 Statement -> FunctionCall 
 FunctionCall -> PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES 
@@ -50,25 +48,22 @@ BasicLit -> T_STRING
 PrimaryExpr -> PrimaryExpr Selector 
 Selector -> T_PERIOD T_IDENTIFIER 
 PrimaryExpr -> Operand 
-Operand -> OperandName 
-OperandName -> T_IDENTIFIER 
+Operand -> T_IDENTIFIER 
 PrimaryExpr -> PrimaryExpr Selector 
 Selector -> T_PERIOD T_IDENTIFIER 
 PrimaryExpr -> Operand 
-Operand -> OperandName 
-OperandName -> T_IDENTIFIER 
+Operand -> T_IDENTIFIER 
 OPENB -> /*empty*/ 
 Signature -> Parameters 
 Parameters -> T_LEFTPARANTHESES T_RIGHTPARANTHESES 
 FunctionName -> T_IDENTIFIER 
 ImportDeclList -> ImportDecl 
 ImportDecl -> T_IMPORT T_LEFTPARANTHESES ImportSpecList  T_RIGHTPARANTHESES 
-ImportSpecList -> ImportSpecList ImportSpec T_SEMICOLON 
+ImportSpecList -> ImportSpecList PacakageName T_SEMICOLON 
 PackageName -> T_STRING 
-ImportSpecList -> ImportSpecList ImportSpec T_SEMICOLON 
+ImportSpecList -> ImportSpecList PacakageName T_SEMICOLON 
 PackageName -> T_STRING 
-ImportSpecList -> ImportSpec T_SEMICOLON 
-ImportSpec -> PackageName2 
-PackageName -> T_STRING 
+ImportSpecList -> PackageName T_SEMICOLON 
+PackageName -> T_STRING T_SEMICOLON 
 PackageClause -> T_PACKAGE PackageName 
 PackageName -> T_IDENTIFIER 

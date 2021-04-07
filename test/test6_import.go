@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-
+	"fmt";
 	"example.com/user/hello/morestrings"
 	"github.com/google/go-cmp/cmp"
 )
