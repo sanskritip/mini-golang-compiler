@@ -17,6 +17,7 @@ vector <string> rhs;
 %union {
      char *nt;
      char *sval;
+	 int ival;
 }
 
 %token <sval> T_PACKAGE T_IMPORT T_FUNC T_BREAK T_CASE T_CONST T_CONTINUE T_DEFAULT
@@ -43,9 +44,8 @@ vector <string> rhs;
 %type <nt> FunctionDecl FunctionName TypeList
 %type <nt> Function FunctionBody FunctionCall ForStmt ForClause ArgumentList
 %type <nt> Condition UnaryExpr PrimaryExpr
-%type <nt> TypeAssertion ExpressionList 
+%type <nt> ExpressionList 
 %type <nt> Operand Literal BasicLit OperandName ImportSpec IfStmt
-%type <nt> ImportPath
 %type <nt> PackageClause PackageName ImportDecl ImportDeclList ImportSpecList
 %type <nt> TypeName
 %% 
@@ -175,7 +175,8 @@ IdentifierLIST:	IdentifierLIST T_COMMA T_IDENTIFIER {lhs.push_back("IdentifierLI
 		| T_COMMA T_IDENTIFIER {lhs.push_back("IdentifierLIST");rhs.push_back("T_COMMA T_IDENTIFIER");};
 
 TopLevelDeclList:
-    TopLevelDeclList T_SEMICOLON /*here colon*/ TopLevelDecl  {lhs.push_back("TopLevelDeclList");rhs.push_back("TopLevelDeclList T_SEMICOLON  TopLevelDecl");}
+     TopLevelDeclList /*here colon*/ TopLevelDecl  {lhs.push_back("TopLevelDeclList");rhs.push_back("TopLevelDeclList TopLevelDecl");}|
+	 TopLevelDeclList T_SEMICOLON/*here colon*/ TopLevelDecl  {lhs.push_back("TopLevelDeclList");rhs.push_back("TopLevelDeclList T_SEMICOLON  TopLevelDecl");}
     | TopLevelDecl  {lhs.push_back("TopLevelDeclList");rhs.push_back("TopLevelDecl");};
 
 TopLevelDecl:
@@ -225,15 +226,17 @@ IfStmt:
 ForStmt:
 	T_FOR Condition Block {lhs.push_back("ForStmt");rhs.push_back("T_FOR Condition Block");}
 	|T_FOR ForClause Block {lhs.push_back("ForStmt");rhs.push_back("T_FOR ForClause Block");};
+
 Condition:
 	Expression {lhs.push_back("Condition");rhs.push_back("Expression");};
+
 ForClause:
 	SimpleStmt T_SEMICOLON Condition T_SEMICOLON SimpleStmt {lhs.push_back("ForClause");rhs.push_back("SimpleStmt T_SEMICOLON Condition T_SEMICOLON SimpleStmt");};
-
 
 ExpressionList:
 		ExpressionList T_COMMA Expression {lhs.push_back("ExpressionList");rhs.push_back("ExpressionList T_COMMA Expression");}
 		| Expression {lhs.push_back("ExpressionList");rhs.push_back("Expression");};
+
 Literal:
 	BasicLit {lhs.push_back("Literal");rhs.push_back("BasicLit");}
 	| FunctionLit {lhs.push_back("Literal");rhs.push_back("FunctionLit");};
@@ -249,46 +252,37 @@ FunctionLit:
 
 PrimaryExpr:
 	Operand {lhs.push_back("PrimaryExpr");rhs.push_back("Operand");}|
-	PrimaryExpr Selector {lhs.push_back("PrimaryExpr");rhs.push_back("PrimaryExpr Selector");}|
-	PrimaryExpr Index {lhs.push_back("PrimaryExpr");rhs.push_back("PrimaryExpr Index");}|
-	PrimaryExpr TypeAssertion {lhs.push_back("PrimaryExpr");rhs.push_back("PrimaryExpr TypeAssertion");};
+	PrimaryExpr Selector {lhs.push_back("PrimaryExpr");rhs.push_back("PrimaryExpr Selector");};
 
 Selector:
 	T_PERIOD T_IDENTIFIER {lhs.push_back("Selector");rhs.push_back("T_PERIOD T_IDENTIFIER");};
-Index:	
-	T_LEFTBRACKET Expression T_RIGHTBRACKET {lhs.push_back("Index");rhs.push_back("T_LEFTBRACKET Expression T_RIGHTBRACKET");};
-TypeAssertion:
-	T_PERIOD T_LEFTPARANTHESES Type T_RIGHTPARANTHESES {lhs.push_back("TypeAssertion");rhs.push_back("T_PERIOD T_LEFTPARANTHESES T_Type T_RIGHTPARANTHESES");};
+
 Expression:
     Expression1 {lhs.push_back("Expression");rhs.push_back("Expression1");};
+
 Expression1:
     Expression1 T_LOR Expression2 {lhs.push_back("Expression1");rhs.push_back("Expression1 T_LOR Expression2");}
     | Expression2 {lhs.push_back("Expression1");rhs.push_back("Expression2");};
 Expression2:
     Expression2 T_LAND Expression3 {lhs.push_back("Expression2");rhs.push_back("Expression2 T_LAND Expression3");}
     | Expression3 {lhs.push_back("Expression2");rhs.push_back("Expression3");};
+
 Expression3:
     Expression3 rel_op Expression4 {lhs.push_back("Expression3");rhs.push_back("Expression3 rel_op Expression4");}
     | Expression4 {lhs.push_back("Expression3");rhs.push_back("Expression4");};
+
 Expression4:
     Expression4 add_op Expression5 {lhs.push_back("Expression4");rhs.push_back("Expression4 add_op Expression5");}
     | Expression5 {lhs.push_back("Expression4");rhs.push_back("Expression5");};
+
 Expression5:
     Expression5 mul_op PrimaryExpr {lhs.push_back("Expression5");rhs.push_back("Expression5 mul_op PrimaryExpr");}
     | UnaryExpr {lhs.push_back("Expression5");rhs.push_back("UnaryExpr");};
+
 UnaryExpr:
 	PrimaryExpr {lhs.push_back("UnaryExpr");rhs.push_back("PrimaryExpr");}
-	| unary_op PrimaryExpr {lhs.push_back("UnaryExpr");rhs.push_back("unary_op PrimaryExpr");}
-	//UnaryExpr {lhs.push_back("UnaryExpr");rhs.push_back("UnaryExpr");};
+	| unary_op PrimaryExpr {lhs.push_back("UnaryExpr");rhs.push_back("unary_op PrimaryExpr");};
 
-//ops using tokens
-/*
-binary_op:
-	T_LOR {lhs.push_back("binary_op");rhs.push_back("T_LOR");}
-	| T_LAND {lhs.push_back("binary_op");rhs.push_back("T_LAND");}
-	| rel_op {lhs.push_back("binary_op");rhs.push_back("rel_op");}
-	| add_op {lhs.push_back("binary_op");rhs.push_back("add_op");}
-	| mul_op {lhs.push_back("binary_op");rhs.push_back("mul_op");};*/
 rel_op:
 	T_EQL {lhs.push_back("rel_op");rhs.push_back("T_EQL");}
 	| T_NEQ {lhs.push_back("rel_op");rhs.push_back("T_NEQ");}
@@ -325,6 +319,8 @@ PackageName:
 	T_STRING {lhs.push_back("PackageName");rhs.push_back("T_STRING");}	|
 	T_STRING T_SEMICOLON {lhs.push_back("PackageName");rhs.push_back("T_STRING T_SEMICOLON");};
 	
+//Can be list of imports, single import or no imports. Imports from local paths not accounted for.
+
 ImportDeclList:
       ImportDeclList ImportDecl  {lhs.push_back("ImportDeclList");rhs.push_back("ImportDeclList ImportDecl");}//{ printf("got import list 1");}
     | ImportDecl  {lhs.push_back("ImportDeclList");rhs.push_back("ImportDecl");}//{ printf("got import list 2"); }
@@ -335,15 +331,12 @@ ImportDecl:
 	| T_IMPORT T_LEFTPARANTHESES ImportSpecList  T_RIGHTPARANTHESES {lhs.push_back("ImportDecl");rhs.push_back("T_IMPORT T_LEFTPARANTHESES ImportSpecList  T_RIGHTPARANTHESES");}//{printf("got imports 2");};
 
 ImportSpecList:
-	ImportSpecList ImportSpec {lhs.push_back("ImportSpecList");rhs.push_back("ImportSpecList ImportSpec T_SEMICOLON");}
+	ImportSpecList PackageName {lhs.push_back("ImportSpecList");rhs.push_back("ImportSpecList ImportSpec T_SEMICOLON");}
 	| ImportSpec {lhs.push_back("ImportSpecList");rhs.push_back("ImportSpec T_SEMICOLON");};
+
 ImportSpec:
-	 T_PERIOD ImportPath {lhs.push_back("ImportSpec");rhs.push_back("T_PERIOD ImportPath");}
-	| PackageName ImportPath {lhs.push_back("ImportSpec");rhs.push_back("PackageName2 ImportPath");}
-	| PackageName {lhs.push_back("ImportSpec");rhs.push_back("PackageName2");};
-ImportPath:
-	T_STRING {lhs.push_back("ImportPath");rhs.push_back("T_STRING");}|
-	T_STRING T_SEMICOLON {lhs.push_back("ImportPath");rhs.push_back("T_STRING T_SEMICOLON");};
+ PackageName {lhs.push_back("ImportSpec");rhs.push_back("PackageName2");};
+
 	
 %%
 

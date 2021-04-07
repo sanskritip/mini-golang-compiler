@@ -1,11 +1,13 @@
 package main
-import (
-	"fmt"
-)
 
-func Sqrt(x float64) float64 {
-};
+import (
+	"fmt" "math")
+
+func basicFunction() {
+	fmt.Println("basic function golang");
+}
 
 func main() {
-	fmt.Println(Sqrt(2))
+	basicFunction();
+	fmt.Println("basic function golang with variable function");
 }
