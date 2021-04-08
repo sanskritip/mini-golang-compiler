@@ -24,7 +24,7 @@ int size=0;
         }
         return NULL;
     }
-    void Insert(char symbol[], int address, char symbol_type[])
+    void Insert(char symbol[], int address, char symbol_type[], bool isNum, int value)
     {
         // printf("Inside ;Insert\n");
         printf(" %s, %d",symbol, address);
@@ -47,6 +47,9 @@ int size=0;
             strcpy(p->label,token_no.c_str());
             // printf("\n\tEnter the symbol : ");
             // scanf("%s", p->symbol);
+            if (isNum){
+                p->value = value;
+            }
             strcpy(p->symbol, symbol);
             strcpy(p->symbol_type,symbol_type);
             // printf("\n\tEnter the address : ");
@@ -74,10 +77,10 @@ int size=0;
         int i;
         struct SymbTab *p;
         p = first;
-        printf("\n\tLABEL\t\tSYMBOL\t\t\tSYMBOL_TYPE\t\t\tADDRESS\n");
+        printf("\nLABEL\tSYMBOL\t\t\tSYMBOL_TYPE\t\tVALUE\t\tADDRESS\n");
         for (i = 0; i < size; i++)
         {   
-            printf("\t%s\t\t%s\t\t\t%s\t\t\t", p->label, p->symbol,p->symbol_type);
+            printf("%-8s%-20s%-10s%10d\t\t", p->label, p->symbol,p->symbol_type,p->value?p->value:NULL);
             for (int i=0;i<p->addr_no;i++){
                 printf("%d,",p->addr[i]);
             }

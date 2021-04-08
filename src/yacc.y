@@ -17,7 +17,8 @@ vector <string> rhs;
 %union {
      char *nt;
      char *sval;
-	 int ival;
+	 int nval;
+	 char *ival;
 	 char *error_msg;
 }
 
