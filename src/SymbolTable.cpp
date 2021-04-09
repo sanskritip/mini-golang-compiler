@@ -7,7 +7,6 @@ int curr_token_id=0;
 struct SymbTab *first, *last;
 struct SymbTab* Search(char lab[])
 {
-    printf("\n\nInside search ->%s\n\n",lab);
     int i, flag = 0;
     struct SymbTab *symbol_entry;
     symbol_entry = first;
@@ -28,10 +27,8 @@ struct SymbTab* Search(char lab[])
 void Insert(char symbol[], int line_no, char symbol_type[])
 {
     struct SymbTab* n;
-    printf("HERE1\n");
     // search for the symbol in the table
     n = Search(symbol);
-    printf("HERE2\n");
     // if token already exists in the symbol table
     if (n)
     {
@@ -45,10 +42,12 @@ void Insert(char symbol[], int line_no, char symbol_type[])
         
         // Token Label as TK<NO>   
         string token_id = "TK_" + to_string(curr_token_id);
-        cout << token_id << endl;
-        symbol_entry->token_id = (char*)malloc(sizeof(char)*token_id.size());
-        symbol_entry->symbol_type = (char*)malloc(sizeof(char)*sizeof(symbol_type)/sizeof(symbol_type[0]));
-        symbol_entry->symbol = (char*)malloc(sizeof(char)*sizeof(symbol)/sizeof(symbol[0]));
+        
+        cout <<"type,size " << symbol_type << sizeof(symbol) << sizeof(symbol[0]) << endl;
+
+        symbol_entry->token_id = (char*)malloc(sizeof(char)*20);
+        symbol_entry->symbol_type = (char*)malloc(sizeof(char)*100);
+        symbol_entry->symbol = (char*)malloc(sizeof(char)*100);
         
         strcpy(symbol_entry->token_id,(char *)token_id.c_str());
 
@@ -56,13 +55,13 @@ void Insert(char symbol[], int line_no, char symbol_type[])
         strcpy(symbol_entry->symbol, symbol);
         strcpy(symbol_entry->symbol_type,symbol_type);
         
-        printf("here5\n");
+        
         // Updating line count
         symbol_entry->lines[0] = line_no;
         symbol_entry->line_count=1;
         symbol_entry->next = NULL;
 
-        printf("here6\n");
+        
         // Updating the HEAD and TAIL for the symbol table
         if (curr_token_id == 0)
         {
@@ -83,7 +82,6 @@ void Insert(char symbol[], int line_no, char symbol_type[])
         else {
             symbol_entry->identifier=NULL;
         }
-
         // Updating the next incoming token_id
         curr_token_id++;
     }

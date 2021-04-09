@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt";
-	"example.com/user/hello/morestrings"
-	"github.com/google/go-cmp/cmp"
+	"fmt"
+	"example.com/user/hello/m"
 )
 
 func main() {

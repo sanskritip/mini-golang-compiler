@@ -1,11 +1,9 @@
 package main
 
 import (
-	"fmt" "math")
-
-func basicFunction() {
-	fmt.Println("basic function golang");
-}
+	"fmt"
+	"math"
+);
 
 func main() {
 	basicFunction();
