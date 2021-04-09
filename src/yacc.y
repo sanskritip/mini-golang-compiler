@@ -15,38 +15,36 @@ vector <string> rhs;
 %start StartFile
 
 %union {
-     char *nt;
      char *sval;
 	 int nval;
-	 char *ival;
-	 char *error_msg;
 }
 
-%token <sval> T_PACKAGE T_IMPORT T_FUNC T_BREAK T_CONST T_CONTINUE
-%token <sval> T_ELSE T_FOR T_IF T_RETURN T_VAR T_VAR_TYPE
-%token <sval> T_BOOL_CONST T_NIL_VAL T_IDENTIFIER T_BYTE T_STRING T_ELLIPSIS
-%token <sval> T_INCREMENT T_DECREMENT 
-%token <sval> T_INTEGER
-%token <sval> T_FLOAT
+%token T_PACKAGE T_IMPORT T_FUNC T_BREAK T_CONST T_CONTINUE
+%token T_ELSE T_FOR T_IF T_RETURN T_VAR T_VAR_TYPE
+%token T_BOOL_CONST T_IDENTIFIER T_STRING T_NIL_VAL
+%token T_INCREMENT T_DECREMENT 
+%token T_INTEGER
+%token T_FLOAT
 
-%left <sval> T_ADD T_MINUS T_MULTIPLY T_DIVIDE T_MOD
-%right <sval> T_ASSIGN T_AND T_NOT
-%left <sval> T_LAND T_LOR T_EQL T_NEQ T_LEQ T_GEQ T_SEMICOLON
-%left <sval> T_GTR T_LSR T_LEFTPARANTHESES T_RIGHTPARANTHESES T_LEFTBRACE T_RIGHTBRACE T_LEFTBRACKET T_RIGHTBRACKET T_COMMA T_PERIOD
+%left T_ADD T_MINUS T_MULTIPLY T_DIVIDE T_MOD
+%right T_ASSIGN T_NOT
+%left T_LAND T_LOR T_EQL T_NEQ T_LEQ T_GEQ T_SEMICOLON
+%left T_GTR T_LSR T_LEFTPARANTHESES T_RIGHTPARANTHESES T_LEFTBRACE T_RIGHTBRACE T_LEFTBRACKET T_RIGHTBRACKET T_COMMA T_PERIOD
 
-%type <nt> StartFile Expression 
-%type <nt> Block StatementList Statement SimpleStmt 
-%type <nt> EmptyStmt IncDecStmt 
-%type <nt> Assignment Declaration ConstDecl
-%type <nt> Signature Result Parameters ParameterList ParameterDecl
-%type <nt> TopLevelDecl TopLevelDeclList
-%type <nt> ReturnStmt 
-%type <nt> FunctionDecl FunctionName TypeList
-%type <nt> Function FunctionBody FunctionCall ForStmt ArgumentList
-%type <nt> UnaryExpr PrimaryExpr
-%type <nt> ExpressionList 
-%type <nt> Operand Literal BasicLit IfStmt
-%type <nt> PackageClause PackageName ImportDecl ImportDeclList ImportSpecList
+%type <sval> StartFile Expression 
+%type <sval> Block StatementList Statement SimpleStmt 
+%type <sval> EmptyStmt IncDecStmt 
+%type <sval> Assignment Declaration ConstDecl
+%type <sval> Signature Result Parameters ParameterList ParameterDecl
+%type <sval> TopLevelDecl TopLevelDeclList
+%type <sval> ReturnStmt 
+%type <sval> FunctionDecl FunctionName TypeList
+%type <sval> Function FunctionBody FunctionCall ForStmt ArgumentList
+%type <sval> UnaryExpr PrimaryExpr
+%type <sval> ExpressionList 
+%type <sval> Operand Literal BasicLit IfStmt
+%type <sval> PackageClause PackageName ImportDecl ImportDeclList ImportSpecList
+
 %% 
 
 StartFile:
@@ -56,14 +54,8 @@ StartFile:
     };
 
 Block:
-	T_LEFTBRACE OPENB StatementList CLOSEB T_RIGHTBRACE{lhs.push_back("Block");rhs.push_back("T_LEFTBRACE StatementList T_RIGHTBRACE");}
+	T_LEFTBRACE StatementList T_RIGHTBRACE{lhs.push_back("Block");rhs.push_back("T_LEFTBRACE StatementList T_RIGHTBRACE");}
 	/*empty*/{lhs.push_back("Empty Block");rhs.push_back("/*empty*/");}; 
-
-OPENB:
-	/*empty*/{lhs.push_back("OPENB");rhs.push_back("/*empty*/");};
-	
-CLOSEB:
-	/*empty*/{lhs.push_back("CLOSEB");rhs.push_back("/*empty*/");};
 
 StatementList:
     StatementList Statement T_SEMICOLON {lhs.push_back("StatementList");rhs.push_back("StatementList Statement T_SEMICOLON");}
@@ -208,7 +200,7 @@ BasicLit:
 	T_INTEGER {lhs.push_back("BasicLit");rhs.push_back("T_INTEGER");}
 	| T_FLOAT {lhs.push_back("BasicLit");rhs.push_back("T_FLOAT");}
 	| T_STRING {lhs.push_back("BasicLit");rhs.push_back("T_STRING");}
-	| T_BYTE {lhs.push_back("BasicLit");rhs.push_back("T_BYTE");};
+	| T_BOOL_CONST {lhs.push_back("BasicLit");rhs.push_back("T_STRING");};
 
 FunctionLit:
 	T_FUNC Function {lhs.push_back("FunctionLit");rhs.push_back("T_FUNC Function");};
@@ -261,18 +253,15 @@ add_op:
 mul_op:
 	T_MULTIPLY {lhs.push_back("mul_op");rhs.push_back("T_MUL");}
 	| T_DIVIDE {lhs.push_back("mul_op");rhs.push_back("T_QUO");}
-	| T_MOD {lhs.push_back("mul_op");rhs.push_back("T_REM");}
-	| T_AND {lhs.push_back("mul_op");rhs.push_back("T_AND");};
+	| T_MOD {lhs.push_back("mul_op");rhs.push_back("T_REM");};
 
 unary_op:
 	T_ADD {lhs.push_back("unary_op");rhs.push_back("T_ADD");}
 	| T_MINUS {lhs.push_back("unary_op");rhs.push_back("T_SUB");}
-	| T_NOT {lhs.push_back("unary_op");rhs.push_back("T_NOT");}
-	| T_MULTIPLY {lhs.push_back("unary_op");rhs.push_back("T_MUL");}
-	| T_AND {lhs.push_back("unary_op");rhs.push_back("T_AND");};
+	| T_NOT {lhs.push_back("unary_op");rhs.push_back("T_NOT");};
 
 assign_op:
-	  T_ASSIGN {lhs.push_back("assign_op");rhs.push_back("T_ASSIGN");};
+	T_ASSIGN {lhs.push_back("assign_op");rhs.push_back("T_ASSIGN");};
 
 //Package Related
 

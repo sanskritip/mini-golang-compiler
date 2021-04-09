@@ -1,16 +1,37 @@
-#define NULL 0
-struct SymbTab
-    {
-        char label[10];
-        char symbol[50];
-        int value;
-        char symbol_type[50];
-        int addr[10];
-        int addr_no;
-        struct SymbTab *next;
-    };
+#define MAX_LINES 10
 
-void Insert(char symbol[], int address, char symbol_type[], bool isNum, int value);
+typedef struct identifier {
+    int data_type;
+    /*
+        1 - int
+        2 - float
+        3 - bool 
+        4 - float32
+        5 - string
+    */
+    union {
+        int n;
+        char* c;
+        float f;
+        bool b;
+    };
+}Identifier;
+
+
+struct SymbTab
+{
+    char* token_id; // token id
+    char* symbol; // token read
+    char* symbol_type; // token type from lexer eg IDENTIFIER
+    int lines[MAX_LINES]; // lines part of it
+    int line_count; // count of the lines
+    Identifier* identifier;
+    struct SymbTab *next;
+};
+
+
+
+void Insert(char symbol[], int address, char symbol_type[]);
 void Display();
 // void Delete();
 struct SymbTab* Search(char lab[]);

@@ -2,89 +2,113 @@
 #include "SymbolTable.h"
 
 using namespace std;
-int size=0;
+int curr_token_id=0;
 
-    struct SymbTab *first, *last;
-    struct SymbTab* Search(char lab[])
+struct SymbTab *first, *last;
+struct SymbTab* Search(char lab[])
+{
+    printf("\n\nInside search ->%s\n\n",lab);
+    int i, flag = 0;
+    struct SymbTab *symbol_entry;
+    symbol_entry = first;
+    //printf("Inside Search, before loop");
+    for (i = 0; i < curr_token_id; i++)
     {
-        //printf("\n\nInside search ->%s\n\n",lab);
-        int i, flag = 0;
-        struct SymbTab *p;
-        p = first;
-        //printf("Inside Search, before loop");
-        for (i = 0; i < size; i++)
-        {
-            //printf("Inside search loop\n");
-            //printf("%s %s\n",p->symbol, lab);
-            if (strcmp(p->symbol, lab) == 0)
-            {   return p;
-                //printf("MATCH");
-            }
-            p = p->next;
+        //printf("Inside search loop\n");
+        //printf("%s %s\n",symbol_entry->symbol, lab);
+        if (strcmp(symbol_entry->symbol, lab) == 0)
+        {   return symbol_entry;
+            //printf("MATCH");
         }
-        return NULL;
+        symbol_entry = symbol_entry->next;
     }
-    void Insert(char symbol[], int address, char symbol_type[], bool isNum, int value)
+    return NULL;
+};
+
+void Insert(char symbol[], int line_no, char symbol_type[])
+{
+    struct SymbTab* n;
+    printf("HERE1\n");
+    // search for the symbol in the table
+    n = Search(symbol);
+    printf("HERE2\n");
+    // if token already exists in the symbol table
+    if (n)
     {
-        // printf("Inside ;Insert\n");
-        printf(" %s, %d",symbol, address);
-        //int n=0;
-        // char l[20];
-        // printf("\n\tEnter the label : ");
-        // scanf("%s", l);
-        struct SymbTab* n;
-        n = Search(symbol);
-        if (n)
-        {
-            n->addr[n->addr_no] = address;
-            n->addr_no++;
-        }
-        else{
-            struct SymbTab *p;
-            p = (SymbTab*)malloc(sizeof(struct SymbTab));
-            //Token Label as TK<NO>
-            string token_no = "TK_"+to_string(size);
-            strcpy(p->label,token_no.c_str());
-            // printf("\n\tEnter the symbol : ");
-            // scanf("%s", p->symbol);
-            if (isNum){
-                p->value = value;
-            }
-            strcpy(p->symbol, symbol);
-            strcpy(p->symbol_type,symbol_type);
-            // printf("\n\tEnter the address : ");
-            // scanf("%d", &p->addr);
-            p->addr[0] = address;
-            p->addr_no=1;
-            p->next = NULL;
-            if (size == 0)
-            {
-                first = p;
-                last = p;
-            }
-            else
-            {
-                last->next = p;
-                last = p;
-            }
-            size++;
+        n->lines[n->line_count] = line_no;
+        n->line_count++;
+    }
+    else{
+        // If token does not exist in the table
+        struct SymbTab *symbol_entry;
+        symbol_entry = (SymbTab*) malloc(sizeof(struct SymbTab));
         
-        // printf("\n\tLabel ;inserted\n");
+        // Token Label as TK<NO>   
+        string token_id = "TK_" + to_string(curr_token_id);
+        cout << token_id << endl;
+        symbol_entry->token_id = (char*)malloc(sizeof(char)*token_id.size());
+        symbol_entry->symbol_type = (char*)malloc(sizeof(char)*sizeof(symbol_type)/sizeof(symbol_type[0]));
+        symbol_entry->symbol = (char*)malloc(sizeof(char)*sizeof(symbol)/sizeof(symbol[0]));
+        
+        strcpy(symbol_entry->token_id,(char *)token_id.c_str());
+
+        // Token read
+        strcpy(symbol_entry->symbol, symbol);
+        strcpy(symbol_entry->symbol_type,symbol_type);
+        
+        printf("here5\n");
+        // Updating line count
+        symbol_entry->lines[0] = line_no;
+        symbol_entry->line_count=1;
+        symbol_entry->next = NULL;
+
+        printf("here6\n");
+        // Updating the HEAD and TAIL for the symbol table
+        if (curr_token_id == 0)
+        {
+            first = symbol_entry;
+            last = symbol_entry;
         }
-    }
-    void Display()
-    {
-        int i;
-        struct SymbTab *p;
-        p = first;
-        printf("\nLABEL\tSYMBOL\t\t\tSYMBOL_TYPE\t\tVALUE\t\tADDRESS\n");
-        for (i = 0; i < size; i++)
-        {   
-            printf("%-8s%-20s%-10s%10d\t\t", p->label, p->symbol,p->symbol_type,p->value?p->value:NULL);
-            for (int i=0;i<p->addr_no;i++){
-                printf("%d,",p->addr[i]);
-            }
-            printf("\n");
-            p = p->next;
+        else
+        {
+            last->next = symbol_entry;
+            last = symbol_entry;
         }
+
+        if(symbol_type=="T_IDENTIFIER"){
+            Identifier* new_identifier = (Identifier*)malloc(sizeof(Identifier));
+            new_identifier->data_type = 0;
+            symbol_entry->identifier = new_identifier;
+        }
+        else {
+            symbol_entry->identifier=NULL;
+        }
+
+        // Updating the next incoming token_id
+        curr_token_id++;
     }
+}
+void Display()
+{
+    int i;
+    struct SymbTab *symbol_entry;
+    symbol_entry = first;
+    for(int i=0;i<65;i++)
+        printf("-");
+    printf("\n LABEL\t  | SYMBOL\t\t | SYMBOL_TYPE\t        | ADDRESS\n");
+    for(int i=0;i<65;i++)
+        printf("-");
+    cout << endl;
+    for (i = 0; i < curr_token_id; i++)
+    {   
+        printf(" %-8s | %-20s | %-20s | ", symbol_entry->token_id, symbol_entry->symbol,symbol_entry->symbol_type);
+        for (int i=0;i<symbol_entry->line_count;i++){
+            printf("%d,",symbol_entry->lines[i]);
+        }
+        printf("\n");
+        symbol_entry = symbol_entry->next;
+    }
+    for(int i=0;i<65;i++)
+        printf("-");
+    cout << endl;
+}

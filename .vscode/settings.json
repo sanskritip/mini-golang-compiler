@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.js": "javascript",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "iostream": "cpp"
     }
 }
