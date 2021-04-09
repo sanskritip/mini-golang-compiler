@@ -6,9 +6,8 @@
     #include "src/SymbolTable.h"
     #include "y.tab.h"    /* token codes from the parser */  
     int yylex();
-    void yyerror (char *s);
+    void yyerror (const char* s);
     extern int errno;
-
 %}
 
 %option nounput yylineno
@@ -18,9 +17,10 @@ LETTER				    [a-zA-Z_]
 DIGIT				    [0-9]
 UNICODE_CHAR			[^\n]
 NEW_LINE			    [\n]
-VAR_TYPE			    "bool"|"error"|"float32"|"float64"|"int"|"int64"|"string"
+VAR_TYPE			    "bool"|"error"|"float32"|"float64"|"int"|"string"
 BOOL_CONST			    "true"|"false"
 NIL_VAL				    "nil"
+WHITESPACE		        [ \t\f\r\v]+
 
 %%
 
@@ -81,8 +81,8 @@ NIL_VAL				    "nil"
 
 "\n"				;
 "\t"				;
-" "				;
-
+{WHITESPACE}				;
+. {yyerror("Lexical error unexpected");}
 
 %%
 

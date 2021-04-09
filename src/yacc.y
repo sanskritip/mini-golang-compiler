@@ -204,9 +204,8 @@ IfStmt:
 	| T_IF Expression Block T_ELSE IfStmt {lhs.push_back("IfStmt");rhs.push_back("T_IF Expression Block T_ELSE IfStmt");}//{printf("T_IF case 5");}
 	| T_IF Expression Block T_ELSE  Block {lhs.push_back("IfStmt");rhs.push_back("T_IF Expression Block T_ELSE  Block");}//{printf("T_IF case 6");};
 
-ForStmt:
-	T_FOR Condition Block {lhs.push_back("ForStmt");rhs.push_back("T_FOR Condition Block");}
-	|T_FOR ForClause Block {lhs.push_back("ForStmt");rhs.push_back("T_FOR ForClause Block");};
+ForStmt: 
+  T_FOR SimpleStmt T_SEMICOLON Expression T_SEMICOLON SimpleStmt Block {lhs.push_back("ForStmt");rhs.push_back("T_FOR SimpleStmt T_SEMICOLON Condition T_SEMICOLON SimpleStmt Block");};
 
 Condition:
 	Expression {lhs.push_back("Condition");rhs.push_back("Expression");};
