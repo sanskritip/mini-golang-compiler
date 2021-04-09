@@ -40,10 +40,10 @@ vector <string> rhs;
 %type <nt> Assignment Declaration ConstDecl
 %type <nt> Signature Result Parameters ParameterList ParameterDecl
 %type <nt> TopLevelDecl TopLevelDeclList
-%type <nt> ReturnStmt BreakStmt ContinueStmt
+%type <nt> ReturnStmt 
 %type <nt> FunctionDecl FunctionName TypeList
-%type <nt> Function FunctionBody FunctionCall ForStmt ForClause ArgumentList
-%type <nt> Condition UnaryExpr PrimaryExpr
+%type <nt> Function FunctionBody FunctionCall ForStmt ArgumentList
+%type <nt> UnaryExpr PrimaryExpr
 %type <nt> ExpressionList 
 %type <nt> Operand Literal BasicLit IfStmt
 %type <nt> PackageClause PackageName ImportDecl ImportDeclList ImportSpecList
@@ -75,8 +75,6 @@ Statement:
 	Declaration {lhs.push_back("Statement");rhs.push_back("Declaration");}
 	| SimpleStmt {lhs.push_back("Statement");rhs.push_back("SimpleStmt");}
 	| ReturnStmt {lhs.push_back("Statement");rhs.push_back("ReturnStmt");}
-	| BreakStmt {lhs.push_back("Statement");rhs.push_back("BreakStmt");}
-	| ContinueStmt {lhs.push_back("Statement");rhs.push_back("ContinueStmt");}
 	| Block {lhs.push_back("Statement");rhs.push_back("Block");}
 	| IfStmt {lhs.push_back("Statement");rhs.push_back("IfStmt");}
 	| ForStmt {lhs.push_back("Statement");rhs.push_back("ForStmt");} 
@@ -92,7 +90,7 @@ EmptyStmt:
 
 IncDecStmt:
 	Expression T_INCREMENT {lhs.push_back("IncDecStmt");rhs.push_back("Expression INC");}
-	|Expression T_DECREMENT {lhs.push_back("IncDecStmt");rhs.push_back("Expression DEC");};
+	| Expression T_DECREMENT {lhs.push_back("IncDecStmt");rhs.push_back("Expression DEC");};
 
 Assignment:
 	ExpressionList assign_op ExpressionList {lhs.push_back("Assignment");rhs.push_back("ExpressionList assign_op ExpressionList");};
@@ -124,7 +122,6 @@ FunctionBody:
 
 FunctionCall:	
 		PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES {lhs.push_back("FunctionCall");rhs.push_back("PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES");};		
-
 
 ArgumentList:	
 		ArgumentList T_COMMA Arguments {lhs.push_back("ArgumentList");rhs.push_back("ArgumentList T_COMMA Arguments");}
@@ -162,11 +159,8 @@ TypeList:
 
 //Understand this plis
 IdentifierList:
-		T_IDENTIFIER IdentifierLIST {lhs.push_back("IdentifierList");rhs.push_back("T_IDENTIFIER IdentifierLIST");}
-		| T_IDENTIFIER {lhs.push_back("IdentifierList");rhs.push_back("T_IDENTIFIER");};
-	
-IdentifierLIST:	IdentifierLIST T_COMMA T_IDENTIFIER {lhs.push_back("IdentifierLIST");rhs.push_back("IdentifierLIST T_COMMA T_IDENTIFIER");}
-		| T_COMMA T_IDENTIFIER {lhs.push_back("IdentifierLIST");rhs.push_back("T_COMMA T_IDENTIFIER");};
+	IdentifierList T_COMMA T_IDENTIFIER {;} 
+	| T_IDENTIFIER {;};
 
 TopLevelDeclList:
      TopLevelDeclList /*here colon*/ TopLevelDecl  {lhs.push_back("TopLevelDeclList");rhs.push_back("TopLevelDeclList TopLevelDecl");}|
@@ -193,12 +187,7 @@ ReturnStmt:
 	T_RETURN Expression {lhs.push_back("ReturnStmt");rhs.push_back("T_RETURN Expression");}
 	| T_RETURN {lhs.push_back("ReturnStmt");rhs.push_back("T_RETURN");};
 
-BreakStmt:
-	T_BREAK {lhs.push_back("BreakStmt");rhs.push_back("T_BREAK");};
-
-ContinueStmt:
-	T_CONTINUE {lhs.push_back("ContinueStmt");rhs.push_back("T_CONTINUE");};
-
+//If , If-else , if-else-if
 IfStmt:
 	T_IF Expression Block {lhs.push_back("IfStmt");rhs.push_back("T_IF Expression Block");}//{printf("T_IF case 1");}
 	| T_IF Expression Block T_ELSE IfStmt {lhs.push_back("IfStmt");rhs.push_back("T_IF Expression Block T_ELSE IfStmt");}//{printf("T_IF case 5");}
@@ -206,12 +195,6 @@ IfStmt:
 
 ForStmt: 
   T_FOR SimpleStmt T_SEMICOLON Expression T_SEMICOLON SimpleStmt Block {lhs.push_back("ForStmt");rhs.push_back("T_FOR SimpleStmt T_SEMICOLON Condition T_SEMICOLON SimpleStmt Block");};
-
-Condition:
-	Expression {lhs.push_back("Condition");rhs.push_back("Expression");};
-
-ForClause:
-	SimpleStmt T_SEMICOLON Condition T_SEMICOLON SimpleStmt {lhs.push_back("ForClause");rhs.push_back("SimpleStmt T_SEMICOLON Condition T_SEMICOLON SimpleStmt");};
 
 ExpressionList:
 		ExpressionList T_COMMA Expression {lhs.push_back("ExpressionList");rhs.push_back("ExpressionList T_COMMA Expression");}
