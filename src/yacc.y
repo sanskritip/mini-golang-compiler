@@ -33,8 +33,6 @@ vector <string> rhs;
 
 %type <sval> StartFile Expression 
 %type <sval> Block StatementList Statement SimpleStmt 
-%type <sval> EmptyStmt IncDecStmt 
-%type <sval> Assignment Declaration ConstDecl
 %type <sval> Signature Result Parameters ParameterList ParameterDecl
 %type <sval> TopLevelDecl TopLevelDeclList
 %type <sval> ReturnStmt 
@@ -43,7 +41,7 @@ vector <string> rhs;
 %type <sval> UnaryExpr PrimaryExpr
 %type <sval> ExpressionList 
 %type <sval> Operand Literal BasicLit IfStmt
-%type <sval> PackageClause PackageName ImportDecl ImportDeclList ImportSpecList
+%type <sval> PackageClause PackageName ImportDecl ImportDeclList ImportSpecList Declaration
 
 %% 
 
@@ -73,31 +71,16 @@ Statement:
 	| FunctionCall {lhs.push_back("Statement");rhs.push_back("FunctionCall");} ;
 
 SimpleStmt:
-	EmptyStmt {lhs.push_back("SimpleStmt");rhs.push_back("EmptyStmt");}
-	| IncDecStmt {lhs.push_back("SimpleStmt");rhs.push_back("IncDecStmt");}
-	| Assignment {lhs.push_back("SimpleStmt");rhs.push_back("Assignment");} ;
-
-EmptyStmt:
-	/*empty*/{lhs.push_back("EmptyStmt");rhs.push_back("/*empty*/");};
-
-IncDecStmt:
 	Expression T_INCREMENT {lhs.push_back("IncDecStmt");rhs.push_back("Expression INC");}
-	| Expression T_DECREMENT {lhs.push_back("IncDecStmt");rhs.push_back("Expression DEC");};
-
-Assignment:
-	ExpressionList assign_op ExpressionList {lhs.push_back("Assignment");rhs.push_back("ExpressionList assign_op ExpressionList");};
-
+	| Expression T_DECREMENT {lhs.push_back("IncDecStmt");rhs.push_back("Expression DEC");} 
+	| ExpressionList assign_op ExpressionList {lhs.push_back("Assignment");rhs.push_back("ExpressionList assign_op ExpressionList");}
+	| /*empty*/{lhs.push_back("EmptyStmt");rhs.push_back("/*empty*/");};
+	
 Declaration:
-	ConstDecl {lhs.push_back("Declaration");rhs.push_back("ConstDecl");}
-	|VarDecl {lhs.push_back("Declaration");rhs.push_back("VarDecl");};
-
-VarDecl:
-		T_VAR IdentifierList Type T_ASSIGN ExpressionList {lhs.push_back("VarDecl");rhs.push_back("T_VAR IdentifierList T_Type T_ASSIGN ExpressionList");}
-		| T_VAR IdentifierList Type {lhs.push_back("VarDecl");rhs.push_back("T_VAR IdentifierList Type");};
-
-ConstDecl:
-		T_CONST T_IDENTIFIER Type T_ASSIGN Expression {lhs.push_back("ConstDecl");rhs.push_back("T_CONST T_IDENTIFIER T_Type T_ASSIGN Expression");}
-		| T_CONST T_IDENTIFIER Type {lhs.push_back("ConstDecl");rhs.push_back("T_CONST T_IDENTIFIER Type");};
+	T_CONST T_IDENTIFIER Type T_ASSIGN Expression {lhs.push_back("ConstDecl");rhs.push_back("T_CONST T_IDENTIFIER T_Type T_ASSIGN Expression");}
+	| T_CONST T_IDENTIFIER Type {lhs.push_back("ConstDecl");rhs.push_back("T_CONST T_IDENTIFIER Type");}
+	| T_VAR IdentifierList Type T_ASSIGN ExpressionList {lhs.push_back("VarDecl");rhs.push_back("T_VAR IdentifierList T_Type T_ASSIGN ExpressionList");}
+	| T_VAR IdentifierList Type {lhs.push_back("VarDecl");rhs.push_back("T_VAR IdentifierList Type");};
 
 FunctionDecl:
 		T_FUNC FunctionName Function  {lhs.push_back("FunctionDecl");rhs.push_back("T_FUNC FunctionName Function");}
