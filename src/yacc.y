@@ -10,38 +10,60 @@ extern int yylineno;
 void yyerror (const char *s) {fprintf (stderr, "\033[0;31mLine:%d | %s\n\033[0m\n",yylineno, s);} 
 vector <string> lhs;
 vector <string> rhs;
+
+//splitting strings separated by comma
+vector<string> split(const string &s, char delim) {
+    stringstream ss(s);
+    string item;
+    vector<string> tokens;
+    while (getline(ss, item, delim)) {
+        tokens.push_back(item);
+    }
+    return tokens;
+}
+
 %}
 
-%start StartFile
+%code requires{
+	//For non terminals
+	typedef struct{
+		char *value;
+	} node;
+}
 
 %union {
      char *sval;
 	 int nval;
+	 node* nt;
 }
 
-%token T_PACKAGE T_IMPORT T_FUNC T_BREAK T_CONST T_CONTINUE
-%token T_ELSE T_FOR T_IF T_RETURN T_VAR T_VAR_TYPE
-%token T_BOOL_CONST T_IDENTIFIER T_STRING T_NIL_VAL
-%token T_INCREMENT T_DECREMENT 
-%token T_INTEGER
-%token T_FLOAT
+%start StartFile
 
-%left T_ADD T_MINUS T_MULTIPLY T_DIVIDE T_MOD
-%right T_ASSIGN T_NOT
-%left T_LAND T_LOR T_EQL T_NEQ T_LEQ T_GEQ T_SEMICOLON
-%left T_GTR T_LSR T_LEFTPARANTHESES T_RIGHTPARANTHESES T_LEFTBRACE T_RIGHTBRACE T_LEFTBRACKET T_RIGHTBRACKET T_COMMA T_PERIOD
+%token <sval> T_PACKAGE T_IMPORT T_FUNC T_BREAK T_CONST T_CONTINUE
+%token <sval> T_ELSE T_FOR T_IF T_RETURN T_VAR T_VAR_TYPE
+%token <sval> T_BOOL_CONST T_IDENTIFIER T_STRING T_NIL_VAL
+%token <sval> T_INCREMENT T_DECREMENT 
+%token <sval> T_INTEGER
+%token <sval> T_FLOAT
 
-%type <sval> StartFile Expression 
-%type <sval> Block StatementList Statement SimpleStmt 
-%type <sval> Signature Result Parameters ParameterList ParameterDecl
-%type <sval> TopLevelDecl TopLevelDeclList
-%type <sval> ReturnStmt 
-%type <sval> FunctionDecl FunctionName TypeList
-%type <sval> Function FunctionBody FunctionCall ForStmt ArgumentList
-%type <sval> UnaryExpr PrimaryExpr
-%type <sval> ExpressionList 
-%type <sval> Operand Literal BasicLit IfStmt
-%type <sval> PackageClause PackageName ImportDecl ImportDeclList ImportSpecList Declaration
+%left <sval> T_ADD T_MINUS T_MULTIPLY T_DIVIDE T_MOD
+%right <sval> T_ASSIGN T_NOT
+%left <sval> T_LAND T_LOR T_EQL T_NEQ T_LEQ T_GEQ T_SEMICOLON
+%left <sval> T_GTR T_LSR T_LEFTPARANTHESES T_RIGHTPARANTHESES T_LEFTBRACE T_RIGHTBRACE T_LEFTBRACKET T_RIGHTBRACKET T_COMMA T_PERIOD
+
+%type <nt> StartFile Expression Expression1 Expression2 Expression3 Expression4 Expression5 
+%type <nt> Block StatementList Statement SimpleStmt 
+%type <nt> Signature Result Parameters ParameterList ParameterDecl
+%type <nt> TopLevelDecl TopLevelDeclList
+%type <nt> ReturnStmt 
+%type <nt> FunctionDecl FunctionName TypeList
+%type <nt> Function FunctionBody FunctionCall ForStmt ArgumentList
+%type <nt> UnaryExpr PrimaryExpr
+%type <nt> ExpressionList assign_op rel_op add_op mul_op unary_op
+%type <nt> Operand Literal BasicLit IfStmt
+%type <nt> PackageClause PackageName ImportDecl ImportDeclList ImportSpecList Declaration
+%type <nt> Type
+%type <nt> IdentifierList
 
 %% 
 
@@ -53,34 +75,72 @@ StartFile:
 
 Block:
 	T_LEFTBRACE StatementList T_RIGHTBRACE{lhs.push_back("Block");rhs.push_back("T_LEFTBRACE StatementList T_RIGHTBRACE");}
-	/*empty*/{lhs.push_back("Empty Block");rhs.push_back("/*empty*/");}; 
+	/*empty*/{lhs.push_back("Empty Block");rhs.push_back("/*empty*/");
+	$$=$2; //Statement List at 2nd pos
+	//cout << "Statement List" << $2 <<endl; //Gives no significant output
+	}; 
 
 StatementList:
     StatementList Statement T_SEMICOLON {lhs.push_back("StatementList");rhs.push_back("StatementList Statement T_SEMICOLON");}
-    | Statement T_SEMICOLON {lhs.push_back("StatementList");rhs.push_back("Statement T_SEMICOLON");}
+    | Statement T_SEMICOLON {lhs.push_back("StatementList");rhs.push_back("Statement T_SEMICOLON");
+	$$=$1; //Statement at pos 1
+	}
 	| StatementList Statement {lhs.push_back("StatementList");rhs.push_back("StatementList Statement ");}
-    | Statement{lhs.push_back("StatementList");rhs.push_back("Statement ");};
+    | Statement{lhs.push_back("StatementList");rhs.push_back("Statement ");
+	$$=$1; //Statement at pos 1
+	};
 
 Statement:
-	Declaration {lhs.push_back("Statement");rhs.push_back("Declaration");}
-	| SimpleStmt {lhs.push_back("Statement");rhs.push_back("SimpleStmt");}
-	| ReturnStmt {lhs.push_back("Statement");rhs.push_back("ReturnStmt");}
-	| Block {lhs.push_back("Statement");rhs.push_back("Block");}
-	| IfStmt {lhs.push_back("Statement");rhs.push_back("IfStmt");}
-	| ForStmt {lhs.push_back("Statement");rhs.push_back("ForStmt");} 
-	| FunctionCall {lhs.push_back("Statement");rhs.push_back("FunctionCall");} ;
+	Declaration {lhs.push_back("Statement");rhs.push_back("Declaration");	$$=$1; /*Statement at  pos 1*/  }
+	| SimpleStmt {lhs.push_back("Statement");rhs.push_back("SimpleStmt");	$$=$1; /*Statement at  pos 1*/  }
+	| ReturnStmt {lhs.push_back("Statement");rhs.push_back("ReturnStmt"); $$=$1; /*Statement at  pos 1*/  }
+	| Block {lhs.push_back("Statement");rhs.push_back("Block");	$$=$1; /*Statement at  pos 1*/  }
+	| IfStmt {lhs.push_back("Statement");rhs.push_back("IfStmt");	$$=$1; /*Statement at  pos 1*/  }
+	| ForStmt {lhs.push_back("Statement");rhs.push_back("ForStmt");	$$=$1; /*Statement at  pos 1*/  }
+	| FunctionCall {lhs.push_back("Statement");rhs.push_back("FunctionCall");	$$=$1; /*Statement at  pos 1*/  };
 
 SimpleStmt:
 	Expression T_INCREMENT {lhs.push_back("IncDecStmt");rhs.push_back("Expression INC");}
 	| Expression T_DECREMENT {lhs.push_back("IncDecStmt");rhs.push_back("Expression DEC");} 
-	| ExpressionList assign_op ExpressionList {lhs.push_back("Assignment");rhs.push_back("ExpressionList assign_op ExpressionList");}
+	| ExpressionList assign_op ExpressionList
+	{   lhs.push_back("Assignment"); rhs.push_back("ExpressionList assign_op ExpressionList");
+		cout<<"Assignment"<<endl;
+		//cout<<"Type of "<< $1->value <<endl;
+		/*
+		// a,b = 2,3
+		string lhs_str = $1->value;
+		vector <string> lhs_expr = split(lhs_str, ',');
+		string rhs_str = $3->value;
+		vector <string> rhs_expr = split(rhs_str, ',');
+		//Checking if No. of expr of LHS=RHS is assignment stmt
+		if(rhs_expr.size()!= lhs_expr.size()){
+			cout<<"ERROR : Unequal # of expressions on LHS "<<lhs_expr.size()<<" & RHS "<<rhs_expr.size()<<endl;
+		}
+		else cout<<"Equal expressions on both sides of Assignment operator"<<endl;
+		*/
+	}
 	| /*empty*/{lhs.push_back("EmptyStmt");rhs.push_back("/*empty*/");};
 	
 Declaration:
 	T_CONST T_IDENTIFIER Type T_ASSIGN Expression {lhs.push_back("ConstDecl");rhs.push_back("T_CONST T_IDENTIFIER T_Type T_ASSIGN Expression");}
 	| T_CONST T_IDENTIFIER Type {lhs.push_back("ConstDecl");rhs.push_back("T_CONST T_IDENTIFIER Type");}
-	| T_VAR IdentifierList Type T_ASSIGN ExpressionList {lhs.push_back("VarDecl");rhs.push_back("T_VAR IdentifierList T_Type T_ASSIGN ExpressionList");}
-	| T_VAR IdentifierList Type {lhs.push_back("VarDecl");rhs.push_back("T_VAR IdentifierList Type");};
+	| T_VAR IdentifierList Type T_ASSIGN ExpressionList {lhs.push_back("VarDecl");rhs.push_back("T_VAR IdentifierList T_Type T_ASSIGN ExpressionList");
+		cout << "Variable initialisation" <<endl;
+		/*
+		string temp_str = $2->value;
+		temp_str.append("=");
+		temp_str.append($4);
+		(*$$).value = strdup(temp_str.c_str());
+		cout << temp_str.c_str() <<endl;
+		*/
+
+	}
+	| T_VAR IdentifierList Type {lhs.push_back("VarDecl");rhs.push_back("T_VAR IdentifierList Type");
+	 //cout << $2->value;
+	 $$=$2;
+	 cout << "Variable declaration " << $$->value<< endl;
+	 cout << $$ <<endl;;
+	};
 
 FunctionDecl:
 		T_FUNC FunctionName Function  {lhs.push_back("FunctionDecl");rhs.push_back("T_FUNC FunctionName Function");}
@@ -132,10 +192,20 @@ TypeList:
     | Type {lhs.push_back("TypeList");rhs.push_back("Type");};
 
 
-//Understand this plis
+
 IdentifierList:
-	IdentifierList T_COMMA T_IDENTIFIER {;} 
-	| T_IDENTIFIER {;};
+	IdentifierList T_COMMA T_IDENTIFIER {
+		string temp_str = $1->value;
+		temp_str.append(",");
+		temp_str.append($3);
+		(*$$).value = strdup(temp_str.c_str());
+		cout << "Identifier List value "<<temp_str.c_str() <<endl;
+	;} 
+	| T_IDENTIFIER {
+		(*$$).value=strdup($1);
+		$1=(*$$).value;
+		cout << "Identifier value "<<$1 <<endl;
+	};
 
 TopLevelDeclList:
      TopLevelDeclList /*here colon*/ TopLevelDecl  {lhs.push_back("TopLevelDeclList");rhs.push_back("TopLevelDeclList TopLevelDecl");}|
@@ -149,12 +219,20 @@ TopLevelDecl:
 //No custom defined types
 
 Type:
-	T_VAR_TYPE {lhs.push_back("TypeName");rhs.push_back("T_VAR_TYPE");}
+	T_VAR_TYPE {lhs.push_back("TypeName");rhs.push_back("T_VAR_TYPE");
+	(*$$).value=strdup($1);
+	$1=(*$$).value;
+	}
 	| T_FUNC Signature {lhs.push_back("Type");rhs.push_back("TypeLit");};
 
 Operand:
-	Literal {lhs.push_back("Operand");rhs.push_back("Literal");}
-	| T_IDENTIFIER {lhs.push_back("Operand");rhs.push_back("T_IDENTIFIER");}
+	Literal {lhs.push_back("Operand");rhs.push_back("Literal"); 
+	$$=$1;
+	}
+	| T_IDENTIFIER {lhs.push_back("Operand");rhs.push_back("T_IDENTIFIER");
+	(*$$).value=strdup($1);
+	$1=(*$$).value;
+	}
 	| T_LEFTPARANTHESES Expression T_RIGHTPARANTHESES {lhs.push_back("Operand");rhs.push_back("T_LEFTPARANTHESES Expression T_RIGHTPARANTHESES");};
 
 //Void return or Returning and Expression
@@ -173,53 +251,87 @@ ForStmt:
 
 ExpressionList:
 		ExpressionList T_COMMA Expression {lhs.push_back("ExpressionList");rhs.push_back("ExpressionList T_COMMA Expression");}
-		| Expression {lhs.push_back("ExpressionList");rhs.push_back("Expression");};
+		| Expression {lhs.push_back("ExpressionList");rhs.push_back("Expression");
+		$$=$1; //Expression at pos 1
+		};
 
 Literal:
-	BasicLit {lhs.push_back("Literal");rhs.push_back("BasicLit");}
+	BasicLit {lhs.push_back("Literal");rhs.push_back("BasicLit");
+	$$=$1;
+	}
 	| FunctionLit {lhs.push_back("Literal");rhs.push_back("FunctionLit");};
 
 BasicLit:
-	T_INTEGER {lhs.push_back("BasicLit");rhs.push_back("T_INTEGER");}
-	| T_FLOAT {lhs.push_back("BasicLit");rhs.push_back("T_FLOAT");}
-	| T_STRING {lhs.push_back("BasicLit");rhs.push_back("T_STRING");}
-	| T_BOOL_CONST {lhs.push_back("BasicLit");rhs.push_back("T_STRING");};
+	T_INTEGER {lhs.push_back("BasicLit");rhs.push_back("T_INTEGER");
+	cout <<"Operand " << $<nval>1 << endl;
+	(*$$).value=strdup($1);
+	$1=(*$$).value;
+	}
+	| T_FLOAT {lhs.push_back("BasicLit");rhs.push_back("T_FLOAT");
+	(*$$).value=strdup($1);
+	$1=(*$$).value;
+	}
+	| T_STRING {lhs.push_back("BasicLit");rhs.push_back("T_STRING");
+	(*$$).value=strdup($1);
+	$1=(*$$).value;
+	}
+	| T_BOOL_CONST {lhs.push_back("BasicLit");rhs.push_back("T_STRING");
+	(*$$).value=strdup($1);
+	$1=(*$$).value;
+	};
 
 FunctionLit:
 	T_FUNC Function {lhs.push_back("FunctionLit");rhs.push_back("T_FUNC Function");};
 
 PrimaryExpr:
-	Operand {lhs.push_back("PrimaryExpr");rhs.push_back("Operand");}|
+	Operand {lhs.push_back("PrimaryExpr");rhs.push_back("Operand");
+	$$=$1;
+	}|
 	PrimaryExpr Selector {lhs.push_back("PrimaryExpr");rhs.push_back("PrimaryExpr Selector");};
 
 Selector:
 	T_PERIOD T_IDENTIFIER {lhs.push_back("Selector");rhs.push_back("T_PERIOD T_IDENTIFIER");};
 
 Expression:
-    Expression1 {lhs.push_back("Expression");rhs.push_back("Expression1");};
+    Expression1 {lhs.push_back("Expression");rhs.push_back("Expression1");
+	$$=$1;
+	};
 
 Expression1:
     Expression1 T_LOR Expression2 {lhs.push_back("Expression1");rhs.push_back("Expression1 T_LOR Expression2");}
-    | Expression2 {lhs.push_back("Expression1");rhs.push_back("Expression2");};
+    | Expression2 {lhs.push_back("Expression1");rhs.push_back("Expression2");
+	$$=$1;
+	};
 Expression2:
     Expression2 T_LAND Expression3 {lhs.push_back("Expression2");rhs.push_back("Expression2 T_LAND Expression3");}
-    | Expression3 {lhs.push_back("Expression2");rhs.push_back("Expression3");};
+    | Expression3 {lhs.push_back("Expression2");rhs.push_back("Expression3");
+	$$=$1;
+	};
 
 Expression3:
     Expression3 rel_op Expression4 {lhs.push_back("Expression3");rhs.push_back("Expression3 rel_op Expression4");}
-    | Expression4 {lhs.push_back("Expression3");rhs.push_back("Expression4");};
+    | Expression4 {lhs.push_back("Expression3");rhs.push_back("Expression4");
+	$$=$1;
+	};
 
 Expression4:
     Expression4 add_op Expression5 {lhs.push_back("Expression4");rhs.push_back("Expression4 add_op Expression5");}
-    | Expression5 {lhs.push_back("Expression4");rhs.push_back("Expression5");};
+    | Expression5 {lhs.push_back("Expression4");rhs.push_back("Expression5");
+	$$=$1;
+	};
 
 Expression5:
     Expression5 mul_op PrimaryExpr {lhs.push_back("Expression5");rhs.push_back("Expression5 mul_op PrimaryExpr");}
-    | UnaryExpr {lhs.push_back("Expression5");rhs.push_back("UnaryExpr");};
+    | UnaryExpr {lhs.push_back("Expression5");rhs.push_back("UnaryExpr");
+	$$=$1;
+	};
 
 UnaryExpr:
-	PrimaryExpr {lhs.push_back("UnaryExpr");rhs.push_back("PrimaryExpr");}
-	| unary_op PrimaryExpr {lhs.push_back("UnaryExpr");rhs.push_back("unary_op PrimaryExpr");};
+	PrimaryExpr {lhs.push_back("UnaryExpr");rhs.push_back("PrimaryExpr");
+	$$=$1;
+	}
+	| unary_op PrimaryExpr {lhs.push_back("UnaryExpr");rhs.push_back("unary_op PrimaryExpr");
+	};
 
 rel_op:
 	T_EQL {lhs.push_back("rel_op");rhs.push_back("T_EQL");}
@@ -230,13 +342,28 @@ rel_op:
 	| T_GEQ {lhs.push_back("rel_op");rhs.push_back("T_GEQ");};
 
 add_op:
-	T_ADD {lhs.push_back("add_op");rhs.push_back("T_ADD");}
-	| T_MINUS {lhs.push_back("add_op");rhs.push_back("T_SUB");};
+	T_ADD {lhs.push_back("add_op");rhs.push_back("T_ADD");
+	(*$$).value=strdup($1);
+	$1=(*$$).value;
+	}
+	| T_MINUS {lhs.push_back("add_op");rhs.push_back("T_SUB");
+	(*$$).value=strdup($1);
+	$1=(*$$).value;
+	};
 
 mul_op:
-	T_MULTIPLY {lhs.push_back("mul_op");rhs.push_back("T_MUL");}
-	| T_DIVIDE {lhs.push_back("mul_op");rhs.push_back("T_QUO");}
-	| T_MOD {lhs.push_back("mul_op");rhs.push_back("T_REM");};
+	T_MULTIPLY {lhs.push_back("mul_op");rhs.push_back("T_MUL");
+	(*$$).value=strdup($1);
+	$1=(*$$).value;
+	}
+	| T_DIVIDE {lhs.push_back("mul_op");rhs.push_back("T_QUO");
+	(*$$).value=strdup($1);
+	$1=(*$$).value;
+	}
+	| T_MOD {lhs.push_back("mul_op");rhs.push_back("T_REM");
+	(*$$).value=strdup($1);
+	$1=(*$$).value;
+	};
 
 unary_op:
 	T_ADD {lhs.push_back("unary_op");rhs.push_back("T_ADD");}
@@ -244,7 +371,10 @@ unary_op:
 	| T_NOT {lhs.push_back("unary_op");rhs.push_back("T_NOT");};
 
 assign_op:
-	T_ASSIGN {lhs.push_back("assign_op");rhs.push_back("T_ASSIGN");};
+	T_ASSIGN {lhs.push_back("assign_op");rhs.push_back("T_ASSIGN");
+	(*$$).value=strdup($1);
+	$1=(*$$).value;
+	};
 
 //Package Related
 
@@ -252,8 +382,14 @@ PackageClause:
 	/*PACKAGE*/T_PACKAGE PackageName {lhs.push_back("PackageClause");rhs.push_back("T_PACKAGE PackageName");};
 
 PackageName:
-	T_IDENTIFIER {lhs.push_back("PackageName");rhs.push_back("T_IDENTIFIER");}|
-	T_STRING {lhs.push_back("PackageName");rhs.push_back("T_STRING");}	|
+	T_IDENTIFIER {lhs.push_back("PackageName");rhs.push_back("T_IDENTIFIER");
+	(*$$).value=strdup($1);
+	$1=(*$$).value;
+	}|
+	T_STRING {lhs.push_back("PackageName");rhs.push_back("T_STRING");
+	(*$$).value=strdup($1);
+	$1=(*$$).value;
+	}	|
 	T_STRING T_SEMICOLON {lhs.push_back("PackageName");rhs.push_back("T_STRING T_SEMICOLON");};
 	
 //Can be list of imports, single import or no imports. Imports from local paths not accounted for.

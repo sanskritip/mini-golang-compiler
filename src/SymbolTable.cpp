@@ -43,7 +43,7 @@ void Insert(char symbol[], int line_no, char symbol_type[])
         // Token Label as TK<NO>   
         string token_id = "TK_" + to_string(curr_token_id);
         
-        cout <<"type,size " << symbol_type << sizeof(symbol) << sizeof(symbol[0]) << endl;
+        cout <<"type,size " << symbol_type <<" "<< sizeof(symbol) <<" "<< sizeof(symbol[0]) << endl;
 
         symbol_entry->token_id = (char*)malloc(sizeof(char)*20);
         symbol_entry->symbol_type = (char*)malloc(sizeof(char)*100);
