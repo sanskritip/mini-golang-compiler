@@ -3,7 +3,11 @@ package main
 import (
 	"fmt"
 	"math"
-);
+)
+
+func basicFunction(){
+	var a int;
+}
 
 func main() {
 	basicFunction();
