@@ -24,6 +24,8 @@ WHITESPACE		        [ \t\f\r\v]+
 
 %%
 
+"fmt.Println"		   {printf("(%s, T_PRINT)\n", yytext);Insert(yytext,yylineno,"T_PRINT");return T_PRINT;}
+
 "="				{printf("(%s, T_ASSIGN)\n", yytext);Insert(yytext,yylineno,"T_ASSIGN");return T_ASSIGN;}
 "+"				{printf("(%s, T_ADD)\n", yytext);Insert(yytext,yylineno,"T_ADD");return T_ADD;}
 "-"				{printf("(%s, T_MINUS)\n", yytext);Insert(yytext,yylineno,"T_MINUS");return T_MINUS;}

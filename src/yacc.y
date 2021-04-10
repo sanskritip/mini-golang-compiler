@@ -19,7 +19,7 @@ vector <string> rhs;
 	 int nval;
 }
 
-%token T_PACKAGE T_IMPORT T_FUNC T_BREAK T_CONST T_CONTINUE
+%token T_PACKAGE T_IMPORT T_FUNC T_BREAK T_CONST T_CONTINUE T_PRINT
 %token T_ELSE T_FOR T_IF T_RETURN T_VAR T_VAR_TYPE
 %token T_BOOL_CONST T_IDENTIFIER T_STRING T_NIL_VAL
 %token T_INCREMENT T_DECREMENT 
@@ -33,15 +33,14 @@ vector <string> rhs;
 
 %type <sval> StartFile Expression 
 %type <sval> Block StatementList Statement SimpleStmt 
-%type <sval> Signature Parameters ParameterList
 %type <sval> TopLevelDecl TopLevelDeclList
 %type <sval> FunctionDecl
-%type <sval> FunctionCall ForStmt ArgumentList
-%type <sval> PrimaryExpr
+%type <sval> ForStmt
 %type <sval> ExpressionList 
 %type <sval> Operand BasicLit IfStmt
 %type <sval> PackageName ImportDecl ImportDeclList ImportSpecList Declaration
 %type <sval> bin_op math_op rel_op
+%type <sval> PrintStmt
 
 %% 
 
@@ -64,7 +63,7 @@ Statement:
 	| Block {}
 	| IfStmt {}
 	| ForStmt {} 
-	| FunctionCall {} ;
+	| PrintStmt {};
 
 SimpleStmt:
 	Expression T_INCREMENT {}
@@ -78,32 +77,11 @@ Declaration:
 	| T_VAR IdentifierList Type T_ASSIGN ExpressionList {}
 	| T_VAR IdentifierList Type {};
 
+PrintStmt:
+	T_PRINT T_LEFTPARANTHESES T_STRING T_RIGHTPARANTHESES {};
+
 FunctionDecl:
-	T_FUNC T_IDENTIFIER Signature Block {};
-
-FunctionCall:	
-		PrimaryExpr T_LEFTPARANTHESES ArgumentList T_RIGHTPARANTHESES {};		
-
-ArgumentList:	
-		ArgumentList T_COMMA Arguments {}
-		| Arguments {}
-		| /*empty*/{};
-
-//Accounts for function call as Arguement can remove that part if need :)
-Arguments:	PrimaryExpr {}
-		| FunctionCall {};
-
-Signature:
-	Parameters {}
-	| Parameters Type {};
-
-Parameters:
-	T_LEFTPARANTHESES ParameterList T_RIGHTPARANTHESES {};
-
-ParameterList:
-	IdentifierList Type {}
-	| ParameterList T_COMMA IdentifierList Type {}
-	| /*empty*/ {};
+	T_FUNC T_IDENTIFIER T_LEFTPARANTHESES T_RIGHTPARANTHESES Block {};
 
 IdentifierList:
 	IdentifierList T_COMMA T_IDENTIFIER {;} 
@@ -119,8 +97,7 @@ TopLevelDecl:
 	| FunctionDecl {};
 
 Type:
-	T_VAR_TYPE {}
-	| T_FUNC Signature {};
+	T_VAR_TYPE {};
 
 Operand:
 	BasicLit {}
@@ -144,13 +121,6 @@ BasicLit:
 	| T_FLOAT {}
 	| T_STRING {}
 	| T_BOOL_CONST {};
-
-PrimaryExpr:
-	Operand {}
-	| PrimaryExpr Selector {};
-
-Selector:
-	T_PERIOD T_IDENTIFIER {};
 
 Expression:
 	Expression math_op Expression {}

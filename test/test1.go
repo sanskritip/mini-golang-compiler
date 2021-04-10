@@ -6,5 +6,5 @@ func main() {
     var a int = 7+8*2;
 	var c,d int = 2
 	a++;
-	fmt.Println("Hello, world.",a);
+	fmt.Println("Hello, world.");
 }
