@@ -70,8 +70,8 @@ WHITESPACE		        [ \t\f\r\v]+
 {NIL_VAL}			{yylval.sval = strdup(yytext);printf("(%s, T_NULL)\n", yytext);Insert(yytext,yylineno,"T_NULL");return T_NIL_VAL;}
 
 {LETTER}({LETTER}|{DIGIT})*	{yylval.sval=strdup(yytext);printf("(%s, T_IDENTIFIER)\n", yytext);Insert(yytext,yylineno,"T_IDENTIFIER");return T_IDENTIFIER;}
-{DIGIT}+			{yylval.sval = strdup(yytext);yylval.nval = strtod(yytext,NULL);printf("(%s, T_INTEGER)\n", yytext);Insert(yytext,yylineno,"T_INTEGER");return T_INTEGER;}
-{DIGIT}+"."{DIGIT}+		{yylval.sval = strdup(yytext);yylval.nval = strtod(yytext,NULL);printf("(%s, T_FLOAT)\n", yytext);Insert(yytext,yylineno,"T_FLOAT");return T_FLOAT;}
+{DIGIT}+			{yylval.nval = strtod(yytext,NULL);yylval.sval = strdup(yytext);printf("(%s, T_INTEGER)\n", yytext);Insert(yytext,yylineno,"T_INTEGER");return T_INTEGER;}
+{DIGIT}+"."{DIGIT}+		{yylval.nval = strtod(yytext,NULL);yylval.sval = strdup(yytext);printf("(%s, T_FLOAT)\n", yytext);Insert(yytext,yylineno,"T_FLOAT");return T_FLOAT;}
 
 \"([^\\\n\"]|(\\.))*\"	{yylval.sval = strdup(yytext);printf("(%s, T_STRING)\n", yytext);Insert(yytext,yylineno,"T_STRING");return T_STRING;}
 \/\/{UNICODE_CHAR}*\n		;

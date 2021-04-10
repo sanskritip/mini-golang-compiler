@@ -126,14 +126,11 @@ Declaration:
 	| T_CONST T_IDENTIFIER Type {lhs.push_back("ConstDecl");rhs.push_back("T_CONST T_IDENTIFIER Type");}
 	| T_VAR IdentifierList Type T_ASSIGN ExpressionList {lhs.push_back("VarDecl");rhs.push_back("T_VAR IdentifierList T_Type T_ASSIGN ExpressionList");
 		cout << "Variable initialisation" <<endl;
-		/*
 		string temp_str = $2->value;
 		temp_str.append("=");
 		temp_str.append($4);
 		(*$$).value = strdup(temp_str.c_str());
 		cout << temp_str.c_str() <<endl;
-		*/
-
 	}
 	| T_VAR IdentifierList Type {lhs.push_back("VarDecl");rhs.push_back("T_VAR IdentifierList Type");
 	 //cout << $2->value;
@@ -191,8 +188,6 @@ TypeList:
     TypeList T_COMMA Type {lhs.push_back("TypeList");rhs.push_back("TypeList T_COMMA Type");}
     | Type {lhs.push_back("TypeList");rhs.push_back("Type");};
 
-
-
 IdentifierList:
 	IdentifierList T_COMMA T_IDENTIFIER {
 		string temp_str = $1->value;
@@ -227,6 +222,7 @@ Type:
 
 Operand:
 	Literal {lhs.push_back("Operand");rhs.push_back("Literal"); 
+	cout << "Operand" << $1 <<endl;
 	$$=$1;
 	}
 	| T_IDENTIFIER {lhs.push_back("Operand");rhs.push_back("T_IDENTIFIER");
@@ -252,6 +248,7 @@ ForStmt:
 ExpressionList:
 		ExpressionList T_COMMA Expression {lhs.push_back("ExpressionList");rhs.push_back("ExpressionList T_COMMA Expression");}
 		| Expression {lhs.push_back("ExpressionList");rhs.push_back("Expression");
+		cout <<"Expression List " << $1->value <<endl;
 		$$=$1; //Expression at pos 1
 		};
 
@@ -262,8 +259,9 @@ Literal:
 	| FunctionLit {lhs.push_back("Literal");rhs.push_back("FunctionLit");};
 
 BasicLit:
-	T_INTEGER {lhs.push_back("BasicLit");rhs.push_back("T_INTEGER");
-	cout <<"Operand " << $<nval>1 << endl;
+	T_INTEGER {
+	lhs.push_back("BasicLit");rhs.push_back("T_INTEGER");
+	//cout <<"Operand " << $<nval>1 << endl;
 	(*$$).value=strdup($1);
 	$1=(*$$).value;
 	}
@@ -294,40 +292,47 @@ Selector:
 
 Expression:
     Expression1 {lhs.push_back("Expression");rhs.push_back("Expression1");
+	cout <<"Expression " << $1 <<endl;
 	$$=$1;
 	};
 
 Expression1:
     Expression1 T_LOR Expression2 {lhs.push_back("Expression1");rhs.push_back("Expression1 T_LOR Expression2");}
     | Expression2 {lhs.push_back("Expression1");rhs.push_back("Expression2");
+	cout <<"Expression 1 " << $1 <<endl;
 	$$=$1;
 	};
 Expression2:
     Expression2 T_LAND Expression3 {lhs.push_back("Expression2");rhs.push_back("Expression2 T_LAND Expression3");}
     | Expression3 {lhs.push_back("Expression2");rhs.push_back("Expression3");
+	cout <<"Expression 2 " << $1 <<endl;
 	$$=$1;
 	};
 
 Expression3:
     Expression3 rel_op Expression4 {lhs.push_back("Expression3");rhs.push_back("Expression3 rel_op Expression4");}
     | Expression4 {lhs.push_back("Expression3");rhs.push_back("Expression4");
+	cout <<"Expression 3 " << $1 <<endl;
 	$$=$1;
 	};
 
 Expression4:
     Expression4 add_op Expression5 {lhs.push_back("Expression4");rhs.push_back("Expression4 add_op Expression5");}
     | Expression5 {lhs.push_back("Expression4");rhs.push_back("Expression5");
+	cout <<"Expression 4 " << $1 <<endl;
 	$$=$1;
 	};
 
 Expression5:
     Expression5 mul_op PrimaryExpr {lhs.push_back("Expression5");rhs.push_back("Expression5 mul_op PrimaryExpr");}
     | UnaryExpr {lhs.push_back("Expression5");rhs.push_back("UnaryExpr");
+	cout <<"Expression 5 " << $1 <<endl;
 	$$=$1;
 	};
 
 UnaryExpr:
 	PrimaryExpr {lhs.push_back("UnaryExpr");rhs.push_back("PrimaryExpr");
+	cout <<"Primary Expr " << $1 <<endl;
 	$$=$1;
 	}
 	| unary_op PrimaryExpr {lhs.push_back("UnaryExpr");rhs.push_back("unary_op PrimaryExpr");
