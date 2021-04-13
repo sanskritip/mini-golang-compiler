@@ -28,6 +28,7 @@ typedef struct symbol_table
   //void insert(char *,int,char,char*,char* );
   void update(char *,int,char *);
   void search_id(char *,int );
+  int get_val(char *token);
 
 %}
 
@@ -54,6 +55,7 @@ typedef struct symbol_table
 %left <sval> T_GTR T_LSR T_LEFTPARANTHESES T_RIGHTPARANTHESES T_LEFTBRACE T_RIGHTBRACE T_LEFTBRACKET T_RIGHTBRACKET T_COMMA T_PERIOD
 
 %type <sval> unary_op bin_op math_op assign_op rel_op
+%type <sval> Expression Operand BasicLit ExpressionList IdentifierList Declaration
 /*
 %type StartFile Expression 
 %type Block StatementList Statement SimpleStmt 
@@ -93,16 +95,27 @@ Statement:
 	| PrintStmt {};
 
 SimpleStmt:
-	Expression T_INCREMENT {}
-	| Expression T_DECREMENT {} 
-	| ExpressionList assign_op ExpressionList {}
+	T_IDENTIFIER assign_op Expression {
+		search_id($1,@1.last_line);lookup($2,@2.last_line,'O',NULL,NULL);update($1,@1.last_line,$3);
+	}
+	| Expression T_INCREMENT {
+		int temp = get_val($1);
+		search_id($1,@1.last_line);lookup($2,@2.last_line,'O',NULL,NULL);update($1,@1.last_line,(char *)to_string(temp+1).c_str());
+	}
+	| Expression T_DECREMENT {
+		int temp = get_val($1);
+		search_id($1,@1.last_line);lookup($2,@2.last_line,'O',NULL,NULL);update($1,@1.last_line,(char *)to_string(temp-1).c_str());
+	} 
+	| ExpressionList assign_op ExpressionList {
+		// b,c = 2,3
+	}
 	| /*empty*/{};
 	
 Declaration:
 	T_CONST T_IDENTIFIER Type T_ASSIGN Expression {lookup($1,@1.last_line,'K',NULL,NULL);}
 	| T_CONST T_IDENTIFIER Type {lookup($1,@1.last_line,'K',NULL,NULL);}
-	| T_VAR IdentifierList Type T_ASSIGN ExpressionList {lookup($1,@1.last_line,'K',NULL,NULL);}
-	| T_VAR IdentifierList Type { lookup($1,@1.last_line,'K',NULL,NULL);
+	| T_VAR IdentifierList Type T_ASSIGN ExpressionList {lookup($2,@1.last_line,'I',NULL,$1);lookup($1,@1.last_line,'K',NULL,NULL);update($2,@2.last_line,$5);}
+	| T_VAR IdentifierList Type { lookup($2,@1.last_line,'I',NULL,$1);lookup($2,@2.last_line,'K',NULL,NULL);
 	};
 
 PrintStmt:
@@ -116,7 +129,7 @@ FunctionDecl:
 
 IdentifierList:
 	IdentifierList T_COMMA T_IDENTIFIER {;} 
-	| T_IDENTIFIER {;};
+	| T_IDENTIFIER {$$=$1;};
 
 TopLevelDeclList:
     TopLevelDeclList TopLevelDecl  {}
@@ -133,8 +146,8 @@ Type:
 	};
 
 Operand:
-	BasicLit {}
-	| T_IDENTIFIER {}
+	BasicLit {$$=$1;}
+	| T_IDENTIFIER {$$=$1;}
 	| T_LEFTPARANTHESES Expression T_RIGHTPARANTHESES {};
 
 IfStmt:
@@ -157,20 +170,27 @@ ForStmt:
 
 ExpressionList:
 	ExpressionList T_COMMA Expression {}
-	| Expression {};
+	| Expression {$$=$1;};
 
 BasicLit:
-	T_INTEGER {}
-	| T_FLOAT {}
-	| T_STRING {}
-	| T_BOOL_CONST {};
+	T_INTEGER {lookup($1,@1.last_line,'C',NULL,NULL); $$=$1;}
+	| T_FLOAT {lookup($1,@1.last_line,'C',NULL,NULL);}
+	| T_STRING {lookup($1,@1.last_line,'C',NULL,NULL);}
+	| T_BOOL_CONST {lookup($1,@1.last_line,'C',NULL,NULL);
+	};
 
 Expression:
-	Expression math_op Expression {lookup($2,@2.last_line,'O',NULL,NULL);}
+	Expression math_op Expression 
+	{
+		lookup($2,@2.last_line,'O',NULL,NULL);
+		cout << atoi($1)<<"Operator" <<$2<<atoi($3)<<endl;
+		if(!strcmp($2,"+")){sprintf($$,"%d",atoi($1)+atoi($3));}
+		if(!strcmp($2,"*")){sprintf($$,"%d",atoi($1)*atoi($3));}
+	}
 	| Expression rel_op Expression {lookup($2,@2.last_line,'O',NULL,NULL);}
 	| Expression bin_op Expression {lookup($2,@2.last_line,'O',NULL,NULL);}
 	| unary_op Operand {lookup($1,@1.last_line,'O',NULL,NULL);}
-	| Operand {};
+	| Operand { $$=$1; };
 
 bin_op:
 	T_LOR {$$=$1;}
