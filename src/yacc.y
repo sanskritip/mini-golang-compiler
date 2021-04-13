@@ -53,6 +53,7 @@ typedef struct symbol_table
 %left <sval> T_LAND T_LOR T_EQL T_NEQ T_LEQ T_GEQ T_SEMICOLON
 %left <sval> T_GTR T_LSR T_LEFTPARANTHESES T_RIGHTPARANTHESES T_LEFTBRACE T_RIGHTBRACE T_LEFTBRACKET T_RIGHTBRACKET T_COMMA T_PERIOD
 
+%type <sval> unary_op bin_op math_op assign_op rel_op
 /*
 %type StartFile Expression 
 %type Block StatementList Statement SimpleStmt 
@@ -165,38 +166,38 @@ BasicLit:
 	| T_BOOL_CONST {};
 
 Expression:
-	Expression math_op Expression {}
-	| Expression rel_op Expression {}
-	| Expression bin_op Expression {}
-	| unary_op Operand {}
+	Expression math_op Expression {lookup($2,@2.last_line,'O',NULL,NULL);}
+	| Expression rel_op Expression {lookup($2,@2.last_line,'O',NULL,NULL);}
+	| Expression bin_op Expression {lookup($2,@2.last_line,'O',NULL,NULL);}
+	| unary_op Operand {lookup($1,@1.last_line,'O',NULL,NULL);}
 	| Operand {};
 
 bin_op:
-	T_LOR {}
-	| T_LAND {};
+	T_LOR {$$=$1;}
+	| T_LAND {$$=$1;};
 
 rel_op:
-	T_EQL {}
-	| T_NEQ {}
-	| T_LSR {}
-	| T_LEQ {}
-	| T_GTR {}
-	| T_GEQ {};
+	T_EQL {$$=$1;}
+	| T_NEQ {$$=$1;}
+	| T_LSR {$$=$1;}
+	| T_LEQ {$$=$1;}
+	| T_GTR {$$=$1;}
+	| T_GEQ {$$=$1;};
 
 math_op:
-	T_ADD {}
-	| T_MINUS {}
-	| T_MULTIPLY {}
-	| T_DIVIDE {}
-	| T_MOD {};
+	T_ADD {$$=$1;}
+	| T_MINUS {$$=$1;}
+	| T_MULTIPLY {$$=$1;}
+	| T_DIVIDE {$$=$1;}
+	| T_MOD {$$=$1;};
 
 unary_op:
-	T_ADD {}
-	| T_MINUS {}
-	| T_NOT {};
+	T_ADD {$$=$1;}
+	| T_MINUS {$$=$1;}
+	| T_NOT {$$=$1;};
 
 assign_op:
-	T_ASSIGN {};
+	T_ASSIGN {$$=$1;};
 
 PackageName:
 	T_IDENTIFIER {}
