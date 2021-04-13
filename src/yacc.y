@@ -11,24 +11,8 @@ extern int yylineno;
 void yyerror (const char *s) {fprintf (stderr, "\033[0;31mLine:%d | %s\n\033[0m\n",yylineno, s);} 
 
 //Symbol Table Structure
-typedef struct symbol_table
-  {
-    int line;
-    char name[31];
-    char type;
-    char *value;
-    char *datatype;
-  }ST;
-  int struct_index = 0;
-  ST st[10000];
   char x[10];
 
-  //Symbol Table functions
-  void lookup(char *,int,char,char*,char* );
-  //void insert(char *,int,char,char*,char* );
-  void update(char *,int,char *);
-  void search_id(char *,int );
-  int get_val(char *token);
 
 %}
 
@@ -189,9 +173,20 @@ Expression:
 		if(!strcmp($2,"-")){sprintf($$,"%d",atoi($1)-atoi($3));}
 		if(!strcmp($2,"%")){sprintf($$,"%d",atoi($1)%atoi($3));}
 	}
-	| Expression rel_op Expression {lookup($2,@2.last_line,'O',NULL,NULL);}
-	| Expression bin_op Expression {lookup($2,@2.last_line,'O',NULL,NULL);}
-	| unary_op Operand {lookup($1,@1.last_line,'O',NULL,NULL);}
+	| Expression rel_op Expression {lookup($2,@2.last_line,'O',NULL,NULL);
+		if(!strcmp($2,"==")){ bool e = (get_val($1)==get_val($1));$$ = e?(char *)"true":(char *)"false";}
+		if(!strcmp($2,"!=")){ bool e = (get_val($1)!=get_val($1));$$ = e?(char *)"true":(char *)"false";}
+		if(!strcmp($2,"<")){ bool e = (get_val($1)<get_val($1));$$ = e?(char *)"true":(char *)"false";}
+		if(!strcmp($2,"<=")){ bool e = (get_val($1)<=get_val($1));$$ = e?(char *)"true":(char *)"false";}
+		if(!strcmp($2,">")){ bool e = (get_val($1)>get_val($1));$$ = e?(char *)"true":(char *)"false";}
+		if(!strcmp($2,">=")){ bool e = (get_val($1)>=get_val($1));$$ = e?(char *)"true":(char *)"false";}
+	}
+	| Expression bin_op Expression {lookup($2,@2.last_line,'O',NULL,NULL);
+		// For logical operators
+	}
+	| unary_op Operand {
+		lookup($1,@1.last_line,'O',NULL,NULL);
+		}
 	| Operand { $$=$1; };
 
 bin_op:
@@ -257,132 +252,6 @@ int main (int argc, char** argv) {
 	printf("\n\033[0;32mParsing completed.\033[0m\n\n");
 	printf("Symbol Table after Lexical Analysis: \n");
 	Display();
-	printf("-----------------------------------Symbol Table-----------------------------------\n\n");
-    printf("S.No\t  Token  \t Line Number \t Category \t DataType \t Value \n");
-    for(int i = 0;i < struct_index;i++)
-    {
-      char *ty;
-      
-      if(st[i].type=='K')
-        ty="keyword";
-      else if(st[i].type=='I')
-      {
-        ty="identifier";
-        printf("%-4d\t  %-7s\t   %-10d \t %-9s\t  %-7s\t   %-5s\n",i+1,st[i].name,st[i].line,ty,st[i].datatype,st[i].value);
-      }
-      else if(st[i].type=='C')
-        ty="constant";
-      else
-        ty="operator";
-      if(st[i].type!='I')
-        printf("%-4d\t  %-7s\t   %-10d\t %-9s\t  NULL\t\t %-5s\n",i+1,st[i].name,st[i].line,ty,st[i].value);
-    }
 	return 0;
 }
 
-void lookup(char *token,int line,char type,char *value,char *datatype)
-{
-  //printf("Token %s line number %d\n",token,line);
-  int flag = 0;
-  for(int i = 0;i < struct_index;i++)
-  {
-    if(!strcmp(st[i].name,token))
-    {
-      flag = 1;
-      if(st[i].line != line)
-      {
-        st[i].line = line;
-      }
-    }
-  }
-  
-  //Insert
-  if(flag == 0)
-  {
-    strcpy(st[struct_index].name,token);
-    st[struct_index].type=type;
-    if(value==NULL)
-        st[struct_index].value=NULL;
-    else
-        strcpy(st[struct_index].value,value);
-        
-    if(datatype==NULL)
-        st[struct_index].datatype=NULL;
-    else
-        st[struct_index].datatype=datatype;
-        
-    st[struct_index].line = line;
-    struct_index++;
-  }
-}
-/*
-void insert(char *token,int line,char type, char* value, char *datatype)
-{
-  printf("start");
-  strcpy(st[struct_index].name,token);
-  st[struct_index].type=type;
-  strcpy(st[struct_index].value,value);
-  strcpy(st[struct_index].datatype,datatype);
-  st[struct_index].line = line;
-  struct_index++;
-  printf("end");
-}
-*/
-void search_id(char *token,int lineno)
-{
-  int flag = 0;
-  for(int i = 0;i < struct_index;i++)
-  {
-    if(!strcmp(st[i].name,token))
-    {
-      flag = 1;
-      return;
-    }
-  }
-  if(flag == 0)
-  {
-    printf("Error at line %d : %s is not defined\n",lineno,token);
-    exit(0);
-  }
-}
-
-void update(char *token,int lineno,char *value)
-{
-  int flag = 0;
-  
-  for(int i = 0;i < struct_index;i++)
-  {
-    if(!strcmp(st[i].name,token))
-    {
-      flag = 1;
-      st[i].value = (char*)malloc(sizeof(char)*strlen(value));
-      //sprintf(st[i].value,"%s",value);
-      strcpy(st[i].value,value);
-      st[i].line = lineno;
-      return;
-    }
-  }
-  if(flag == 0)
-  {
-    printf("Error at line %d : %s is not defined\n",lineno,token);
-    exit(0);
-  }
-}
-
-int get_val(char *token)
-{
-  int flag = 0;
-  for(int i = 0;i < struct_index;i++)
-  {
-    if(!strcmp(st[i].name,token))
-    {
-      flag = 1;
-      return atoi(st[i].value);
-    }
-  }
-  if(flag == 0)
-  {
-    printf("Error at line : %s is not defined\n",token);
-    exit(0);
-  }
-}
