@@ -7,7 +7,6 @@ func main() {
 	a++;
 	var c int = 2.3;
 	var d string = "Hello";
-	var e bool = true;
 	b = 3;
-	fmt.Println("Hello, world.");
+	var e bool = a==b;
 }
