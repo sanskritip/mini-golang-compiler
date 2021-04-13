@@ -174,18 +174,20 @@ ExpressionList:
 
 BasicLit:
 	T_INTEGER {lookup($1,@1.last_line,'C',NULL,NULL); $$=$1;}
-	| T_FLOAT {lookup($1,@1.last_line,'C',NULL,NULL);}
-	| T_STRING {lookup($1,@1.last_line,'C',NULL,NULL);}
-	| T_BOOL_CONST {lookup($1,@1.last_line,'C',NULL,NULL);
+	| T_FLOAT {lookup($1,@1.last_line,'C',NULL,NULL); $$=$1;}
+	| T_STRING {lookup($1,@1.last_line,'C',NULL,NULL); $$=$1;}
+	| T_BOOL_CONST {lookup($1,@1.last_line,'C',NULL,NULL);$$=$1;
 	};
 
 Expression:
 	Expression math_op Expression 
 	{
 		lookup($2,@2.last_line,'O',NULL,NULL);
-		cout << atoi($1)<<"Operator" <<$2<<atoi($3)<<endl;
 		if(!strcmp($2,"+")){sprintf($$,"%d",atoi($1)+atoi($3));}
 		if(!strcmp($2,"*")){sprintf($$,"%d",atoi($1)*atoi($3));}
+		if(!strcmp($2,"/")){sprintf($$,"%d",atoi($1)/atoi($3));}
+		if(!strcmp($2,"-")){sprintf($$,"%d",atoi($1)-atoi($3));}
+		if(!strcmp($2,"%")){sprintf($$,"%d",atoi($1)%atoi($3));}
 	}
 	| Expression rel_op Expression {lookup($2,@2.last_line,'O',NULL,NULL);}
 	| Expression bin_op Expression {lookup($2,@2.last_line,'O',NULL,NULL);}
@@ -220,7 +222,7 @@ assign_op:
 	T_ASSIGN {$$=$1;};
 
 PackageName:
-	T_IDENTIFIER {}
+	T_IDENTIFIER {lookup($1,@1.last_line,'I',NULL,$1);}
 	| T_STRING {}
 	| T_STRING T_SEMICOLON {};
 	
@@ -254,7 +256,7 @@ int main (int argc, char** argv) {
 	yyparse ( );
 	printf("\n\033[0;32mParsing completed.\033[0m\n\n");
 	printf("Symbol Table after Lexical Analysis: \n");
-	//Display();
+	Display();
 	printf("-----------------------------------Symbol Table-----------------------------------\n\n");
     printf("S.No\t  Token  \t Line Number \t Category \t DataType \t Value \n");
     for(int i = 0;i < struct_index;i++)
