@@ -94,7 +94,11 @@ int get_val(char *token)
     if(!strcmp(table[i].symbol,token))
     {
       flag = 1;
-      return atoi(table[i].value);
+      if(table[i].symbol_type=='I')
+        return atoi(table[i].value);
+      //Added this part so rel_op works for numbers
+      if(table[i].symbol_type=='C')
+        return atoi(table[i].symbol);
     }
   }
   if(flag == 0)

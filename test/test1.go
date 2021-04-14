@@ -8,5 +8,5 @@ func main() {
 	var c int = 2.3;
 	var d string = "Hello";
 	b = 3;
-	var e bool = a==b;
+	var e bool = 2==3;
 }

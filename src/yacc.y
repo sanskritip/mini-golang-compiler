@@ -57,16 +57,19 @@ void yyerror (const char *s) {fprintf (stderr, "\033[0;31mLine:%d | %s\n\033[0m\
 
 StartFile:
     T_PACKAGE PackageName ImportDeclList TopLevelDeclList {
+		cout<<"Input accepted"<<endl;
 		lookup($1,@1.last_line,'K',NULL,NULL);
 	};
 
 Block:
-	T_LEFTBRACE StatementList T_RIGHTBRACE {}
+	T_LEFTBRACE StatementList T_RIGHTBRACE {
+		cout<<"Block"<<endl;
+	}
 	| /*empty*/ {}; 
 
 StatementList:
     StatementList Statement T_SEMICOLON {}
-    | Statement T_SEMICOLON {}
+    | Statement T_SEMICOLON {cout<<"Statement ;"<<endl;}
 	| StatementList Statement {}
     | Statement{};
 
@@ -103,7 +106,9 @@ Declaration:
 	};
 
 PrintStmt:
-	T_PRINT T_LEFTPARANTHESES T_STRING T_RIGHTPARANTHESES {lookup($1,@1.last_line,'K',NULL,NULL);
+	T_PRINT T_LEFTPARANTHESES T_STRING T_RIGHTPARANTHESES {
+		cout <<"Enter print"<<endl;
+		lookup($1,@1.last_line,'K',NULL,NULL);
 	};
 
 FunctionDecl:
@@ -165,7 +170,7 @@ BasicLit:
 
 Expression:
 	Expression math_op Expression 
-	{
+	{	//Won't work for identifiers
 		lookup($2,@2.last_line,'O',NULL,NULL);
 		if(!strcmp($2,"+")){sprintf($$,"%d",atoi($1)+atoi($3));}
 		if(!strcmp($2,"*")){sprintf($$,"%d",atoi($1)*atoi($3));}
@@ -173,16 +178,20 @@ Expression:
 		if(!strcmp($2,"-")){sprintf($$,"%d",atoi($1)-atoi($3));}
 		if(!strcmp($2,"%")){sprintf($$,"%d",atoi($1)%atoi($3));}
 	}
-	| Expression rel_op Expression {lookup($2,@2.last_line,'O',NULL,NULL);
-		if(!strcmp($2,"==")){ bool e = (get_val($1)==get_val($1));$$ = e?(char *)"true":(char *)"false";}
-		if(!strcmp($2,"!=")){ bool e = (get_val($1)!=get_val($1));$$ = e?(char *)"true":(char *)"false";}
-		if(!strcmp($2,"<")){ bool e = (get_val($1)<get_val($1));$$ = e?(char *)"true":(char *)"false";}
-		if(!strcmp($2,"<=")){ bool e = (get_val($1)<=get_val($1));$$ = e?(char *)"true":(char *)"false";}
-		if(!strcmp($2,">")){ bool e = (get_val($1)>get_val($1));$$ = e?(char *)"true":(char *)"false";}
-		if(!strcmp($2,">=")){ bool e = (get_val($1)>=get_val($1));$$ = e?(char *)"true":(char *)"false";}
+	| Expression rel_op Expression {
+		//Only binary expressions
+		lookup($2,@2.last_line,'O',NULL,NULL);
+		cout << "Rel op" <<get_val($1)<<get_val($3);
+		if(!strcmp($2,"==")){ bool e = (get_val($1)==get_val($3));$$ = e?(char *)"true":(char *)"false";}
+		if(!strcmp($2,"!=")){ bool e = (get_val($1)!=get_val($3));$$ = e?(char *)"true":(char *)"false";}
+		if(!strcmp($2,"<")){ bool e = (get_val($1)<get_val($3));$$ = e?(char *)"true":(char *)"false";}
+		if(!strcmp($2,"<=")){ bool e = (get_val($1)<=get_val($3));$$ = e?(char *)"true":(char *)"false";}
+		if(!strcmp($2,">")){ bool e = (get_val($1)>get_val($3));$$ = e?(char *)"true":(char *)"false";}
+		if(!strcmp($2,">=")){ bool e = (get_val($1)>=get_val($3));$$ = e?(char *)"true":(char *)"false";}
 	}
-	| Expression bin_op Expression {lookup($2,@2.last_line,'O',NULL,NULL);
-		// For logical operators
+	| Expression bin_op Expression {
+		lookup($2,@2.last_line,'O',NULL,NULL);
+		//For logical operators
 	}
 	| unary_op Operand {
 		lookup($1,@1.last_line,'O',NULL,NULL);
