@@ -5,8 +5,10 @@ func main() {
 	var b int;
     var a int = 7+8*2;
 	a++;
-	var c int = 2.3;
+	var c float32 = 2.3;
 	var d string = "Hello";
-	b = 3;
+	b = a+c;
+	//Constant comparision using relational
 	var e bool = 2==3;
+	//Identifier comparision using relational
 }

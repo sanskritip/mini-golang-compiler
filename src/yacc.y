@@ -13,6 +13,17 @@ void yyerror (const char *s) {fprintf (stderr, "\033[0;31mLine:%d | %s\n\033[0m\
 //Symbol Table Structure
   char x[10];
 
+//To check if number
+// Returns true if s is a number else false 
+bool isNumber(string s) 
+{ 
+    for (int i = 0; i < s.length(); i++) 
+        if (isdigit(s[i]) == false) 
+            return false; 
+  
+    return true; 
+} 
+
 
 %}
 
@@ -135,8 +146,12 @@ Type:
 	};
 
 Operand:
-	BasicLit {$$=$1;}
-	| T_IDENTIFIER {$$=$1;}
+	BasicLit {$$=$1;
+	//2
+	}
+	| T_IDENTIFIER {$$=$1;
+	//a
+	}
 	| T_LEFTPARANTHESES Expression T_RIGHTPARANTHESES {};
 
 IfStmt:
@@ -172,22 +187,25 @@ Expression:
 	Expression math_op Expression 
 	{	//Won't work for identifiers
 		lookup($2,@2.last_line,'O',NULL,NULL);
-		if(!strcmp($2,"+")){sprintf($$,"%d",atoi($1)+atoi($3));}
-		if(!strcmp($2,"*")){sprintf($$,"%d",atoi($1)*atoi($3));}
-		if(!strcmp($2,"/")){sprintf($$,"%d",atoi($1)/atoi($3));}
-		if(!strcmp($2,"-")){sprintf($$,"%d",atoi($1)-atoi($3));}
-		if(!strcmp($2,"%")){sprintf($$,"%d",atoi($1)%atoi($3));}
+		int a = isNumber($1)?atoi($1):get_val($1);
+		int b = isNumber($3)?atoi($3):get_val($3);
+		if(!strcmp($2,"+")){sprintf($$,"%d",a+b);}
+		if(!strcmp($2,"*")){sprintf($$,"%d",a*b);}
+		if(!strcmp($2,"/")){sprintf($$,"%d",a/b);}
+		if(!strcmp($2,"-")){sprintf($$,"%d",a-b);}
+		if(!strcmp($2,"%")){sprintf($$,"%d",a%b);}
 	}
 	| Expression rel_op Expression {
 		//Only binary expressions
 		lookup($2,@2.last_line,'O',NULL,NULL);
-		cout << "Rel op" <<get_val($1)<<get_val($3);
-		if(!strcmp($2,"==")){ bool e = (get_val($1)==get_val($3));$$ = e?(char *)"true":(char *)"false";}
-		if(!strcmp($2,"!=")){ bool e = (get_val($1)!=get_val($3));$$ = e?(char *)"true":(char *)"false";}
-		if(!strcmp($2,"<")){ bool e = (get_val($1)<get_val($3));$$ = e?(char *)"true":(char *)"false";}
-		if(!strcmp($2,"<=")){ bool e = (get_val($1)<=get_val($3));$$ = e?(char *)"true":(char *)"false";}
-		if(!strcmp($2,">")){ bool e = (get_val($1)>get_val($3));$$ = e?(char *)"true":(char *)"false";}
-		if(!strcmp($2,">=")){ bool e = (get_val($1)>=get_val($3));$$ = e?(char *)"true":(char *)"false";}
+		int a = isNumber($1)?atoi($1):get_val($1);
+		int b = isNumber($3)?atoi($3):get_val($3);
+		if(!strcmp($2,"==")){ bool e = (a==b);$$ = e?(char *)"true":(char *)"false";}
+		if(!strcmp($2,"!=")){ bool e = (a!=b);$$ = e?(char *)"true":(char *)"false";}
+		if(!strcmp($2,"<")){ bool e = (a<b);$$ = e?(char *)"true":(char *)"false";}
+		if(!strcmp($2,"<=")){ bool e = (a<=b);$$ = e?(char *)"true":(char *)"false";}
+		if(!strcmp($2,">")){ bool e = (a>b);$$ = e?(char *)"true":(char *)"false";}
+		if(!strcmp($2,">=")){ bool e = (a>=b);$$ = e?(char *)"true":(char *)"false";}
 	}
 	| Expression bin_op Expression {
 		lookup($2,@2.last_line,'O',NULL,NULL);
