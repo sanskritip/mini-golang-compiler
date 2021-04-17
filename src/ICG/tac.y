@@ -4,21 +4,18 @@
   #include <stdlib.h>
   #include <string.h>
   #include <ctype.h>
-  int top=-1;
   using namespace std;
-  
-//Stuff
- int yylex();
- extern int yylineno;
+
 
 //Error Handling
 void yyerror (const char *s) {fprintf (stderr, "\033[0;31mLine:%d | %s\n\033[0m\n",yylineno, s);} 
   extern FILE *yyin;
   
-//Stuff
+//yacc related 
  int yylex();
  extern int yylineno;
 
+//Quadraple Structure
   typedef struct quadruples
   {
     char *op;
@@ -27,7 +24,10 @@ void yyerror (const char *s) {fprintf (stderr, "\033[0;31mLine:%d | %s\n\033[0m\
     char *res;
   }quad;
   int quadlen = 0;
+  //Quadraples data structure
   quad q[100];
+  //Top of stack
+  int top=-1;
 
 //quadraple functions
 void push();
@@ -36,16 +36,8 @@ void pusha();
 void pushx();
 void pushab();
 void codegen();
-void codegen_assigna();
-void codegen_umin();
 void codegen_assign();
 void codegen_incdec(int o);
-void if1();
-void if2();
-void if3();
-void ifelse1();
-void ifelse2();
-void ifelse3();
 void for1();
 void for2();
 void for3();
@@ -233,24 +225,31 @@ ImportSpecList:
 
 #include "lex.yy.c"
 #include<ctype.h>
+#include<fstream>
+//Stack
 char st[100][100];
-
 char i_[2]="0";
+//Temporary variable counter
 int temp_i=0;
+//Char string to store temporary varoable number
 char tmp_i[3];
 char temp[2]="t";
+//Array for labels
 int label[20];
+//Label number counter
 int lnum=0;
+//Top of label stack
 int ltop=0;
-int abcd=0;
-int l_while=0;
+//Label counter for loop
 int l_for=0;
-int flag_set = 1;
+//Output tac file
+ofstream fo;
 
 int main (int argc, char** argv) {	
 	printf("Inside main\n");
 	FILE * fp= fopen(argv[1], "r");
 	yyin = fp;
+    fo.open("tac.txt");
 	printf("Read the input file, continue with Lexing and Parsing\n");
 	printf("Performing Lexical analysis......\n\n");
 	yyparse ( );
@@ -271,45 +270,51 @@ int main (int argc, char** argv) {
 	for(int i=0;i<62;i++)
         printf("-");
     cout << endl;
+    fo.close();
 	return 0;
 }
-
+//Print top of stack
 void printStack()
 {
     cout << "Stack Top " << st[top] <<" "<<st[top-1]<<" "<<st[top-2]<<" "<<st[top-3]<<endl;
 }
-
+//Pushing to stack using yytext
 void push()
 {
     cout << "Pushed to stack : "<<yytext<<endl;
-strcpy(st[++top],yytext);
-printStack();
+    strcpy(st[++top],yytext);
+    printStack();
 }
 void pusha()
 {
-strcpy(st[++top],"  ");
+    strcpy(st[++top],"  ");
 }
-void pushi(char * i){
+//Pushing to stack by passing value
+void pushi(char * i)
+{
     cout << "Pushed to stack : "<<i<<endl;
     strcpy(st[++top],i);
 }
 void pushx()
 {
-strcpy(st[++top],"x ");
+    strcpy(st[++top],"x ");
 }
 void pushab()
 {
-strcpy(st[++top],"  ");
-strcpy(st[++top],"  ");
-strcpy(st[++top],"  ");
+    strcpy(st[++top],"  ");
+    strcpy(st[++top],"  ");
+    strcpy(st[++top],"  ");
 }
+
 void codegen()
 {   //Intermediate operation assigned to temporary variable
     strcpy(temp,"T");
     sprintf(tmp_i, "%d", temp_i);
     strcat(temp,tmp_i);
-    //Quad creation
+    //Quad creation (eq. T = a + c)
     printf("%s = %s %s %s\n",temp,st[top-2],st[top-1],st[top]);
+    //Writing into output tac file
+    fo << temp <<" = "<<st[top-2]<<" "<<st[top-1]<<" "<<st[top]<<endl;
     q[quadlen].op = (char*)malloc(sizeof(char)*strlen(st[top-1]));
     q[quadlen].arg1 = (char*)malloc(sizeof(char)*strlen(st[top-2]));
     q[quadlen].arg2 = (char*)malloc(sizeof(char)*strlen(st[top]));
@@ -319,102 +324,46 @@ void codegen()
     strcpy(q[quadlen].arg2,st[top]);
     strcpy(q[quadlen].res,temp);
     quadlen++;
+    //Pop 3 elements from stack (eq. a + c)
     top-=2;
     //Pushing temporary variable to stack
     strcpy(st[top],temp);
-
-temp_i++;
-}
-void codegen_assigna()
-{
-strcpy(temp,"T");
-sprintf(tmp_i, "%d", temp_i);
-strcat(temp,tmp_i);
-printf("%s = %s %s %s %s\n",temp,st[top-3],st[top-2],st[top-1],st[top]);
-//printf("%d\n",strlen(st[top]));
-if(strlen(st[top])==1)
-{
-	//printf("hello");
-	
-    char t[20];
-	//printf("hello");
-	strcpy(t,st[top-2]);
-	strcat(t,st[top-1]);
-	q[quadlen].op = (char*)malloc(sizeof(char)*strlen(t));
-    q[quadlen].arg1 = (char*)malloc(sizeof(char)*strlen(st[top-3]));
-    q[quadlen].arg2 = (char*)malloc(sizeof(char)*strlen(st[top]));
-    q[quadlen].res = (char*)malloc(sizeof(char)*strlen(temp));
-    strcpy(q[quadlen].op,t);
-    strcpy(q[quadlen].arg1,st[top-3]);
-    strcpy(q[quadlen].arg2,st[top]);
-    strcpy(q[quadlen].res,temp);
-    quadlen++;
-    
-}
-else
-{
-	q[quadlen].op = (char*)malloc(sizeof(char)*strlen(st[top-2]));
-    q[quadlen].arg1 = (char*)malloc(sizeof(char)*strlen(st[top-3]));
-    q[quadlen].arg2 = (char*)malloc(sizeof(char)*strlen(st[top-1]));
-    q[quadlen].res = (char*)malloc(sizeof(char)*strlen(temp));
-    strcpy(q[quadlen].op,st[top-2]);
-    strcpy(q[quadlen].arg1,st[top-3]);
-    strcpy(q[quadlen].arg2,st[top-1]);
-    strcpy(q[quadlen].res,temp);
-    quadlen++;
-}
-top-=4;
-
-temp_i++;
-strcpy(st[++top],temp);
-}
-
-void codegen_umin()
-{
-    strcpy(temp,"T");
-    sprintf(tmp_i, "%d", temp_i);
-    strcat(temp,tmp_i);
-    printf("%s = -%s\n",temp,st[top]);
-    q[quadlen].op = (char*)malloc(sizeof(char));
-    q[quadlen].arg1 = (char*)malloc(sizeof(char)*strlen(st[top]));
-    q[quadlen].arg2 = NULL;
-    q[quadlen].res = (char*)malloc(sizeof(char)*strlen(temp));
-    strcpy(q[quadlen].op,"-");
-    strcpy(q[quadlen].arg1,st[top-2]);
-    strcpy(q[quadlen].res,temp);
-    quadlen++;
-    top--;
-    strcpy(st[top],temp);
     temp_i++;
 }
+
 void codegen_assign()
-{   //b=T2
-    //assignment 
-    //T2 < = < b (top)
-    //top-3
+{  
+    //Assignment operation (eg. b = T2 )
+    //T2 < = < b 
+    //Writing into output tac file
+    fo << st[top-2] <<" = "<<st[top]<<endl;
     printf("%s = %s\n",st[top-2],st[top]);
+    //Quad creation
     q[quadlen].op = (char*)malloc(sizeof(char));
     q[quadlen].arg1 = (char*)malloc(sizeof(char)*strlen(st[top]));
     q[quadlen].arg2 = NULL;
-    //top-3
     q[quadlen].res = (char*)malloc(sizeof(char)*strlen(st[top-2]));
     strcpy(q[quadlen].op,"=");
     strcpy(q[quadlen].arg1,st[top]);
-    //top-3
     strcpy(q[quadlen].res,st[top-2]);
     quadlen++;
+    //Pop elements from stack
     top-=2;
 }
+
 //Only for identifiers
 void codegen_incdec(int o){
+    //Check if increment or decrement
     if(o)
         pushi("+");
     else
         pushi("-");
+    // Push one to stack
     pushi("1");
+    // Get identifier at position top-2 which has to be incremented
     char tempi[31];
-    //cout<<st[top-2];
     strcpy(tempi,st[top-2]);
+    //quad generation like Tx = a + 1
     codegen();
     pushi("=");
     cout<<"hello "<<st[top]<<" "<<st[top-1]<<" "<<st[top-2]<<endl;
@@ -422,141 +371,18 @@ void codegen_incdec(int o){
     pushi(st[top-1]);
     cout<<"hello "<<st[top]<<" "<<st[top-1]<<" "<<st[top-2]<<endl;
     strcpy(st[top-2],tempi);
+    //Quad genreation for a = Tx
     codegen_assign();
-}
-void if1()
-{
- lnum++;
- strcpy(temp,"T");
- sprintf(tmp_i, "%d", temp_i);
- strcat(temp,tmp_i);
- printf("%s = not %s\n",temp,st[top]);
- q[quadlen].op = (char*)malloc(sizeof(char)*4);
- q[quadlen].arg1 = (char*)malloc(sizeof(char)*strlen(st[top]));
- q[quadlen].arg2 = NULL;
- q[quadlen].res = (char*)malloc(sizeof(char)*strlen(temp));
- strcpy(q[quadlen].op,"not");
- strcpy(q[quadlen].arg1,st[top]);
- strcpy(q[quadlen].res,temp);
- quadlen++;
- printf("if %s goto L%d\n",temp,lnum);
- q[quadlen].op = (char*)malloc(sizeof(char)*3);
- q[quadlen].arg1 = (char*)malloc(sizeof(char)*strlen(temp));
- q[quadlen].arg2 = NULL;
- q[quadlen].res = (char*)malloc(sizeof(char)*(lnum+2));
- strcpy(q[quadlen].op,"if");
- strcpy(q[quadlen].arg1,st[top-2]);
- char x[10];
- sprintf(x,"%d",lnum);
- char l[]="L";
- strcpy(q[quadlen].res,strcat(l,x));
- quadlen++;
-
- temp_i++;
- label[++ltop]=lnum;
-}
-
-void if3()
-{
-    int y;
-    y=label[ltop--];
-    printf("L%d: \n",y);
-    q[quadlen].op = (char*)malloc(sizeof(char)*6);
-    q[quadlen].arg1 = NULL;
-    q[quadlen].arg2 = NULL;
-    q[quadlen].res = (char*)malloc(sizeof(char)*(y+2));
-    strcpy(q[quadlen].op,"Label");
-    char x[10];
-    sprintf(x,"%d",y);
-    char l[]="L";
-    strcpy(q[quadlen].res,strcat(l,x));
-    quadlen++;
-}
-
-void ifelse1()
-{
-    lnum++;
-    strcpy(temp,"T");
-    sprintf(tmp_i, "%d", temp_i);
-    strcat(temp,tmp_i);
-    printf("%s = not %s\n",temp,st[top]);
-    q[quadlen].op = (char*)malloc(sizeof(char)*4);
-    q[quadlen].arg1 = (char*)malloc(sizeof(char)*strlen(st[top]));
-    q[quadlen].arg2 = NULL;
-    q[quadlen].res = (char*)malloc(sizeof(char)*strlen(temp));
-    strcpy(q[quadlen].op,"not");
-    strcpy(q[quadlen].arg1,st[top]);
-    strcpy(q[quadlen].res,temp);
-    quadlen++;
-    printf("if %s goto L%d\n",temp,lnum);
-    q[quadlen].op = (char*)malloc(sizeof(char)*3);
-    q[quadlen].arg1 = (char*)malloc(sizeof(char)*strlen(temp));
-    q[quadlen].arg2 = NULL;
-    q[quadlen].res = (char*)malloc(sizeof(char)*(lnum+2));
-    strcpy(q[quadlen].op,"if");
-    strcpy(q[quadlen].arg1,temp);
-    char x[10];
-    sprintf(x,"%d",lnum);
-    char l[]="L";
-    strcpy(q[quadlen].res,strcat(l,x));
-    quadlen++;
-    temp_i++;
-    label[++ltop]=lnum;
-}
-
-void ifelse2()
-{
-    int x;
-    lnum++;
-    x=label[ltop--];
-    printf("goto L%d\n",lnum);
-    q[quadlen].op = (char*)malloc(sizeof(char)*5);
-    q[quadlen].arg1 = NULL;
-    q[quadlen].arg2 = NULL;
-    q[quadlen].res = (char*)malloc(sizeof(char)*(lnum+2));
-    strcpy(q[quadlen].op,"goto");
-    char jug[10];
-    sprintf(jug,"%d",lnum);
-    char l[]="L";
-    strcpy(q[quadlen].res,strcat(l,jug));
-    quadlen++;
-    printf("L%d: \n",x);
-    q[quadlen].op = (char*)malloc(sizeof(char)*6);
-    q[quadlen].arg1 = NULL;
-    q[quadlen].arg2 = NULL;
-    q[quadlen].res = (char*)malloc(sizeof(char)*(x+2));
-    strcpy(q[quadlen].op,"Label");
-
-    char jug1[10];
-    sprintf(jug1,"%d",x);
-    char l1[]="L";
-    strcpy(q[quadlen].res,strcat(l1,jug1));
-    quadlen++;
-    label[++ltop]=lnum;
-}
-
-void ifelse3()
-{
-int y;
-y=label[ltop--];
-printf("L%d: \n",y);
-q[quadlen].op = (char*)malloc(sizeof(char)*6);
-    q[quadlen].arg1 = NULL;
-    q[quadlen].arg2 = NULL;
-    q[quadlen].res = (char*)malloc(sizeof(char)*(y+2));
-    strcpy(q[quadlen].op,"Label");
-    char x[10];
-    sprintf(x,"%d",y);
-    char l[]="L";
-    strcpy(q[quadlen].res,strcat(l,x));
-    quadlen++;
-lnum++;
 }
 
 void for1()
-{
+{   //...initialisation statement
+    //For loop lable count
     l_for = lnum;
+    //Writing into output tac file
+    fo << "L"<<lnum<<": "<<endl;
     printf("L%d: \n",lnum++);
+    //Creating quad for label after initialisation statement (condition)
     q[quadlen].op = (char*)malloc(sizeof(char)*6);
     q[quadlen].arg1 = NULL;
     q[quadlen].arg2 = NULL;
@@ -569,10 +395,14 @@ void for1()
     quadlen++;
 }
 void for2()
-{
+{   //...Condition statement
     strcpy(temp,"T");
     sprintf(tmp_i, "%d", temp_i);
     strcat(temp,tmp_i);
+    //Writing into output tac file
+    fo << temp <<" = not "<<st[top]<<endl;
+    //Generating quad for when condition is "not" true, Tx = not condition
+    //Output of condition stored on top of stack as temp variable
     printf("%s = not %s\n",temp,st[top]);
     q[quadlen].op = (char*)malloc(sizeof(char)*4);
     q[quadlen].arg1 = (char*)malloc(sizeof(char)*strlen(st[top]));
@@ -582,6 +412,9 @@ void for2()
     strcpy(q[quadlen].arg1,st[top]);
     strcpy(q[quadlen].res,temp);
     quadlen++;
+    //Writing into output tac file
+    fo <<"if "<<temp<<" goto L"<<lnum<<endl;
+    //Genrating goto for going to statement after loop when condition fails eg. if (not cond) goto next
     printf("if %s goto L%d\n",temp,lnum);
     q[quadlen].op = (char*)malloc(sizeof(char)*3);
     q[quadlen].arg1 = (char*)malloc(sizeof(char)*strlen(temp));
@@ -594,11 +427,16 @@ void for2()
     char l[]="L";
     strcpy(q[quadlen].res,strcat(l,x));
     quadlen++;
-
+    //Increase temp variable count
     temp_i++;
+    //Label on top of stack is for instruction after loop
     label[++ltop]=lnum;
+    //Increment label count
     lnum++;
+    //Writing into output tac file
+    fo <<"goto L"<<lnum<<endl;
     printf("goto L%d\n",lnum);
+    //Generating goto for when condition is true (loop body)
     q[quadlen].op = (char*)malloc(sizeof(char)*5);
     q[quadlen].arg1 = NULL;
     q[quadlen].arg2 = NULL;
@@ -609,8 +447,13 @@ void for2()
     char l1[]="L";
     strcpy(q[quadlen].res,strcat(l1,x1));
     quadlen++;
+    //Label on top of stack is for loop body
     label[++ltop]=lnum;
+    //Increment label number to get lable for increment statement
     printf("L%d: \n",++lnum);
+    //Writing into output tac file
+    fo <<"L"<<lnum<<": "<<endl;
+    //Creating quad for label for increment statement following condition
     q[quadlen].op = (char*)malloc(sizeof(char)*6);
     q[quadlen].arg1 = NULL;
     q[quadlen].arg2 = NULL;
@@ -623,11 +466,14 @@ void for2()
     quadlen++;
  }
 void for3()
-{
+{   //...Increment statement
     int x;
+    //Get label for loop body from label stack top
     x=label[ltop--];
+    //Writing into output tac file
+    fo <<"goto L"<<l_for<<" "<<endl;
     printf("goto L%d \n",l_for);
-
+    //Generating goto for checking condition label
     q[quadlen].op = (char*)malloc(sizeof(char)*5);
     q[quadlen].arg1 = NULL;
     q[quadlen].arg2 = NULL;
@@ -638,9 +484,10 @@ void for3()
     char l[]="L";
     strcpy(q[quadlen].res,strcat(l,jug));
     quadlen++;
-
+    //Writing into output tac file
+    fo <<"L"<<x<<": "<<endl;
     printf("L%d: \n",x);
-
+    //Creating quad for label for loop body
     q[quadlen].op = (char*)malloc(sizeof(char)*6);
     q[quadlen].arg1 = NULL;
     q[quadlen].arg2 = NULL;
@@ -653,13 +500,14 @@ void for3()
     quadlen++;
 
 }
-
 void for4()
-{
+{   //...Loop body
     int x;
     x=label[ltop--];
+    //Writing into output tac file
+    fo <<"goto L"<<lnum<<" "<<endl;
     printf("goto L%d \n",lnum);
-
+    //Creating quad for goto to label for increment statement
     q[quadlen].op = (char*)malloc(sizeof(char)*5);
     q[quadlen].arg1 = NULL;
     q[quadlen].arg2 = NULL;
@@ -670,9 +518,10 @@ void for4()
     char l[]="L";
     strcpy(q[quadlen].res,strcat(l,jug));
     quadlen++;
-
+    //Writing into output tac file
+    fo <<"L"<<x<<": "<<endl;
     printf("L%d: \n",x);
-
+    //Creating quad for label after loop , instruction after loop
     q[quadlen].op = (char*)malloc(sizeof(char)*6);
     q[quadlen].arg1 = NULL;
     q[quadlen].arg2 = NULL;
