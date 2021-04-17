@@ -6,14 +6,13 @@
   #include <ctype.h>
   using namespace std;
 
+//yacc related 
+ int yylex();
+ extern int yylineno;
 
 //Error Handling
 void yyerror (const char *s) {fprintf (stderr, "\033[0;31mLine:%d | %s\n\033[0m\n",yylineno, s);} 
   extern FILE *yyin;
-  
-//yacc related 
- int yylex();
- extern int yylineno;
 
 //Quadraple Structure
   typedef struct quadruples
@@ -43,7 +42,11 @@ void for2();
 void for3();
 void for4();
 void printStack();
-
+//Optimization functions
+void constantPropagation(int index, quad arr[100]);
+int checkForDigits(char *ch);
+char* compute(char *x, char *y, char *op);
+void constantFolding(quad arr[100]);
 %}
 
 %start StartFile
@@ -69,7 +72,7 @@ void printStack();
 %left <sval> T_GTR T_LSR T_LEFTPARANTHESES T_RIGHTPARANTHESES T_LEFTBRACE T_RIGHTBRACE T_LEFTBRACKET T_RIGHTBRACKET T_COMMA T_PERIOD
 
 %type <sval> unary_op bin_op math_op assign_op rel_op
-%type <sval> Expression Operand BasicLit ExpressionList IdentifierList Declaration
+%type <sval> Expression Operand BasicLit ExpressionList Declaration
 
 %% 
 
@@ -116,10 +119,6 @@ PrintStmt:
 
 FunctionDecl:
 	T_FUNC T_IDENTIFIER T_LEFTPARANTHESES T_RIGHTPARANTHESES Block {};
-
-IdentifierList:
-	IdentifierList T_COMMA T_IDENTIFIER {;} 
-	| T_IDENTIFIER {push();};
 
 TopLevelDeclList:
     TopLevelDeclList TopLevelDecl  {}
@@ -271,6 +270,22 @@ int main (int argc, char** argv) {
         printf("-");
     cout << endl;
     fo.close();
+    constantFolding(q);
+    printf("\n\n----------AFTER CONSTANT FOLDING and PROPOGATION--------------\n");
+    for(int i=0;i<62;i++)
+        printf("-");
+    cout << endl;
+    printf("Operator \t | Arg1 \t | Arg2 \t | Result \n");
+    for(int i=0;i<62;i++)
+        printf("-");
+    cout << endl;
+    for(i=0;i<quadlen;i++)
+    {
+        printf("%-8s \t | %-8s \t | %-8s \t | %-6s \n",q[i].op,q[i].arg1,q[i].arg2,q[i].res);
+    }
+	for(int i=0;i<62;i++)
+        printf("-");
+    cout << endl;
 	return 0;
 }
 //Print top of stack
@@ -532,4 +547,112 @@ void for4()
     char l1[]="L";
     strcpy(q[quadlen].res,strcat(l1,jug1));
     quadlen++;
+}
+
+char* compute(char *x, char *y, char *op)
+{
+    char* res;
+    //convert x and y to integers
+    int xx=atoi(x);
+    int yy=atoi(y);
+    int result = 0;
+    switch(*op)
+    {
+      case '+':
+        result = xx+yy;
+        break;
+      case '-':
+        result = xx-yy;
+        break;
+      case '*':
+        result = xx*yy;
+        break;
+      case '/':
+        result = xx/yy;
+        break;
+      case '%':
+        result = xx%yy;
+        break;
+      case '>':
+        res= strdup((xx>yy)?"true":"false");
+        return res;
+      case '<':
+        res= strdup((xx<yy)?"true":"false");
+        return res;
+      default:
+        if(strcmp(op,"==")) return (xx==yy)?(char *)"true":(char *)"false";
+        else if(strcmp(op,">=")) return (xx>=yy)?(char *)"true":(char *)"false";
+        else if(strcmp(op,"!=")) return (xx!=yy)?(char *)"true":(char *)"false";
+        else if(strcmp(op,"<=")) return (xx<=yy)?(char *)"true":(char *)"false";
+    }
+    return (char*)to_string(result).c_str();
+}
+void constantPropagation(int index, quad arr[100])
+{
+    char val[50], var[50];
+    int i=index;
+    strcpy(var, arr[i].res);
+    strcpy(val, arr[i].arg1);
+    i=index+1;
+    for(; i<quadlen; i++)
+    {   
+        if (strcmp(arr[i].op, "if")!=0 && strcmp(arr[i].op, "goto")!=0 && strcmp(arr[i].op, "call")!=0 && strcmp(arr[i].op, "proc")!=0 && arr[i].op[0]!='L'&&strcmp(arr[i].res, "stack top")!=0){    
+            if(strcmp(arr[i].res, var)==0)
+            {
+                return;
+            }
+            else if(arr[i].arg2 && strcmp(arr[i].arg2, var)==0)
+            {
+                strcpy(arr[i].arg2, val);
+            }
+            else if(arr[i].arg1 && strcmp(arr[i].arg1, var)==0)
+            {
+                strcpy(arr[i].arg1, val);
+            }
+        }
+    }
+}
+int checkForDigits(char *ch)
+{
+    if(!ch) return 0;
+    while(*ch)
+    {
+        if(isdigit(*ch++)==0)
+        {
+          return 0;
+        }
+        return 1;
+    }
+}
+
+void constantFolding(quad arr[100])
+{
+  int i=0, flag=0;
+  char* res=0;
+
+  while(i<quadlen)
+  {
+    //first check if arg2 exists
+    if(!arr[i].arg2)
+    {
+      flag=1;
+      constantPropagation(i, arr);
+    }
+    int ch1=checkForDigits(arr[i].arg1);
+    int ch2=checkForDigits(arr[i].arg2);
+
+    char stringres[50];
+    if(ch1==1 && ch2==1) //if arg1 AND arg2 are digits
+    {
+      //compute the value, pass 2, 3, + and return 5
+      res=compute(arr[i].arg1, arr[i].arg2, arr[i].op);
+      //after computing result, op=, arg1 is 5 and result is a
+      strcpy(arr[i].op, "=");
+      strcpy(arr[i].arg1, res);
+      strcpy(arr[i].arg2, " ");
+
+      constantPropagation(i, arr); 
+    }
+    i++;
+  }
 }

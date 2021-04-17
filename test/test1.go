@@ -12,4 +12,5 @@ func main() {
 	//Constant comparision using relational
 	var e bool = 2==3;
 	//Identifier comparision using relational
+	var f bool = a<b;
 }
