@@ -149,13 +149,9 @@ Operand:
 
 
 IfStmt:
-	T_IF Expression Block {
-    //Havent't added stuff
-	}
-    | T_IF Expression Block T_ELSE  Block {
-	}
-	| T_IF Expression Block T_ELSE IfStmt {
-	}
+	T_IF Expression Block
+    | T_IF Expression Block T_ELSE  Block
+	| T_IF Expression Block T_ELSE IfStmt
 	;
 
 ForStmt: 
