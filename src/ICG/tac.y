@@ -259,14 +259,22 @@ int main (int argc, char** argv) {
 	printf("Performing Lexical analysis......\n\n");
 	yyparse ( );
 	printf("\n\033[0;32mParsing completed.\033[0m\n\n");
-	printf("---------------------Quadruples-------------------------\n\n");
-    printf("Operator \t Arg1 \t\t Arg2 \t\t Result \n");
+	printf("---------------------ICG in the form of Quadruples-------------------------\n\n");
+    for(int i=0;i<62;i++)
+        printf("-");
+    cout << endl;
+    printf("Operator \t | Arg1 \t | Arg2 \t | Result \n");
+    for(int i=0;i<62;i++)
+        printf("-");
+    cout << endl;
     int i;
     for(i=0;i<quadlen;i++)
     {
-        printf("%-8s \t %-8s \t %-8s \t %-6s \n",q[i].op,q[i].arg1,q[i].arg2,q[i].res);
+        printf("%-8s \t | %-8s \t | %-8s \t | %-6s \n",q[i].op,q[i].arg1,q[i].arg2,q[i].res);
     }
-	
+	for(int i=0;i<62;i++)
+        printf("-");
+    cout << endl;
 	return 0;
 }
 
