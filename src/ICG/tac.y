@@ -113,10 +113,10 @@ SimpleStmt:
 	| /*empty*/{};
 	
 Declaration:
-	T_CONST T_IDENTIFIER Type T_ASSIGN Expression {}
-	| T_CONST T_IDENTIFIER Type {}
-    | T_VAR T_IDENTIFIER Type {}
-	| T_VAR T_IDENTIFIER Type T_ASSIGN ExpressionList {}
+	T_VAR Expression Type assign_op ExpressionList {codegen_assign();}
+    | T_VAR Expression Type {};
+    | T_CONST Expression Type assign_op ExpressionList {codegen_assign();}
+    | T_CONST Expression Type {};
     ;
 
 PrintStmt:
