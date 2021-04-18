@@ -600,6 +600,10 @@ void copyPropagation(quad arr[100])
             int flag = 0; 
             for(int j = i + 1; j<quadlen; j++)
             {
+                    //If value of the var is changed somewhere then the copy propogation must end
+                    if(strcmp(arr[j].res, var)==0){
+                        break;
+                    }
                     //r = q * q; replace first occurence of q with b
                     if (strcmp(arr[j].arg1, var)==0){
                         strcpy(arr[j].arg1, val);

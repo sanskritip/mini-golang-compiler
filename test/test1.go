@@ -18,6 +18,7 @@ func main() {
 	var e bool = 2==3;
 	//Copy Prop
 	r = q * q;
+	q = 5;
 	t = q * 2;
 	//Identifier comparision using relational
 	var f bool = a<b;
