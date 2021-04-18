@@ -50,6 +50,7 @@ bool isNumber(string s)
 %left <sval> T_GTR T_LSR T_LEFTPARANTHESES T_RIGHTPARANTHESES T_LEFTBRACE T_RIGHTBRACE T_LEFTBRACKET T_RIGHTBRACKET T_COMMA T_PERIOD
 
 %type <sval> unary_op bin_op math_op assign_op rel_op
+%type <sval> Type
 %type <sval> Expression Operand BasicLit ExpressionList IdentifierList Declaration
 /*
 %type StartFile Expression 
@@ -112,8 +113,11 @@ SimpleStmt:
 Declaration:
 	T_CONST T_IDENTIFIER Type T_ASSIGN Expression {lookup($1,@1.last_line,'K',NULL,NULL);}
 	| T_CONST T_IDENTIFIER Type {lookup($1,@1.last_line,'K',NULL,NULL);}
-	| T_VAR IdentifierList Type T_ASSIGN ExpressionList {lookup($2,@1.last_line,'I',NULL,$1);lookup($1,@1.last_line,'K',NULL,NULL);update($2,@2.last_line,$5);}
-	| T_VAR IdentifierList Type { lookup($2,@1.last_line,'I',NULL,$1);lookup($2,@2.last_line,'K',NULL,NULL);
+	| T_VAR IdentifierList Type T_ASSIGN ExpressionList {
+		cout<<"datatype"<<$3<<endl;
+		lookup($2,@1.last_line,'I',NULL,$3);lookup($1,@1.last_line,'K',NULL,NULL);update($2,@2.last_line,$5);
+		}
+	| T_VAR IdentifierList Type { lookup($2,@1.last_line,'I',NULL,$3);lookup($2,@2.last_line,'K',NULL,NULL);
 	};
 
 PrintStmt:
@@ -142,6 +146,7 @@ TopLevelDecl:
 
 Type:
 	T_VAR_TYPE {
+		$$=$1;
 		lookup($1,@1.last_line,'K',NULL,NULL);
 	};
 
@@ -244,7 +249,7 @@ assign_op:
 	T_ASSIGN {$$=$1;};
 
 PackageName:
-	T_IDENTIFIER {lookup($1,@1.last_line,'I',NULL,$1);}
+	T_IDENTIFIER {lookup($1,@1.last_line,'I',NULL,NULL);}
 	| T_STRING {}
 	| T_STRING T_SEMICOLON {};
 	

@@ -7,7 +7,7 @@ int token_count=0;
 SymbTab table[10000];
 
 void lookup(char *token,int line,char type,char *value,char *datatype)
-{
+{  
   //printf("Token %s line number %d\n",token,line);
   int flag = 0;
   for(int i = 0;i < token_count;i++)
@@ -109,17 +109,21 @@ int get_val(char *token)
 }
 
 void Display(){
-    for(int i=0;i<82;i++)
+    char * typenm;
+    char type;
+    for(int i=0;i<92;i++)
         printf("-");
-    printf("\n LABEL\t  | SYMBOL\t\t | SYMBOL_TYPE\t        | LINE\t | VALUE\t\n");
-    for(int i=0;i<82;i++)
+    printf("\n LABEL\t  | SYMBOL\t\t | SYMBOL_TYPE\t        | LINE\t   | VALUE\t| DATATYPE\t\n");
+    for(int i=0;i<92;i++)
         printf("-");
     cout << endl;
     for (int i = 0; i < token_count; i++)
     {   
-        printf(" %-8s | %-20s | %-20c | %-8d | %-10s\n", table[i].token_id, table[i].symbol, table[i].symbol_type, table[i].line_no, table[i].value);
+        type=table[i].symbol_type;
+        strcpy(typenm,type=='I'?"IDENTIFIER":type=='O'?"OPERATOR":type=='K'?"KEYWORD":"CONSTANT");
+        printf(" %-8s | %-20s | %-20s | %-8d | %-10s | %-10s\n", table[i].token_id, table[i].symbol,typenm,table[i].line_no, table[i].value==NULL?"-":table[i].value, table[i].datatype==NULL?"-":table[i].datatype);
     }
-    for(int i=0;i<65;i++)
+    for(int i=0;i<92;i++)
         printf("-");
     cout << endl;
 }
