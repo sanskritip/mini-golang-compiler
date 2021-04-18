@@ -49,6 +49,7 @@ int checkForDigits(char *ch);
 char* compute(char *x, char *y, char *op);
 void constantFolding(quad arr[100]);
 void copyPropagation(quad arr[100]);
+void DCE(quad arr[100]);
 %}
 
 %start StartFile
@@ -259,6 +260,9 @@ int main (int argc, char** argv) {
     fo.close();
  	copyPropagation(q);
     printf("\n\n------------------AFTER COPY PROPOGATION----------------------\n");
+    printQuadraples();
+    DCE(q);
+    printf("\n\n----------------AFTER DEAD CODE ELIMINATION-------------------\n");
     printQuadraples();
     constantFolding(q);
     printf("\n\n----------AFTER CONSTANT FOLDING and PROPOGATION--------------\n");
@@ -697,4 +701,38 @@ void constantFolding(quad arr[100])
     }
     i++;
   }
+}
+void DCE(quad arr[100])
+{   //Dead Code Elimination
+    char val[50], var[50];
+    int i=0;
+    for(; i<quadlen-1; i++)
+    {       
+            //p = a + c                
+            //q = b         =>  q = b
+            //r = q * q         r = b * b
+            strcpy(var, arr[i].res);
+            //flag = 1, var not used anywhere, dead code
+            int flag = 1; 
+            for(int j = i + 1; j<quadlen; j++)
+            {
+                    //check if the var is used as arg1, arg2 and res
+                    if (strcmp(arr[j].arg1, var)==0 || (arr[j].arg2 && strcmp(arr[j].arg2, var)==0) || (strcmp(arr[j].res,var)==0)){
+                        flag = 0;
+                        break;
+                    }
+            }
+            //After the replacements, remove the line q = b
+            if(flag){
+                int del = i;
+                for (int k = del-1; k < quadlen; k++)
+                {
+                    arr[del]=arr[del+1];
+                    del++;
+                }
+                //since the ith index was removed, length reduces by 1
+                quadlen=quadlen-1;
+            }
+
+    }
 }
