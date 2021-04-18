@@ -25,7 +25,7 @@ WHITESPACE		        [ \t\f\r\v]+
 
 %%
 
-"fmt.Println"		   {yylval.sval= strdup(yytext);printf("(%s, T_PRINT)\n", yytext);}
+"fmt.Println"		   {yylval.sval= strdup(yytext);printf("(%s, T_PRINT)\n", yytext);return T_PRINT;}
 
 "="				{yylval.sval= strdup(yytext);return T_ASSIGN;}
 "+"				{yylval.sval= strdup(yytext);return T_ADD;}

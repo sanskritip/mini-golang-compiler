@@ -57,8 +57,7 @@ void search_id(char *token,int lineno)
     }
   }
   if(flag == 0)
-  {
-    printf("Error at line %d : %s is not defined\n",lineno,token);
+  { printf("\033[0;31m Line : %d | Semantic Error : %s is not defined\n \n\033[0m\n",lineno,token);
     exit(0);
   }
 }
