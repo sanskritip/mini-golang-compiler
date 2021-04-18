@@ -40,7 +40,7 @@ void yyerror (const char *s) {fprintf (stderr, "\033[0;31mLine:%d | %s\n\033[0m\
 %left <sval> T_GTR T_LSR T_LEFTPARANTHESES T_RIGHTPARANTHESES T_LEFTBRACE T_RIGHTBRACE T_LEFTBRACKET T_RIGHTBRACKET T_COMMA T_PERIOD
 
 %type <sval> unary_op bin_op math_op assign_op rel_op
-%type <node> Expression Operand BasicLit ExpressionList IdentifierList Declaration SimpleStmt
+%type <node> Expression Operand BasicLit ExpressionList Declaration SimpleStmt IfStmt
 
 %% 
 
@@ -60,9 +60,18 @@ StatementList:
 
 Statement:
 	Declaration {}
-	| SimpleStmt {for(int i=0;i<80;i++) cout << "-"; cout<<endl;displayAST($1,0);for(int i=0;i<80;i++) cout << "-"; cout<<endl;}
+	| SimpleStmt 
+	{
+		for(int i=0;i<25;i++) cout << "-"; 
+		cout << "Generated AST in Tree format";
+		for(int i=0;i<26;i++) cout << "-";
+		cout<<endl;
+		printTree($1, nullptr, false);
+		for(int i=0;i<80;i++) cout << "-"; cout<<endl;
+	}
 	| Block {}
-	| IfStmt {}
+	| IfStmt {
+	}
 	| ForStmt {} 
 	| PrintStmt {};
 
@@ -88,9 +97,6 @@ PrintStmt:
 FunctionDecl:
 	T_FUNC T_IDENTIFIER T_LEFTPARANTHESES T_RIGHTPARANTHESES Block {};
 
-IdentifierList:
-	IdentifierList T_COMMA T_IDENTIFIER {;} 
-	| T_IDENTIFIER {$<node>$ = createNode($<sval>1,0,0);};
 
 TopLevelDeclList:
     TopLevelDeclList TopLevelDecl  {}
