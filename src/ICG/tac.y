@@ -42,6 +42,7 @@ void for2();
 void for3();
 void for4();
 void printStack();
+void printQuadraples();
 //Optimization functions
 void constantPropagation(int index, quad arr[100]);
 int checkForDigits(char *ch);
@@ -222,7 +223,6 @@ ImportSpecList:
 
 %%
 
-
 #include "lex.yy.c"
 #include<ctype.h>
 #include<fstream>
@@ -255,6 +255,20 @@ int main (int argc, char** argv) {
 	yyparse ( );
 	printf("\n\033[0;32mParsing completed.\033[0m\n\n");
 	printf("---------------------ICG in the form of Quadruples-------------------------\n\n");
+    printQuadraples();
+    fo.close();
+ 	copyPropagation(q);
+    printf("\n\n------------------AFTER COPY PROPOGATION----------------------\n");
+    printQuadraples();
+    constantFolding(q);
+    printf("\n\n----------AFTER CONSTANT FOLDING and PROPOGATION--------------\n");
+    printQuadraples();
+	return 0;
+}
+
+//Print Quadraples
+void printQuadraples()
+{
     for(int i=0;i<62;i++)
         printf("-");
     cout << endl;
@@ -270,40 +284,6 @@ int main (int argc, char** argv) {
 	for(int i=0;i<62;i++)
         printf("-");
     cout << endl;
-    fo.close();
- 	copyPropagation(q);
-    printf("\n\n------------------AFTER COPY PROPOGATION----------------------\n");
-    for(int i=0;i<62;i++)
-        printf("-");
-    cout << endl;
-    printf("Operator \t | Arg1 \t | Arg2 \t | Result \n");
-    for(int i=0;i<62;i++)
-        printf("-");
-    cout << endl;
-    for(i=0;i<quadlen;i++)
-    {
-        printf("%-8s \t | %-8s \t | %-8s \t | %-6s \n",q[i].op,q[i].arg1,q[i].arg2,q[i].res);
-    }
-	for(int i=0;i<62;i++)
-        printf("-");
-    cout << endl;
-    constantFolding(q);
-    printf("\n\n----------AFTER CONSTANT FOLDING and PROPOGATION--------------\n");
-    for(int i=0;i<62;i++)
-        printf("-");
-    cout << endl;
-    printf("Operator \t | Arg1 \t | Arg2 \t | Result \n");
-    for(int i=0;i<62;i++)
-        printf("-");
-    cout << endl;
-    for(i=0;i<quadlen;i++)
-    {
-        printf("%-8s \t | %-8s \t | %-8s \t | %-6s \n",q[i].op,q[i].arg1,q[i].arg2,q[i].res);
-    }
-	for(int i=0;i<62;i++)
-        printf("-");
-    cout << endl;
-    return 0;
 }
 //Print top of stack
 void printStack()
