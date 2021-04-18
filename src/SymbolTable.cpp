@@ -2,86 +2,124 @@
 #include "SymbolTable.h"
 
 using namespace std;
-int size=0;
+int token_count=0;
 
-    struct SymbTab *first, *last;
-    struct SymbTab* Search(char lab[])
+SymbTab table[10000];
+
+void lookup(char *token,int line,char type,char *value,char *datatype)
+{
+  //printf("Token %s line number %d\n",token,line);
+  int flag = 0;
+  for(int i = 0;i < token_count;i++)
+  {
+    if(!strcmp(table[i].symbol,token))
     {
-        //printf("\n\nInside search ->%s\n\n",lab);
-        int i, flag = 0;
-        struct SymbTab *p;
-        p = first;
-        //printf("Inside Search, before loop");
-        for (i = 0; i < size; i++)
-        {
-            //printf("Inside search loop\n");
-            //printf("%s %s\n",p->symbol, lab);
-            if (strcmp(p->symbol, lab) == 0)
-            {   return p;
-                //printf("MATCH");
-            }
-            p = p->next;
-        }
-        return NULL;
+      flag = 1;
+      if(table[i].line_no != line)
+      {
+        table[i].line_no = line;
+      }
     }
-    void Insert(char symbol[], int address, char symbol_type[])
-    {
-        // printf("Inside ;Insert\n");
-        printf(" %s, %d",symbol, address);
-        //int n=0;
-        // char l[20];
-        // printf("\n\tEnter the label : ");
-        // scanf("%s", l);
-        struct SymbTab* n;
-        n = Search(symbol);
-        if (n)
-        {
-            n->addr[n->addr_no] = address;
-            n->addr_no++;
-        }
-        else{
-            struct SymbTab *p;
-            p = (SymbTab*)malloc(sizeof(struct SymbTab));
-            //Token Label as TK<NO>
-            string token_no = "TK_"+to_string(size);
-            strcpy(p->label,token_no.c_str());
-            // printf("\n\tEnter the symbol : ");
-            // scanf("%s", p->symbol);
-            strcpy(p->symbol, symbol);
-            strcpy(p->symbol_type,symbol_type);
-            // printf("\n\tEnter the address : ");
-            // scanf("%d", &p->addr);
-            p->addr[0] = address;
-            p->addr_no=1;
-            p->next = NULL;
-            if (size == 0)
-            {
-                first = p;
-                last = p;
-            }
-            else
-            {
-                last->next = p;
-                last = p;
-            }
-            size++;
+  }
+  
+  //Insert
+  if(flag == 0)
+  {
+    table[token_count].token_id = (char*)malloc(sizeof(char)*20);
+    string token_id = "TK_" + to_string(token_count);
+    strcpy(table[token_count].token_id,(char *)token_id.c_str());
+    strcpy(table[token_count].symbol,token);
+    table[token_count].symbol_type = type;
+    if(value==NULL)
+        table[token_count].value=NULL;
+    else
+        strcpy(table[token_count].value,value);
         
-        // printf("\n\tLabel ;inserted\n");
-        }
-    }
-    void Display()
+    if(datatype==NULL)
+        table[token_count].datatype=NULL;
+    else
+        table[token_count].datatype=datatype;
+        
+    table[token_count].line_no = line;
+    token_count++;
+  }
+}
+
+void search_id(char *token,int lineno)
+{
+  int flag = 0;
+  for(int i = 0;i < token_count;i++)
+  {
+    if(!strcmp(table[i].symbol,token))
     {
-        int i;
-        struct SymbTab *p;
-        p = first;
-        printf("\n\tLABEL\t\tSYMBOL\t\t\tSYMBOL_TYPE\t\t\tADDRESS\n");
-        for (i = 0; i < size; i++)
-        {   
-            printf("\t%s\t\t%s\t\t\t%s\t\t\t", p->label, p->symbol,p->symbol_type);
-            for (int i=0;i<p->addr_no;i++){
-                printf("%d,",p->addr[i]);
-            }
-            printf("\n");
-            p = p->next;
-        }
+      flag = 1;
+      return;
     }
+  }
+  if(flag == 0)
+  {
+    printf("Error at line %d : %s is not defined\n",lineno,token);
+    exit(0);
+  }
+}
+
+void update(char *token,int lineno,char *value)
+{
+  int flag = 0;
+  
+  for(int i = 0;i < token_count;i++)
+  {
+    if(!strcmp(table[i].symbol,token))
+    {
+      flag = 1;
+      table[i].value = (char*)malloc(sizeof(char)*strlen(value));
+      //sprintf(table[i].value,"%s",value);
+      strcpy(table[i].value,value);
+      table[i].line_no = lineno;
+      return;
+    }
+  }
+  if(flag == 0)
+  {
+    printf("Error at line %d : %s is not defined\n",lineno,token);
+    exit(0);
+  }
+}
+
+int get_val(char *token)
+{
+  int flag = 0;
+  for(int i = 0;i < token_count;i++)
+  {
+    if(!strcmp(table[i].symbol,token))
+    {
+      flag = 1;
+      if(table[i].symbol_type=='I')
+        return atoi(table[i].value);
+      //Added this part so rel_op works for numbers
+      if(table[i].symbol_type=='C')
+        return atoi(table[i].symbol);
+    }
+  }
+  if(flag == 0)
+  {
+    printf("Error at line : %s is not defined\n",token);
+    exit(0);
+  }
+}
+
+void Display(){
+    for(int i=0;i<82;i++)
+        printf("-");
+    printf("\n LABEL\t  | SYMBOL\t\t | SYMBOL_TYPE\t        | LINE\t | VALUE\t\n");
+    for(int i=0;i<82;i++)
+        printf("-");
+    cout << endl;
+    for (int i = 0; i < token_count; i++)
+    {   
+        printf(" %-8s | %-20s | %-20c | %-8d | %-10s\n", table[i].token_id, table[i].symbol, table[i].symbol_type, table[i].line_no, table[i].value);
+    }
+    for(int i=0;i<65;i++)
+        printf("-");
+    cout << endl;
+}

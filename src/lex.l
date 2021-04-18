@@ -1,98 +1,95 @@
-%option noyywrap
+
 %{
 	#include <stdio.h>
     #include<string.h>
-    #include "src/SymbolTable.h"    
+    #include<errno.h>
+    //#include "src/SymbolTable.h"
+    #include "y.tab.h"    /* token codes from the parser */ 
+    int yylex();
+    void yyerror (const char* s);
+    extern int errno;
+    #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno;
 %}
-%option nounput yylineno
-UNICODE_LETTER			[a-zA-Z]
-LETTER				[a-zA-Z_]
-DIGIT				[0-9]
-UNICODE_CHAR			[^\n]
-NEW_LINE			[\n]
-VAR_TYPE			"bool"|"byte"|"error"|"float32"|"float64"|"int"|"int8"|"int16"|"int32"|"int64"|"rune"|"string"|"uint"|"uint8 "|"uint16"|"uint32"|"uint64"|"uintptr"
-BOOL_CONST			"true"|"false"
-NIL_VAL				"nil"
 
+%option nounput yylineno
+
+UNICODE_LETTER			[a-zA-Z]
+LETTER				    [a-zA-Z_]
+DIGIT				    [0-9]
+UNICODE_CHAR			[^\n]
+NEW_LINE			    [\n]
+VAR_TYPE			    "bool"|"error"|"float32"|"float64"|"int"|"string"
+BOOL_CONST			    "true"|"false"
+NIL_VAL				    "nil"
+WHITESPACE		        [ \t\f\r\v]+
 
 %%
 
-"="				{printf("(%s, ASSIGN)\n", yytext);Insert(yytext,yylineno,"ASSIGN");}
-"+"				{printf("(%s, ADD)\n", yytext);Insert(yytext,yylineno,"ADD");}
-"-"				{printf("(%s, MINUS)\n", yytext);Insert(yytext,yylineno,"MINUS");}
-"*"				{printf("(%s, MULTIPLY)\n", yytext);Insert(yytext,yylineno,"MULTIPLY");}
-"/"				{printf("(%s, DIVIDE)\n", yytext);Insert(yytext,yylineno,"DIVIDE");}
-"%"				{printf("(%s, MOD)\n", yytext);Insert(yytext,yylineno,"MOD");}
+"fmt.Println"		   {yylval.sval= strdup(yytext);printf("(%s, T_PRINT)\n", yytext);}
 
-"&&"				{printf("(%s, AND)\n", yytext);Insert(yytext,yylineno,"AND");}
-"||"				{printf("(%s, OR)\n", yytext);Insert(yytext,yylineno,"OR");}
-"->"				{printf("(%s, ARROW)\n", yytext);Insert(yytext,yylineno,"ARROW");}
-"++"				{printf("(%s, INCREMENT)\n", yytext);Insert(yytext,yylineno,"INCREMENT");}
-"--"				{printf("(%s, DECREMENT)\n", yytext);Insert(yytext,yylineno,"DECREMENT");}
+"="				{yylval.sval= strdup(yytext);printf("(%s, T_ASSIGN)\n", yytext);return T_ASSIGN;}
+"+"				{yylval.sval= strdup(yytext);printf("(%s, T_ADD)\n", yytext);return T_ADD;}
+"-"				{yylval.sval= strdup(yytext);printf("(%s, T_MINUS)\n", yytext);return T_MINUS;}
+"*"				{yylval.sval= strdup(yytext);printf("(%s, T_MULTIPLY)\n", yytext);return T_MULTIPLY;}
+"/"				{yylval.sval= strdup(yytext);printf("(%s, T_DIVIDE)\n", yytext);return T_DIVIDE;}
+"%"				{yylval.sval= strdup(yytext);printf("(%s, T_MOD)\n", yytext);return T_MOD;}
 
-"=="			{printf("(%s, EQL)\n", yytext);Insert(yytext,yylineno,"EQL");}
-">"				{printf("(%s, GTR)\n", yytext);Insert(yytext,yylineno,"GTR");}
-"<"				{printf("(%s, LSR)\n", yytext);Insert(yytext,yylineno,"LSR");}
-"!"				{printf("(%s, NOT)\n", yytext);Insert(yytext,yylineno,"NOT");}
+"&&"				{yylval.sval= strdup(yytext);printf("(%s, T_LAND)\n", yytext);}
+"||"				{yylval.sval= strdup(yytext);printf("(%s, T_LOR)\n", yytext);return T_LOR;}
+"++"				{yylval.sval= strdup(yytext);printf("(%s, T_INCREMENT)\n", yytext);return T_INCREMENT;}
+"--"				{yylval.sval= strdup(yytext);printf("(%s, T_DECREMENT)\n", yytext);return T_DECREMENT;}
 
-"!="			{printf("(%s, NEQ)\n", yytext);Insert(yytext,yylineno,"NEQ");}
-"<="			{printf("(%s, LEQ)\n", yytext);Insert(yytext,yylineno,"LEQ");}
-">="			{printf("(%s, GEQ)\n", yytext);Insert(yytext,yylineno,"GEQ");}
-":="			{printf("(%s, DEFINE)\n", yytext);Insert(yytext,yylineno,"DEFINE");}
 
-"("				{printf("(%s, LEFTPARANTHESES)\n", yytext);}
-")"				{printf("(%s, RIGHTPARANTHESES)\n", yytext);}
-"{"				{printf("(%s, LEFTBRACE)\n", yytext);}
-"}"				{printf("(%s, RIGHTBRACE)\n", yytext);}
-"["				{printf("(%s, LEFTBRACKET)\n", yytext);}
-"]"				{printf("(%s, RIGHTBRACKET)\n", yytext);}
-","				{printf("(%s, COMMA)\n", yytext);Insert(yytext,yylineno,"COMMA");}
-";"				{printf("(%s, SEMICOLON)\n", yytext);Insert(yytext,yylineno,"SEMICOLON");}
-":"				{printf("(%s, COLON)\n", yytext);Insert(yytext,yylineno,"COLON");}
-"."				{printf("(%s, PERIOD)\n", yytext);Insert(yytext,yylineno,"PERIOD");}
+"=="			{yylval.sval= strdup(yytext);printf("(%s, T_EQL)\n", yytext);return T_EQL;}
+">"				{yylval.sval= strdup(yytext);printf("(%s, T_GTR)\n", yytext);return T_GTR;}
+"<"				{yylval.sval= strdup(yytext);printf("(%s, T_LSR)\n", yytext);return T_LSR;}
+"!"				{yylval.sval= strdup(yytext);printf("(%s, T_NOT)\n", yytext);return T_NOT;}
 
-"package"			{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
-"import"			{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
-"func"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
-"break"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");} 
-"case"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
-"const"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");} 
-"continue"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");} 
-"default"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");} 
-"else"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
-"for"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
-"go"        		{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
-"if"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
-"range"				{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
-"return"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
-"struct"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
-"switch"        	{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");} 
-"type"       		{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");} 
-"var"        		{printf("(%s, KEYWORD)\n", yytext);Insert(yytext,yylineno,"KEYWORD");}
-{VAR_TYPE}			{printf("(%s, DATA TYPE)\n", yytext);Insert(yytext,yylineno,"DATA TYPE");}
-{BOOL_CONST}		{printf("(%s, BOOLEAN CONSTANT)\n", yytext);Insert(yytext,yylineno,"BOOLEAN CONSTANT");}
-{NIL_VAL}			{printf("(%s, NULL)\n", yytext);Insert(yytext,yylineno,"NULL");}
+"!="			{yylval.sval= strdup(yytext);printf("(%s, T_NEQ)\n", yytext);return T_NEQ; }
+"<="			{yylval.sval= strdup(yytext);printf("(%s, T_LEQ)\n", yytext);return T_LEQ;}
+">="			{yylval.sval= strdup(yytext);printf("(%s, T_GEQ)\n", yytext);return T_GEQ;}
 
-{LETTER}({LETTER}|{DIGIT})*	{printf("(%s, IDENTIFIER)\n", yytext);Insert(yytext,yylineno,"IDENTIFIER");}
-{DIGIT}+			{printf("(%s, INTEGER)\n", yytext);Insert(yytext,yylineno,"INTEGER");}
-{DIGIT}+"."{DIGIT}+		{printf("(%s, FLOAT)\n", yytext);Insert(yytext,yylineno,"FLOAT");}
-\'{UNICODE_CHAR}\'  		{printf("(%s, BYTE)\n", yytext);Insert(yytext,yylineno,"BYTE");}
+"("				{yylval.sval= strdup(yytext);printf("(%s, T_LEFTPARANTHESES)\n", yytext);return T_LEFTPARANTHESES;}
+")"				{yylval.sval= strdup(yytext);printf("(%s, T_RIGHTPARANTHESES)\n", yytext);return T_RIGHTPARANTHESES;}
+"{"				{yylval.sval= strdup(yytext);printf("(%s, T_LEFTBRACE)\n", yytext);return T_LEFTBRACE;}
+"}"				{yylval.sval= strdup(yytext);printf("(%s, T_RIGHTBRACE)\n", yytext);return T_RIGHTBRACE;}
+"["				{yylval.sval= strdup(yytext);printf("(%s, T_LEFTBRACKET)\n", yytext);return T_LEFTBRACKET;}
+"]"				{yylval.sval= strdup(yytext);printf("(%s, T_RIGHTBRACKET)\n", yytext);return T_RIGHTBRACKET;}
+","				{yylval.sval= strdup(yytext);printf("(%s, T_COMMA)\n", yytext);return T_COMMA;}
+";"				{yylval.sval= strdup(yytext);printf("(%s, T_SEMICOLON)\n", yytext);return T_SEMICOLON;}
+"."				{yylval.sval= strdup(yytext);printf("(%s, T_PERIOD)\n", yytext);return T_PERIOD;}
 
-\"([^\\\n\"]|(\\.))*\"	{printf("(%s, STRING)\n", yytext);Insert(yytext,yylineno,"STRING");}
+"package"			{yylval.sval= strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);return T_PACKAGE;}
+"import"			{yylval.sval= strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);return T_IMPORT;}
+"func"				{yylval.sval= strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);return T_FUNC;}
+"break"				{yylval.sval= strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);return T_BREAK;} 
+"const"				{yylval.sval= strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);return T_CONST;} 
+"continue"        	{yylval.sval= strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);return T_CONTINUE;} 
+"else"				{yylval.sval= strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);return T_ELSE;}
+"for"				{yylval.sval= strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);return T_FOR;}
+"if"				{yylval.sval= strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);return T_IF;}
+"return"        	{yylval.sval= strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);return T_RETURN;}
+"var"        		{yylval.sval= strdup(yytext);printf("(%s, T_KEYWORD)\n", yytext);return T_VAR;}
+{VAR_TYPE}			{yylval.sval= strdup(yytext);printf("(%s, T_DATA TYPE)\n", yytext);return T_VAR_TYPE;}
+{BOOL_CONST}		{yylval.sval= strdup(yytext);printf("(%s, T_BOOLEAN CONSTANT)\n", yytext);return T_BOOL_CONST;}
+{NIL_VAL}			{yylval.sval= strdup(yytext);printf("(%s, T_NULL)\n", yytext);return T_NIL_VAL;}
+
+{LETTER}({LETTER}|{DIGIT})*	{yylval.sval= strdup(yytext);printf("(%s, T_IDENTIFIER)\n", yytext);return T_IDENTIFIER;}
+{DIGIT}+			{yylval.sval= strdup(yytext);printf("(%s, T_INTEGER)\n", yytext);return T_INTEGER;}
+{DIGIT}+"."{DIGIT}+		{ yylval.sval= strdup(yytext);printf("(%s, T_FLOAT)\n", yytext);return T_FLOAT;}
+
+\"([^\\\n\"]|(\\.))*\"	{ yylval.sval= strdup(yytext);printf("(%s, T_STRING)\n", yytext);return T_STRING;}
 \/\/{UNICODE_CHAR}*\n		;
+
 "\n"				;
 "\t"				;
-" "				;
+{WHITESPACE}				;
+. {yyerror("Lexical error unidentified token");}
+
 %%
 
-int main(){
-
-	FILE *fp = fopen("test/test1.go", "r");
-	if(fp)
-			yyin = fp;
-    yylex();
-    printf("LEXING COMPLETED:\n");
-    printf("Symbol Table after Lexical Analysis:\n");
-    Display();
+int yywrap()
+{
+    printf("Input Exhausted!\n");
+    return 1;
 }
-

@@ -1,15 +1,18 @@
-#define NULL 0
-struct SymbTab
-    {
-        char label[10];
-        char symbol[50];
-        char symbol_type[50];
-        int addr[10];
-        int addr_no;
-        struct SymbTab *next;
-    };
+typedef struct
+{
+    char* token_id; // token id
+    char symbol[100]; // token read
+    char symbol_type; // token type from lexer eg IDENTIFIER
+    int line_no; 
+    char *value;
+    char *datatype;
+}SymbTab;
 
-void Insert(char symbol[], int address, char symbol_type[]);
+
+//Symbol Table functions
+void lookup(char *,int,char,char*,char* );
+//void insert(char *,int,char,char*,char* );
+void update(char *,int,char *);
+void search_id(char *,int );
+int get_val(char *token);
 void Display();
-// void Delete();
-struct SymbTab* Search(char lab[]);
