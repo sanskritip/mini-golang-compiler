@@ -47,6 +47,7 @@ void constantPropagation(int index, quad arr[100]);
 int checkForDigits(char *ch);
 char* compute(char *x, char *y, char *op);
 void constantFolding(quad arr[100]);
+void copyPropagation(quad arr[100]);
 %}
 
 %start StartFile
@@ -270,6 +271,22 @@ int main (int argc, char** argv) {
         printf("-");
     cout << endl;
     fo.close();
+ 	copyPropagation(q);
+    printf("\n\n------------------AFTER COPY PROPOGATION----------------------\n");
+    for(int i=0;i<62;i++)
+        printf("-");
+    cout << endl;
+    printf("Operator \t | Arg1 \t | Arg2 \t | Result \n");
+    for(int i=0;i<62;i++)
+        printf("-");
+    cout << endl;
+    for(i=0;i<quadlen;i++)
+    {
+        printf("%-8s \t | %-8s \t | %-8s \t | %-6s \n",q[i].op,q[i].arg1,q[i].arg2,q[i].res);
+    }
+	for(int i=0;i<62;i++)
+        printf("-");
+    cout << endl;
     constantFolding(q);
     printf("\n\n----------AFTER CONSTANT FOLDING and PROPOGATION--------------\n");
     for(int i=0;i<62;i++)
@@ -286,7 +303,7 @@ int main (int argc, char** argv) {
 	for(int i=0;i<62;i++)
         printf("-");
     cout << endl;
-	return 0;
+    return 0;
 }
 //Print top of stack
 void printStack()
@@ -586,6 +603,47 @@ char* compute(char *x, char *y, char *op)
         else if(strcmp(op,"<=")) return (xx<=yy)?(char *)"true":(char *)"false";
     }
     return (char*)to_string(result).c_str();
+}
+void copyPropagation(quad arr[100])
+{
+    char val[50], var[50];
+    int i=0;
+    for(; i<quadlen; i++)
+    {       //If arg2 is null; ex q = b -> res = q, arg1 = b, op = '='
+            //p = a + c         p = a + c       p = a + c
+            //q = b         =>  q = b       =>  r = b * b
+            //r = q * q         r = b * b
+        if(!arr[i].arg2){
+            strcpy(var, arr[i].res);
+            strcpy(val, arr[i].arg1);
+            //flag to see if any arg was changed
+            int flag = 0; 
+            for(int j = i + 1; j<quadlen; j++)
+            {
+                    //r = q * q; replace first occurence of q with b
+                    if (strcmp(arr[j].arg1, var)==0){
+                        strcpy(arr[j].arg1, val);
+                        flag = 1;
+                    }
+                    //replace second occurance with b
+                    if (arr[j].arg2 && strcmp(arr[j].arg2, var)==0){
+                        strcpy(arr[j].arg2, val);
+                        flag = 1;
+                    }
+            }
+            //After the replacements, remove the line q = b
+            if(flag){
+                int del = i;
+                for (int k = del-1; k < quadlen; k++)
+                {
+                    arr[del]=arr[del+1];
+                    del++;
+                }
+                //since the ith index was removed, length reduces by 1
+                quadlen=quadlen-1;
+            }
+        }
+    }
 }
 void constantPropagation(int index, quad arr[100])
 {
