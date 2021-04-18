@@ -1,8 +1,7 @@
 all:
-	lex ../../lex.l
-	yacc -d opt.y -Wno-yacc
+	lex ../lex.l
+	yacc -d tac.y --warnings=none
 	g++ y.tab.c -ll -w -o gocompiler	
-	./gocompiler ../../../test/test1_opt.go
 clean:
 	rm lex.yy.c
 	rm y.tab.c

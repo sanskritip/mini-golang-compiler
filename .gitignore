@@ -32,7 +32,7 @@
 *.app
 
 *.yy.c
-src/lex.yy.c
+lex.yy.c
 
 *.tab.c
 *.tab.h

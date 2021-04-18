@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 #include "y.tab.h"
 using namespace std;
-#include "src/SymbolTable.h"
+#include "SymbolTable.h"
 int yylex();
 extern FILE *yyin;
 extern int yylineno;
