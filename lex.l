@@ -74,17 +74,32 @@ WHITESPACE		        [ \t\f\r\v]+
 {BOOL_CONST}		{yylval.sval= strdup(yytext);return T_BOOL_CONST;}
 {NIL_VAL}			{yylval.sval= strdup(yytext);return T_NIL_VAL;}
 
-{LETTER}({LETTER}|{DIGIT})*	{yylval.sval= strdup(yytext);return T_IDENTIFIER;}
+{LETTER}({LETTER}|{DIGIT})*	{
+    if(strlen(yytext)<=32)
+        {yylval.sval= strdup(yytext);return T_IDENTIFIER;}
+    else
+    {
+        printf ("\033[0;31m Line:%d | Identifier too long,must be between 1 to 32 characters \n\033[0m\n",yylineno);
+        char newid[32];
+        strncpy(newid,yytext,32);
+        printf ("\033[0;36m Error handled , Identifier name %s replaced by %s \n\033[0m\n",yytext,newid);
+        yylval.sval= strdup(newid);return T_IDENTIFIER;
+    }
+}
+{DIGIT}+({LETTER}|_)+  {yyerror("Lexical Error : Illegal identifier format\n");}
+
 {DIGIT}+			{yylval.sval= strdup(yytext);return T_INTEGER;}
 {DIGIT}+"."{DIGIT}+		{ yylval.sval= strdup(yytext);return T_FLOAT;}
 
+\"([^\"\n\"]|(\\.))*$   { yyerror("Lexical Error : Badly Terminated String\n");}
 \"([^\\\n\"]|(\\.))*\"	{ yylval.sval= strdup(yytext);return T_STRING;}
+
 \/\/{UNICODE_CHAR}*\n		;
 
 "\n"				;
 "\t"				;
-{WHITESPACE}				;
-. {yyerror("Lexical error unidentified token");}
+{WHITESPACE}		;
+. {yyerror("Lexical error : Unidentified token");}
 
 %%
 

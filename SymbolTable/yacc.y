@@ -8,7 +8,7 @@ extern FILE *yyin;
 extern int yylineno;
 
 //Error Handling
-void yyerror (const char *s) {fprintf (stderr, "\033[0;31mLine:%d | %s\n\033[0m\n",yylineno, s);} 
+void yyerror (const char *s) {fprintf (stderr, "\033[0;31mLine:%d | %s\n\033[0m\n",yylineno, s);exit(0);} 
 
 //Symbol Table Structure
   char x[10];
