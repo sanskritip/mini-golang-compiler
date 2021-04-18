@@ -21,7 +21,7 @@
 
 ### CFG and Parsing (Syntax validation)
 
-  - [ ] Printing
+   - [ ] Printing
 	- [ ] Variable declaration 
 	- [ ] Const Declaration
 	- [ ] Assign Variables - int , float , string , bool , null 
@@ -51,27 +51,26 @@
 ### TAC
   - [ ] Semmatic error analysis
   - [ ] Print out semantic errors and continue parsing
-  - [ ] Quadraple format
-  - [ ] Update Symbol table
+  - [x] Quadraple format ```DONE```
+  - [x] Update Symbol table ```DONE```
   
 ### Optimisation
-  - [ ] Type 1 Optimisation ( Remove dead code/  unreachanble code )
-  - [ ] Type 2 Optimisation ( Remove common subexpression )
-  - [ ] Type 3 Optimisation ( Constant Folding )
-  - [ ] Type 4 Optimisation ( Constant Propagation )
-  - [ ] Type 5 Optimisation ( Loop invariant code outside loop )
+  - [x] Type 1 Optimisation ( Remove dead code/  unreachanble code ) ```DONE```
+  - [x] Type 2 Optimisation ( Copy Propagation ) ```DONE```
+  - [x] Type 3 Optimisation ( Constant Folding ) ```DONE```
+  - [x] Type 4 Optimisation ( Constant Propagation ) ```DONE```
   
 ### Look into
   - [ ] Reduce conflicts
   - [ ] Parser error recovery ? Even if its declaration related!
   
 ### Deliverables
-  - [ ] CFG
-  - [ ] All the files related to all the tasks
+  - [ ]  CFG
+  - [ ]  All the files related to all the tasks
   - [ ]  Symbol table with required Information
   - [ ]  ReadMe file for Syntax Error Handling Strategies
   - [ ]  Abstract syntax tree printed in an inorder way.
   - [ ]  ReadMe file for Semantic Error Handling
-  - [ ]  Three address code (in Quadruple format)
-  - [ ]  Optimized Three address code.
+  - [x]  Three address code (in Quadruple format) ```DONE```
+  - [x]  Optimized Three address code. ```DONE```
   - [ ]  ReadMe file for the Overall Tasks
