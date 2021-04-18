@@ -258,15 +258,6 @@ int main (int argc, char** argv) {
 	printf("---------------------ICG in the form of Quadruples-------------------------\n\n");
     printQuadraples();
     fo.close();
- 	copyPropagation(q);
-    printf("\n\n------------------AFTER COPY PROPOGATION----------------------\n");
-    printQuadraples();
-    DCE(q);
-    printf("\n\n----------------AFTER DEAD CODE ELIMINATION-------------------\n");
-    printQuadraples();
-    constantFolding(q);
-    printf("\n\n----------AFTER CONSTANT FOLDING and PROPOGATION--------------\n");
-    printQuadraples();
 	return 0;
 }
 
