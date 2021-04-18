@@ -51,8 +51,8 @@ void printTree(AST* root, Trunk *prev, bool isLeft)
     }
     else if (isLeft)
     {
-        trunk->str = ".——— ";
-        prev_str = "   |";
+        trunk->str = ".—— ";
+        prev_str = "    |";
     }
     else {
         trunk->str = "`——— ";
