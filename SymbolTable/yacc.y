@@ -6,7 +6,7 @@ using namespace std;
 int yylex();
 extern FILE *yyin;
 extern int yylineno;
-
+extern int yycolno;
 //Error Handling
 void yyerror (const char *s) {fprintf (stderr, "\033[0;31mLine:%d | %s\n\033[0m\n",yylineno, s);exit(0);} 
 
@@ -69,13 +69,11 @@ bool isNumber(string s)
 
 StartFile:
     T_PACKAGE PackageName ImportDeclList TopLevelDeclList {
-		cout<<"Input accepted"<<endl;
 		lookup($1,@1.last_line,'K',NULL,NULL);
 	};
 
 Block:
 	T_LEFTBRACE StatementList T_RIGHTBRACE {
-		cout<<"Block"<<endl;
 	}
 	| /*empty*/ {}; 
 
@@ -123,7 +121,6 @@ Declaration:
 
 PrintStmt:
 	T_PRINT T_LEFTPARANTHESES T_STRING T_RIGHTPARANTHESES {
-		cout <<"Enter print"<<endl;
 		lookup($1,@1.last_line,'K',NULL,NULL);
 	};
 

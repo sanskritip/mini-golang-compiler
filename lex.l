@@ -1,5 +1,7 @@
 
 %{
+    #include <bits/stdc++.h>
+    using namespace std;
 	#include <stdio.h>
     #include<string.h>
     #include<errno.h>
@@ -25,7 +27,7 @@ WHITESPACE		        [ \t\f\r\v]+
 
 %%
 
-"fmt.Println"		   {yylval.sval= strdup(yytext);printf("(%s, T_PRINT)\n", yytext);return T_PRINT;}
+"fmt.Println"		   {yylval.sval= strdup(yytext);}
 
 "="				{yylval.sval= strdup(yytext);return T_ASSIGN;}
 "+"				{yylval.sval= strdup(yytext);return T_ADD;}
@@ -97,7 +99,7 @@ WHITESPACE		        [ \t\f\r\v]+
 \/\/{UNICODE_CHAR}*\n		;
 
 "\n"				;
-"\t"				;
+"\t"				{};
 {WHITESPACE}		;
 . {yyerror("Lexical error : Unidentified token");}
 

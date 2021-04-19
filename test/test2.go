@@ -17,7 +17,7 @@ func main() {
 	var num int = 9;
     //If - elseif - else statement
     if num < 0 {
-        //fmt.Println(num, "is negative");
+        fmt.Println("is negative");
     } else if num < 10 {
         //fmt.Println(num, "has 1 digit");
     } else {
