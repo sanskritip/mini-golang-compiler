@@ -24,6 +24,8 @@ func main() {
 	t = q * 2;
 	//Identifier comparision using relational
 	var f bool = a<b;
+	deadCode = q * 3;
+
 	
 
 }
