@@ -258,14 +258,14 @@ int main (int argc, char** argv) {
 	printf("---------------------ICG in the form of Quadruples-------------------------\n\n");
     printQuadraples();
     fo.close();
- 	DCE(q);
-    printf("\n\n----------------AFTER DEAD CODE ELIMINATION-------------------\n");
-    printQuadraples();
     copyPropagation(q);
-    printf("\n\n------------------AFTER COPY PROPOGATION----------------------\n");
+    printf("\n\n------------------AFTER COPY PROPOGATION----------------------\n\n");
+    printQuadraples();
+ 	DCE(q);
+    printf("\n\n----------------AFTER DEAD CODE ELIMINATION-------------------\n\n");
     printQuadraples();
     constantFolding(q);
-    printf("\n\n----------AFTER CONSTANT FOLDING and PROPOGATION--------------\n");
+    printf("\n\n----------AFTER CONSTANT FOLDING and PROPOGATION--------------\n\n");
     printQuadraples();
 	return 0;
 }
@@ -601,7 +601,9 @@ void copyPropagation(quad arr[100])
             strcpy(var, arr[i].res);
             strcpy(val, arr[i].arg1);
             //Check if arg1 is var
+            //arg1 shouldn't be the temp var we create like T0,T1 etc
             int varCheck = checkForDigits(arr[i].arg1);
+            //arg1[0] is T
             if(varCheck==0)
             {   
                 //flag to see if any arg was changed
