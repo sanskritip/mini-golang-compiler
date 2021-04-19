@@ -49,8 +49,8 @@
 	- [x] Evaluate complex logical expressions
 	
 ### TAC
-  - [ ] Semmatic error analysis
-  - [ ] Print out semantic errors and continue parsing
+  - [x] Semmatic error analysis
+  - [x] Print out semantic errors and continue parsing ```Currentlt stops parsing```
   - [x] Quadraple format ```DONE```
   - [ ] Update Symbol table ```DONE```
   

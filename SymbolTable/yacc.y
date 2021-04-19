@@ -81,7 +81,7 @@ Block:
 
 StatementList:
     StatementList Statement T_SEMICOLON {}
-    | Statement T_SEMICOLON {cout<<"Statement ;"<<endl;}
+    | Statement T_SEMICOLON {}
 	| StatementList Statement {}
     | Statement{};
 
@@ -95,15 +95,15 @@ Statement:
 
 SimpleStmt:
 	T_IDENTIFIER assign_op Expression {
-		search_id($1,@1.last_line);lookup($2,@2.last_line,'O',NULL,NULL);update($1,@1.last_line,$3);
+		search_id($1,@1.last_line,0);lookup($2,@2.last_line,'O',NULL,NULL);update($1,@1.last_line,$3);
+		type_check($1,$3,yylineno);
 	}
 	| Expression T_INCREMENT {
 		int temp = get_val($1);
-		search_id($1,@1.last_line);lookup($2,@2.last_line,'O',NULL,NULL);update($1,@1.last_line,(char *)to_string(temp+1).c_str());
+		search_id($1,@1.last_line,0);lookup($2,@2.last_line,'O',NULL,NULL);update($1,@1.last_line,(char *)to_string(temp+1).c_str());
 	}
 	| Expression T_DECREMENT {
-		int temp = get_val($1);
-		search_id($1,@1.last_line);lookup($2,@2.last_line,'O',NULL,NULL);update($1,@1.last_line,(char *)to_string(temp-1).c_str());
+		int temp = get_val($1);search_id($1,@1.last_line,0);lookup($2,@2.last_line,'O',NULL,NULL);update($1,@1.last_line,(char *)to_string(temp-1).c_str());
 	} 
 	| ExpressionList assign_op ExpressionList {
 		// b,c = 2,3
@@ -113,12 +113,13 @@ SimpleStmt:
 Declaration:
 	T_CONST T_IDENTIFIER Type T_ASSIGN Expression {lookup($1,@1.last_line,'K',NULL,NULL);}
 	| T_CONST T_IDENTIFIER Type {lookup($1,@1.last_line,'K',NULL,NULL);}
-	| T_VAR IdentifierList Type T_ASSIGN ExpressionList {
-		cout<<"datatype"<<$3<<endl;
-		lookup($2,@1.last_line,'I',NULL,$3);lookup($1,@1.last_line,'K',NULL,NULL);update($2,@2.last_line,$5);
-		}
-	| T_VAR IdentifierList Type { lookup($2,@1.last_line,'I',NULL,$3);lookup($2,@2.last_line,'K',NULL,NULL);
-	};
+	| T_VAR IdentifierList Type T_ASSIGN ExpressionList 
+	{	search_id($2,@1.last_line,1);
+		lookup($2,@1.last_line,'I',NULL,$3);lookup($1,@1.last_line,'K',NULL,NULL);
+		update($2,@2.last_line,$5);
+		type_check($2,$5,yylineno);
+	}
+	| T_VAR IdentifierList Type { search_id($2,@1.last_line,1);lookup($2,@1.last_line,'I',NULL,$3);lookup($2,@2.last_line,'K',NULL,NULL);};
 
 PrintStmt:
 	T_PRINT T_LEFTPARANTHESES T_STRING T_RIGHTPARANTHESES {
@@ -182,10 +183,10 @@ ExpressionList:
 	| Expression {$$=$1;};
 
 BasicLit:
-	T_INTEGER {lookup($1,@1.last_line,'C',NULL,NULL); $$=$1;}
-	| T_FLOAT {lookup($1,@1.last_line,'C',NULL,NULL); $$=$1;}
-	| T_STRING {lookup($1,@1.last_line,'C',NULL,NULL); $$=$1;}
-	| T_BOOL_CONST {lookup($1,@1.last_line,'C',NULL,NULL);$$=$1;
+	T_INTEGER {lookup($1,@1.last_line,'C',NULL,"int"); $$=$1;}
+	| T_FLOAT {lookup($1,@1.last_line,'C',NULL,"float"); $$=$1;}
+	| T_STRING {lookup($1,@1.last_line,'C',NULL,"string"); $$=$1;}
+	| T_BOOL_CONST {lookup($1,@1.last_line,'C',NULL,"bool");$$=$1;
 	};
 
 Expression:
