@@ -8,7 +8,7 @@ extern FILE *yyin;
 extern int yylineno;
 extern int yycolno;
 //Error Handling
-void yyerror (const char *s) {fprintf (stderr, "\033[0;31mLine:%d | %s\n\033[0m\n",yylineno, s);exit(0);} 
+void yyerror (const char *s) {fprintf (stderr, "\033[0;31m Line:%d | Column: %d %s\n\033[0m\n",yylineno, yycolno, s);exit(0);} 
 
 //Symbol Table Structure
   char x[10];
@@ -28,6 +28,8 @@ bool isNumber(string s)
 %}
 
 %start StartFile
+
+%error-verbose
 
 %union {
      char *sval;
@@ -97,11 +99,11 @@ SimpleStmt:
 		type_check($1,$3,yylineno);
 	}
 	| Expression T_INCREMENT {
-		int temp = get_val($1);
+		int temp = get_val($1,@1.last_line);
 		search_id($1,@1.last_line,0);lookup($2,@2.last_line,'O',NULL,NULL);update($1,@1.last_line,(char *)to_string(temp+1).c_str());
 	}
 	| Expression T_DECREMENT {
-		int temp = get_val($1);search_id($1,@1.last_line,0);lookup($2,@2.last_line,'O',NULL,NULL);update($1,@1.last_line,(char *)to_string(temp-1).c_str());
+		int temp = get_val($1,@1.last_line);search_id($1,@1.last_line,0);lookup($2,@2.last_line,'O',NULL,NULL);update($1,@1.last_line,(char *)to_string(temp-1).c_str());
 	} 
 	| ExpressionList assign_op ExpressionList {
 		// b,c = 2,3
@@ -190,8 +192,8 @@ Expression:
 	Expression math_op Expression 
 	{	//Won't work for identifiers
 		lookup($2,@2.last_line,'O',NULL,NULL);
-		int a = isNumber($1)?atoi($1):get_val($1);
-		int b = isNumber($3)?atoi($3):get_val($3);
+		int a = isNumber($1)?atoi($1):get_val($1,@1.last_line);
+		int b = isNumber($3)?atoi($3):get_val($3,@3.last_line);
 		if(!strcmp($2,"+")){sprintf($$,"%d",a+b);}
 		if(!strcmp($2,"*")){sprintf($$,"%d",a*b);}
 		if(!strcmp($2,"/")){sprintf($$,"%d",a/b);}
@@ -201,8 +203,8 @@ Expression:
 	| Expression rel_op Expression {
 		//Only binary expressions
 		lookup($2,@2.last_line,'O',NULL,NULL);
-		int a = isNumber($1)?atoi($1):get_val($1);
-		int b = isNumber($3)?atoi($3):get_val($3);
+		int a = isNumber($1)?atoi($1):get_val($1,@1.last_line);
+		int b = isNumber($3)?atoi($3):get_val($3,@3.last_line);
 		if(!strcmp($2,"==")){ bool e = (a==b);$$ = e?(char *)"true":(char *)"false";}
 		if(!strcmp($2,"!=")){ bool e = (a!=b);$$ = e?(char *)"true":(char *)"false";}
 		if(!strcmp($2,"<")){ bool e = (a<b);$$ = e?(char *)"true":(char *)"false";}

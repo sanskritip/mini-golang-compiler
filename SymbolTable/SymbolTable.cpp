@@ -111,12 +111,12 @@ void update(char *token,int lineno,char *value)
   }
   if(flag == 0)
   {
-    printf("Error at line %d : %s is not defined\n",lineno,token);
+    printf("\033[0;31m Line : %d | Semantic Error : %s is not defined\n\033[0m\n",lineno,token);
     exit(0);
   }
 }
 
-int get_val(char *token)
+int get_val(char *token,int lineno)
 {
   int flag = 0;
   for(int i = 0;i < token_count;i++)
@@ -133,7 +133,7 @@ int get_val(char *token)
   }
   if(flag == 0)
   {
-    printf("Error at line : %s is not defined\n",token);
+    printf("\033[0;31m Line : %d | Semantic Error : %s is not defined\n\033[0m\n",lineno,token);
     exit(0);
   }
 }
