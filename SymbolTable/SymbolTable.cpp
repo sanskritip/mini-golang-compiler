@@ -45,7 +45,7 @@ void lookup(char *token,int line,char type,char *value,char *datatype)
   }
 }
 
-void search_id(char *token,int lineno)
+void search_id(char *token,int lineno,int isDeclaration)
 {
   int flag = 0;
   for(int i = 0;i < token_count;i++)
@@ -53,15 +53,46 @@ void search_id(char *token,int lineno)
     if(!strcmp(table[i].symbol,token))
     {
       flag = 1;
-      return;
+      break;
     }
   }
-  if(flag == 0)
+  //If its being referenced without initialisation
+  if(isDeclaration==0 && flag == 0)
   { printf("\033[0;31m Line : %d | Semantic Error : %s is not defined\n \n\033[0m\n",lineno,token);
     exit(0);
   }
+  //If it is declartion and symbol entry exists
+  if(isDeclaration==1 && flag == 1)
+  { printf("\033[0;31m Line : %d | Semantic Error : %s is already defined, can't redefine identifier.\n \n\033[0m\n",lineno,token);
+    exit(0);
+  }
+  return;
 }
-
+void type_check(char * token1, char * token2, int lineno)
+{
+    int flag1 = -1;
+    int flag2= -1;
+    //Search for both tokens
+    for(int i = 0;i < token_count;i++)
+    {
+      if(!strcmp(table[i].symbol,token1))
+        flag1 = i;
+      if(!strcmp(table[i].symbol,token2))
+        flag2 = i;
+    }
+    //If both tokens found
+    if (flag1>=0 && flag2>=0)
+    { //Check if they have datatypes
+      if (table[flag1].datatype && table[flag2].datatype)
+        { //If datatype dont match
+          if(strcmp(table[flag1].datatype,table[flag2].datatype)!=0)
+            {
+              printf("\033[0;31m Line : %d | Semantic Error : Type Mismatch for %s : %s and %s : %s \n \n\033[0m\n",lineno,token1,table[flag1].datatype,token2,table[flag2].datatype);
+              exit(0);
+            }
+        }
+    }
+}
 void update(char *token,int lineno,char *value)
 {
   int flag = 0;
