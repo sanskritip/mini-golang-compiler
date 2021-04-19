@@ -600,35 +600,40 @@ void copyPropagation(quad arr[100])
         if(!arr[i].arg2){
             strcpy(var, arr[i].res);
             strcpy(val, arr[i].arg1);
-            //flag to see if any arg was changed
-            int flag = 0; 
-            for(int j = i + 1; j<quadlen; j++)
-            {
-                    //If value of the var is changed somewhere then the copy propogation must end
-                    if(strcmp(arr[j].res, var)==0){
-                        break;
-                    }
-                    //r = q * q; replace first occurence of q with b
-                    if (strcmp(arr[j].arg1, var)==0){
-                        strcpy(arr[j].arg1, val);
-                        flag = 1;
-                    }
-                    //replace second occurance with b
-                    if (arr[j].arg2 && strcmp(arr[j].arg2, var)==0){
-                        strcpy(arr[j].arg2, val);
-                        flag = 1;
-                    }
-            }
-            //After the replacements, remove the line q = b
-            if(flag){
-                int del = i;
-                for (int k = del-1; k < quadlen; k++)
+            //Check if arg1 is var
+            int varCheck = checkForDigits(arr[i].arg1);
+            if(varCheck==0)
+            {   
+                //flag to see if any arg was changed
+                int flag = 0; 
+                for(int j = i + 1; j<quadlen; j++)
                 {
-                    arr[del]=arr[del+1];
-                    del++;
+                        //If value of the var is changed somewhere then the copy propogation must end
+                        if(strcmp(arr[j].res, var)==0){
+                            break;
+                        }
+                        //r = q * q; replace first occurence of q with b
+                        if (strcmp(arr[j].arg1, var)==0){
+                            strcpy(arr[j].arg1, val);
+                            flag = 1;
+                        }
+                        //replace second occurance with b
+                        if (arr[j].arg2 && strcmp(arr[j].arg2, var)==0){
+                            strcpy(arr[j].arg2, val);
+                            flag = 1;
+                        }
                 }
-                //since the ith index was removed, length reduces by 1
-                quadlen=quadlen-1;
+                //After the replacements, remove the line q = b
+                if(flag){
+                    int del = i;
+                    for (int k = del-1; k < quadlen; k++)
+                    {
+                        arr[del]=arr[del+1];
+                        del++;
+                    }
+                    //since the ith index was removed, length reduces by 1
+                    quadlen=quadlen-1;
+                }
             }
         }
     }
@@ -636,10 +641,9 @@ void copyPropagation(quad arr[100])
 void constantPropagation(int index, quad arr[100])
 {
     char val[50], var[50];
-    int i=index;
-    strcpy(var, arr[i].res);
-    strcpy(val, arr[i].arg1);
-    i=index+1;
+    strcpy(var, arr[index].res);
+    strcpy(val, arr[index].arg1);
+    int i=index+1;
     for(; i<quadlen; i++)
     {   
         if (strcmp(arr[i].op, "if")!=0 && strcmp(arr[i].op, "goto")!=0 && strcmp(arr[i].op, "call")!=0 && strcmp(arr[i].op, "proc")!=0 && arr[i].op[0]!='L'&&strcmp(arr[i].res, "stack top")!=0){    

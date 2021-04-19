@@ -15,13 +15,12 @@ func main() {
 	//var d string = "Hello";
 	p = a + c;
 	q = b;
+	t = 5;
 	deadCode = q * 3;
 	//Constant comparision using relational
 	var e bool = 2==3;
-	//Copy Prop
-	r = q * q;
-	q = 5;
-	t = q * 2;
+	//Copy Prop for q and Const Prop for t
+	r = q * t;
 	//Identifier comparision using relational
 	var f bool = a<b;
 	deadCode = q * 3;
