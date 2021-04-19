@@ -258,11 +258,11 @@ int main (int argc, char** argv) {
 	printf("---------------------ICG in the form of Quadruples-------------------------\n\n");
     printQuadraples();
     fo.close();
- 	copyPropagation(q);
-    printf("\n\n------------------AFTER COPY PROPOGATION----------------------\n");
-    printQuadraples();
-    DCE(q);
+ 	DCE(q);
     printf("\n\n----------------AFTER DEAD CODE ELIMINATION-------------------\n");
+    printQuadraples();
+    copyPropagation(q);
+    printf("\n\n------------------AFTER COPY PROPOGATION----------------------\n");
     printQuadraples();
     constantFolding(q);
     printf("\n\n----------AFTER CONSTANT FOLDING and PROPOGATION--------------\n");
@@ -706,7 +706,7 @@ void DCE(quad arr[100])
 {   //Dead Code Elimination
     char val[50], var[50];
     int i=0;
-    for(; i<quadlen-1; i++)
+    for(; i<quadlen; i++)
     {       
             //p = a + c                
             //q = b         =>  q = b
@@ -717,7 +717,7 @@ void DCE(quad arr[100])
             for(int j = i + 1; j<quadlen; j++)
             {
                     //check if the var is used as arg1, arg2 and res
-                    if (strcmp(arr[j].arg1, var)==0 || (arr[j].arg2 && strcmp(arr[j].arg2, var)==0) || (strcmp(arr[j].res,var)==0)){
+                    if (strcmp(arr[j].arg1, var)==0 || (arr[j].arg2 && strcmp(arr[j].arg2, var)==0)){
                         flag = 0;
                         break;
                     }
