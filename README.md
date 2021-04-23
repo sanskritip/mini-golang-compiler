@@ -1,6 +1,19 @@
+
 # mini-golang-compiler
 
-# TODO
+## Build and execution
+-   To ensure the code works well, you need make, g++, flex/lex and bison installed in your system. 
+    
+-   Clone this repository into your local system. The project has a single global lex file, while has separate yacc files for each of the phases to ensure code cleanliness and ease of maintenance.
+    
+-   To build any of the phases, from a terminal, go into the directory and execute the MakeFile using the `make`  command. It then builds the compiler into an executable in the name of `gocompiler`  in that folder.
+    
+-   To run the compiler with an input file testinput.go, from the same directory as the previous step run `./gocompiler testinput.go`
+    
+
+**Note**: To help execute and test the compiler quickly, there are a set of prebuilt scripts in the scripts/ folder which will help build and execute predefined test cases using the compiler. Run `sh <script-name>.sh`
+
+## Task List
 
 ### Lexical Analysis and Token Generation
 
