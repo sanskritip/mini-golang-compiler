@@ -1,5 +1,5 @@
 
-# mini-golang-compiler
+# mini-golang-compiler 
 
 ## Build and execution
 -   To ensure the code works well, you need make, g++, flex/lex and bison installed in your system. 
@@ -20,17 +20,16 @@
   - [x] Conversion of strings to numbers.
   - [x] Handling Whitespace
   - [x] Handling Comments
-  - [ ] Update yylval, yylloc, other global variables (line and col nums) and return token code for each action.
-  - [ ] Record the line number and first and last column in yylloc for all tokens.
+  - [x] Update yylval, yylloc, other global variables (line and col nums) and return token code for each action.
+  - [x] Record the line number and first and last column in yylloc for all tokens.
   - [x] Report lexical errors for improper strings, lengthy identifiers, and invalid characters.
   - [ ] For each character that cannot be matched to any token pattern, report it and continue parsing with the next character. 
-  - [ ] If a string erroneously contains a newline, report an error and continue at the beginning of the next line.
   - [x] If an identifier is longer than the maximum (31 characters), report the error, truncate the identifier to the first 31 characters (discarding the rest), and continue.
 
 ### Symbol Table generation
 
   - [x] Data Value for identifiers
-  - [ ] Line numbers for declaration and reference
+  - [x] Line numbers for declaration and reference
 
 ### CFG and Parsing (Syntax validation)
 
@@ -38,7 +37,7 @@
    - [x] Variable declaration 
    - [x] Const Declaration
    - [x] Assign Variables - int , float , string , bool , null 
-   - [ ] Print Varible 
+   - [x] Print String 
    - [x] Simple arithmetic expressions
    - [x] Increment and decrement variables
    - [ ] Boolean operations on variables 
@@ -54,11 +53,11 @@
 	  - [x] Single import
 	  - [x] Multiple imports
 	- Identifiers
-	  - [x] Compute Identifier values and insert in symbol table
+		- [x] Compute Identifier values and insert in symbol table
 	- [x] Print line number of syntax errors ```DONE```
-	- [ ] Print col number of syntax errors
+	- [x] Print col number of syntax errors
 	- [ ] String computations
-	- [ ] Recognising errors and suggesting fix
+	- [x] Recognizing errors and suggesting fix
 	- [x] Evaluate complex logical expressions
 	
 ### TAC
@@ -79,7 +78,7 @@
   
 ### Deliverables
   - [x]  CFG
-  - [ ]  All the files related to all the tasks
+  - [x]  All the files related to all the tasks
   - [x]  Symbol table with required Information
   - [ ]  ReadMe file for Syntax Error Handling Strategies
   - [x]  Abstract syntax tree printed in an inorder way.
